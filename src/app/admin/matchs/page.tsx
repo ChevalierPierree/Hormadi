@@ -109,6 +109,7 @@ export default function AdminMatchsPage() {
       awayTeam: match.isHomeGame ? match.awayTeam : match.homeTeam,
       venue: match.venue,
       status: match.status,
+      competition: (match as any).competition || '',
       isHomeGame: match.isHomeGame,
       homeScore: match.homeScore?.toString() || '',
       awayScore: match.awayScore?.toString() || '',
