@@ -1,0 +1,181 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Auth & Users ────────────────────────────────────────
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      String   @default("editor") // super_admin, admin_billetterie, admin_boutique, editor
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  logs AdminLog[]
+}
+
+model AdminLog {
+  id        String   @id @default(cuid())
+  userId    String
+  action    String
+  entity    String
+  entityId  String?
+  details   String?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+// ─── Content ─────────────────────────────────────────────
+
+model Article {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  title       String
+  excerpt     String
+  content     String
+  category    String   @default("Club") // Match, Club, Équipe, Partenaires, Hospitalités
+  imageUrl    String?
+  published   Boolean  @default(false)
+  publishedAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// ─── Matches & Standings ─────────────────────────────────
+
+model Match {
+  id           String   @id @default(cuid())
+  date         DateTime
+  homeTeam     String
+  awayTeam     String
+  homeScore    Int?
+  awayScore    Int?
+  venue        String   @default("Patinoire de la Barre")
+  status       String   @default("scheduled") // scheduled, live, finished, postponed
+  competition  String   @default("Ligue Magnus") // Ligue Magnus, Poule de Maintien, Coupe de France
+  isHomeGame   Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  ticketCategories TicketCategory[]
+  orders           TicketOrder[]
+}
+
+model Standing {
+  id    String @id @default(cuid())
+  team  String @unique
+  rank  Int
+  gp    Int    @default(0) // games played
+  w     Int    @default(0) // wins
+  l     Int    @default(0) // losses
+  otw   Int    @default(0) // overtime wins
+  otl   Int    @default(0) // overtime losses
+  gf    Int    @default(0) // goals for
+  ga    Int    @default(0) // goals against
+  pts   Int    @default(0) // points
+
+  updatedAt DateTime @updatedAt
+}
+
+// ─── Ticketing ───────────────────────────────────────────
+
+model TicketCategory {
+  id       String @id @default(cuid())
+  matchId  String
+  name     String          // e.g. "Tribune Est", "VIP"
+  price    Int             // price in cents
+  capacity Int
+  sold     Int    @default(0)
+
+  match  Match         @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  orders TicketOrder[]
+}
+
+model TicketOrder {
+  id              String   @id @default(cuid())
+  matchId         String
+  categoryId      String
+  quantity        Int
+  totalPrice      Int      // in cents
+  customerName    String
+  customerEmail   String
+  customerPhone   String?
+  status          String   @default("confirmed") // confirmed, cancelled, used
+  reference       String   @unique
+  createdAt       DateTime @default(now())
+
+  match    Match          @relation(fields: [matchId], references: [id])
+  category TicketCategory @relation(fields: [categoryId], references: [id])
+}
+
+// ─── Shop ────────────────────────────────────────────────
+
+model Product {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  description String
+  price       Int      // in cents
+  category    String   // maillots, textile, accessoires, enfant, collectors
+  imageUrl    String?
+  images      String?  // JSON array of image URLs
+  sizes       String?  // JSON array: ["S","M","L","XL","XXL"]
+  stock       Int      @default(0)
+  featured    Boolean  @default(false)
+  published   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  orderItems ShopOrderItem[]
+}
+
+model ShopOrder {
+  id              String   @id @default(cuid())
+  reference       String   @unique
+  customerName    String
+  customerEmail   String
+  customerPhone   String?
+  shippingAddress String
+  shippingCity    String
+  shippingZip     String
+  totalPrice      Int      // in cents
+  status          String   @default("pending") // pending, confirmed, shipped, delivered, cancelled
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  items ShopOrderItem[]
+}
+
+model ShopOrderItem {
+  id        String @id @default(cuid())
+  orderId   String
+  productId String
+  quantity  Int
+  size      String?
+  unitPrice Int    // in cents at time of order
+
+  order   ShopOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product   @relation(fields: [productId], references: [id])
+}
+
+// ─── Partners ────────────────────────────────────────────
+
+model Partner {
+  id        String   @id @default(cuid())
+  name      String
+  logoUrl   String?  // path to logo image (PNG, black on transparent preferred)
+  website   String?  // URL du site web
+  category  String   @default("partenaire") // partenaire_principal, partenaire_officiel, fournisseur_officiel, partenaire_institutionnel, partenaire
+  order     Int      @default(0)
+  visible   Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
