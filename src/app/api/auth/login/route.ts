@@ -1,5 +1,7 @@
 import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/db'
+
+export const dynamic = 'force-dynamic'
 import { verifyPassword, signToken, setSessionCookie } from '@/lib/auth'
 import { jsonResponse, errorResponse } from '@/lib/api-utils'
 

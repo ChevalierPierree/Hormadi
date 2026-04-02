@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
+
+export const dynamic = 'force-dynamic'
 import { authenticateRequest, jsonResponse, errorResponse, getPaginationParams } from '@/lib/api-utils'
 
 // ─── Public GET ─────────────────────────────────────────
