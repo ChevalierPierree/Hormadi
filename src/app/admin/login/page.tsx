@@ -44,16 +44,16 @@ export default function AdminLoginPage() {
 
   return (
     <div className="min-h-screen bg-hormadi-dark flex items-center justify-center p-4">
-      <div className="card glass w-full max-w-md">
+      <div className="w-full max-w-md bg-hormadi-surface/80 backdrop-blur border border-hormadi-border rounded-2xl p-8 md:p-10 shadow-2xl shadow-black/20">
         {/* Logo */}
         <div className="flex justify-center mb-8">
-          <div className="w-16 h-16 rounded-full bg-hormadi-red flex items-center justify-center">
-            <span className="text-white text-4xl font-bold">H</span>
+          <div className="w-20 h-20 rounded-full bg-hormadi-red flex items-center justify-center shadow-lg shadow-hormadi-red/30">
+            <span className="text-white text-5xl font-bold">H</span>
           </div>
         </div>
 
         {/* Title */}
-        <h1 className="text-3xl font-bold text-white text-center mb-2">
+        <h1 className="text-3xl font-black text-white text-center mb-2 tracking-tight uppercase">
           Administration
         </h1>
         <p className="text-hormadi-muted text-center mb-8 text-sm">
@@ -62,15 +62,15 @@ export default function AdminLoginPage() {
 
         {/* Error Message */}
         {error && (
-          <div className="mb-6 p-4 bg-red-500/10 border border-hormadi-red rounded-lg">
-            <p className="text-hormadi-red text-sm">{error}</p>
+          <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-xl">
+            <p className="text-red-400 text-sm text-center">{error}</p>
           </div>
         )}
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-white mb-2">
+            <label htmlFor="email" className="block text-sm font-medium text-hormadi-muted mb-2">
               Email
             </label>
             <input
@@ -79,14 +79,14 @@ export default function AdminLoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="admin@hormadi.fr"
-              className="input w-full"
+              className="w-full px-4 py-3 bg-hormadi-dark/60 border border-hormadi-border rounded-xl text-white placeholder-hormadi-muted/50 focus:outline-none focus:border-hormadi-red/50 focus:ring-1 focus:ring-hormadi-red/30 transition-all"
               required
               disabled={loading}
             />
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-white mb-2">
+            <label htmlFor="password" className="block text-sm font-medium text-hormadi-muted mb-2">
               Mot de passe
             </label>
             <input
@@ -95,7 +95,7 @@ export default function AdminLoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
-              className="input w-full"
+              className="w-full px-4 py-3 bg-hormadi-dark/60 border border-hormadi-border rounded-xl text-white placeholder-hormadi-muted/50 focus:outline-none focus:border-hormadi-red/50 focus:ring-1 focus:ring-hormadi-red/30 transition-all"
               required
               disabled={loading}
             />
@@ -103,7 +103,7 @@ export default function AdminLoginPage() {
 
           <button
             type="submit"
-            className="btn-primary w-full"
+            className="btn-primary w-full mt-2"
             disabled={loading}
           >
             {loading ? 'Connexion en cours...' : 'Se connecter'}
@@ -111,8 +111,8 @@ export default function AdminLoginPage() {
         </form>
 
         {/* Footer */}
-        <p className="text-center text-hormadi-muted text-xs mt-6">
-          Hormadi Anglet Hockey © 2024
+        <p className="text-center text-hormadi-muted/60 text-xs mt-8">
+          Hormadi Anglet Hockey © {new Date().getFullYear()}
         </p>
       </div>
     </div>
