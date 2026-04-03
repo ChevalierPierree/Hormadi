@@ -10,10 +10,24 @@ import {
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { formatPrice } from '@/lib/utils'
-import { demoProducts } from '@/lib/demo-products'
 import { useCart } from '@/lib/cart'
 
-type Product = (typeof demoProducts)[0]
+type Product = {
+  id: string
+  slug: string
+  name: string
+  description: string
+  price: number
+  category: string
+  imageUrl: string | null
+  sizes: string | null
+  stock: number
+  featured: boolean
+  published?: boolean
+  badge?: string | null
+  createdAt?: string
+  updatedAt?: string
+}
 
 const CATEGORY_LABELS: Record<string, string> = {
   maillots: 'Maillots',
@@ -60,10 +74,10 @@ export default function ProductDetailPage() {
           const data = await response.json()
           setProduct(data)
         } else {
-          setProduct(demoProducts.find((p) => p.slug === slug) || null)
+          setProduct(null)
         }
       } catch {
-        setProduct(demoProducts.find((p) => p.slug === slug) || null)
+        setProduct(null)
       } finally {
         setLoading(false)
       }
@@ -76,9 +90,23 @@ export default function ProductDetailPage() {
     try { return JSON.parse(product.sizes) as string[] } catch { return null }
   }, [product])
 
-  const relatedProducts = useMemo(() => {
-    if (!product) return []
-    return demoProducts.filter((p) => p.category === product.category && p.id !== product.id).slice(0, 4)
+  const [relatedProducts, setRelatedProducts] = useState<Product[]>([])
+
+  useEffect(() => {
+    if (!product) return
+    const fetchRelated = async () => {
+      try {
+        const res = await fetch(`/api/products?category=${product.category}&limit=5`)
+        if (res.ok) {
+          const data = await res.json()
+          const list = data?.data || data?.products || []
+          setRelatedProducts(list.filter((p: Product) => p.id !== product.id).slice(0, 4))
+        }
+      } catch {
+        // ignore
+      }
+    }
+    fetchRelated()
   }, [product])
 
   const sizeGuide = product ? SIZE_GUIDE[product.category] : null

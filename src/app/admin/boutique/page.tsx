@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { AlertTriangle, ShoppingCart, Package, TrendingUp, ArrowRight } from 'lucide-react'
 import { formatPrice } from '@/lib/utils'
-import { demoProducts } from '@/lib/demo-products'
+type Product = { id: string; name: string; stock: number; price: number; category: string; slug: string; [key: string]: any }
 
 // Mock data - in production this would come from API
 const mockOrders = [
@@ -85,6 +85,7 @@ const getStatusLabel = (status: string) => {
 }
 
 export default function AdminShopDashboard() {
+  const [products, setProducts] = useState<Product[]>([])
   const [stats, setStats] = useState({
     totalRevenue: 0,
     ordersInProgress: 0,
@@ -93,21 +94,30 @@ export default function AdminShopDashboard() {
   })
 
   useEffect(() => {
-    // Calculate stats from demo data
-    const totalRevenue = mockOrders.reduce((sum, order) => sum + order.total, 0)
-    const ordersInProgress = mockOrders.filter((o) => o.status !== 'delivered' && o.status !== 'cancelled').length
-    const productsInStock = demoProducts.filter((p) => p.stock > 0).length
-    const lowStockAlerts = demoProducts.filter((p) => p.stock > 0 && p.stock < 10).length
+    const fetchData = async () => {
+      try {
+        // Fetch products
+        const prodRes = await fetch('/api/products?limit=200')
+        const prodData = prodRes.ok ? await prodRes.json() : { data: [] }
+        const prods: Product[] = prodData?.data || []
+        setProducts(prods)
 
-    setStats({
-      totalRevenue,
-      ordersInProgress,
-      productsInStock,
-      lowStockAlerts,
-    })
+        const productsInStock = prods.filter((p) => p.stock > 0).length
+        const lowStockAlerts = prods.filter((p) => p.stock > 0 && p.stock < 10).length
+
+        // Calculate stats from mock orders (in production, fetch from API)
+        const totalRevenue = mockOrders.reduce((sum, order) => sum + order.total, 0)
+        const ordersInProgress = mockOrders.filter((o) => o.status !== 'delivered' && o.status !== 'cancelled').length
+
+        setStats({ totalRevenue, ordersInProgress, productsInStock, lowStockAlerts })
+      } catch {
+        // fallback
+      }
+    }
+    fetchData()
   }, [])
 
-  const lowStockProducts = demoProducts.filter((p) => p.stock > 0 && p.stock < 10)
+  const lowStockProducts = products.filter((p) => p.stock > 0 && p.stock < 10)
 
   return (
     <main className="min-h-screen bg-hormadi-dark">
@@ -161,7 +171,7 @@ export default function AdminShopDashboard() {
               </div>
               <div>
                 <p className="text-3xl font-bold text-white">{stats.productsInStock}</p>
-                <p className="text-hormadi-muted text-xs mt-2">Sur {demoProducts.length} articles</p>
+                <p className="text-hormadi-muted text-xs mt-2">Sur {products.length} articles</p>
               </div>
             </div>
 

@@ -1,10 +1,25 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import Link from 'next/link'
 import { Trash2, Edit, Plus, Search, Eye, EyeOff } from 'lucide-react'
 import { formatPrice } from '@/lib/utils'
-import { demoProducts } from '@/lib/demo-products'
+
+type Product = {
+  id: string
+  slug: string
+  name: string
+  description: string
+  price: number
+  category: string
+  imageUrl: string | null
+  sizes: string | null
+  stock: number
+  featured: boolean
+  published: boolean
+  createdAt?: string
+  updatedAt?: string
+}
 
 const CATEGORIES = ['maillots', 'textile', 'accessoires', 'enfant', 'collectors']
 
@@ -20,10 +35,11 @@ type ProductFormData = {
 }
 
 export default function AdminProductsPage() {
+  const [products, setProducts] = useState<Product[]>([])
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('')
   const [showForm, setShowForm] = useState(false)
-  const [editingProduct, setEditingProduct] = useState<(typeof demoProducts)[0] | null>(null)
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null)
   const [formData, setFormData] = useState<ProductFormData>({
     name: '',
     slug: '',
@@ -35,9 +51,24 @@ export default function AdminProductsPage() {
     published: true,
   })
 
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await fetch('/api/products?limit=200')
+        if (res.ok) {
+          const data = await res.json()
+          setProducts(data?.data || [])
+        }
+      } catch {
+        // ignore
+      }
+    }
+    fetchProducts()
+  }, [])
+
   // Filter products
   const filteredProducts = useMemo(() => {
-    return demoProducts.filter((p) => {
+    return products.filter((p) => {
       const matchesSearch =
         p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         p.slug.toLowerCase().includes(searchTerm.toLowerCase())
@@ -45,9 +76,9 @@ export default function AdminProductsPage() {
 
       return matchesSearch && matchesCategory
     })
-  }, [searchTerm, selectedCategory])
+  }, [products, searchTerm, selectedCategory])
 
-  const handleOpenForm = (product?: (typeof demoProducts)[0]) => {
+  const handleOpenForm = (product?: Product) => {
     if (product) {
       setEditingProduct(product)
       setFormData({

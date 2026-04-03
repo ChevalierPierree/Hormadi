@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
-import { isDemoMode, demoArticles } from '@/lib/demo-data'
 
 export const dynamic = 'force-dynamic'
 import { authenticateRequest, jsonResponse, errorResponse, getPaginationParams } from '@/lib/api-utils'
@@ -14,62 +13,6 @@ export async function GET(request: NextRequest) {
     const published = url.searchParams.get('published')
     const slug = url.searchParams.get('slug')
     const { page, limit, skip } = getPaginationParams(request)
-
-    // Return demo data if database is unavailable
-    if (isDemoMode) {
-      let filtered = [...demoArticles];
-
-      // If fetching by slug, return single article
-      if (slug) {
-        const article = filtered.find(a => a.slug === slug);
-        if (!article) return errorResponse('Article non trouvé', 404);
-        return jsonResponse({ article });
-      }
-
-      // Filter by published status
-      if (published === 'false') {
-        filtered = filtered.filter(a => !a.published);
-      } else if (published !== 'all') {
-        filtered = filtered.filter(a => a.published);
-      }
-
-      // Filter by category
-      if (category && category !== 'Tous') {
-        filtered = filtered.filter(a => a.category === category);
-      }
-
-      // Filter by search
-      if (search) {
-        filtered = filtered.filter(a =>
-          a.title.includes(search) || a.excerpt.includes(search)
-        );
-      }
-
-      // Sort by publishedAt desc, then createdAt desc
-      filtered.sort((a, b) => {
-        const aDate = new Date(a.publishedAt || a.createdAt).getTime();
-        const bDate = new Date(b.publishedAt || b.createdAt).getTime();
-        return bDate - aDate;
-      });
-
-      const total = filtered.length;
-      const articles = filtered.slice(skip, skip + limit).map(a => ({
-        id: a.id,
-        slug: a.slug,
-        title: a.title,
-        excerpt: a.excerpt,
-        category: a.category,
-        imageUrl: a.imageUrl,
-        published: a.published,
-        publishedAt: a.publishedAt,
-        createdAt: a.createdAt,
-      }));
-
-      return jsonResponse({
-        articles,
-        pagination: { page, limit, total, pages: Math.ceil(total / limit) },
-      });
-    }
 
     const where: any = {}
 
@@ -94,11 +37,11 @@ export async function GET(request: NextRequest) {
       where.category = category
     }
 
-    // Search (SQLite doesn't support mode: 'insensitive', use contains only)
+    // Search (PostgreSQL supports mode: 'insensitive')
     if (search) {
       where.OR = [
-        { title: { contains: search } },
-        { excerpt: { contains: search } },
+        { title: { contains: search, mode: 'insensitive' } },
+        { excerpt: { contains: search, mode: 'insensitive' } },
       ]
     }
 

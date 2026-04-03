@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
-import { isDemoMode, demoProducts } from '@/lib/demo-data'
 
 export const dynamic = 'force-dynamic'
 import {
@@ -22,40 +21,6 @@ export async function GET(req: NextRequest) {
     const category = url.searchParams.get('category')
     const search = url.searchParams.get('search')
     const featured = url.searchParams.get('featured')
-
-    // Return demo data if database is unavailable
-    if (isDemoMode) {
-      let filtered = [...demoProducts];
-
-      if (category) {
-        filtered = filtered.filter(p => p.category === category);
-      }
-
-      if (search) {
-        const lowerSearch = search.toLowerCase();
-        filtered = filtered.filter(p =>
-          p.name.toLowerCase().includes(lowerSearch) ||
-          p.description.toLowerCase().includes(lowerSearch)
-        );
-      }
-
-      if (featured === 'true') {
-        filtered = filtered.filter(p => p.featured);
-      }
-
-      const total = filtered.length;
-      const products = filtered.slice(skip, skip + limit);
-
-      return jsonResponse({
-        data: products,
-        pagination: {
-          page,
-          limit,
-          total,
-          pages: Math.ceil(total / limit),
-        },
-      });
-    }
 
     // Build filter
     const where: any = { published: true }

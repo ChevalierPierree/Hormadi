@@ -1,89 +1,116 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { prisma } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
-
-// Mock database
-const ticketOrders: any[] = [
-  {
-    id: 'order-1',
-    reference: 'HRM-001234',
-    matchId: '1',
-    customerName: 'Jean Dupont',
-    email: 'jean@example.com',
-    phone: '+33612345678',
-    tickets: [
-      { sectionId: 'tribune-est', sectionName: 'Tribune Est', quantity: 2, price: 18 },
-    ],
-    totalAmount: 36,
-    status: 'confirmed',
-    createdAt: new Date('2026-04-01').toISOString(),
-  },
-];
-
-function hasAdminPermission(req: NextRequest): boolean {
-  const authHeader = req.headers.get('authorization');
-  return authHeader?.includes('admin') ?? false;
-}
+import {
+  authenticateRequest,
+  jsonResponse,
+  errorResponse,
+  logAdminAction,
+} from '@/lib/api-utils';
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
 
     // Try to find by id or reference
-    const order = ticketOrders.find(
-      (order) => order.id === id || order.reference === id,
-    );
+    const order = await prisma.ticketOrder.findFirst({
+      where: {
+        OR: [{ id }, { reference: id }],
+      },
+      include: {
+        category: true,
+        match: true,
+      },
+    });
 
     if (!order) {
-      return NextResponse.json({ error: 'Order not found' }, { status: 404 });
+      return errorResponse('Order not found', 404);
     }
 
-    return NextResponse.json(order);
+    return jsonResponse({
+      ...order,
+      categoryName: order.category.name,
+      unitPrice: order.category.price,
+      matchDate: order.match.date,
+      homeTeam: order.match.homeTeam,
+      awayTeam: order.match.awayTeam,
+      venue: order.match.venue,
+    });
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to fetch order' }, { status: 500 });
+    console.error('Get ticket order error:', error);
+    return errorResponse('Failed to fetch order', 500);
   }
 }
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    // Check admin permission for updates
-    if (!hasAdminPermission(req)) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    // Authenticate
+    const auth = await authenticateRequest(req, ['admin_billetterie', 'super_admin']);
+    if (auth instanceof NextResponse) {
+      return auth;
     }
 
-    const { id } = params;
+    const { id } = await params;
     const body = await req.json();
     const { status } = body;
 
     if (!status) {
-      return NextResponse.json({ error: 'Status is required' }, { status: 400 });
+      return errorResponse('Status is required', 400);
     }
 
-    const validStatuses = ['confirmed', 'pending', 'cancelled'];
+    const validStatuses = ['confirmed', 'cancelled', 'used'];
     if (!validStatuses.includes(status)) {
-      return NextResponse.json({ error: 'Invalid status' }, { status: 400 });
+      return errorResponse('Invalid status', 400);
     }
 
-    // Find and update order
-    const orderIndex = ticketOrders.findIndex(
-      (order) => order.id === id || order.reference === id,
+    // Find order
+    const order = await prisma.ticketOrder.findFirst({
+      where: {
+        OR: [{ id }, { reference: id }],
+      },
+    });
+
+    if (!order) {
+      return errorResponse('Order not found', 404);
+    }
+
+    // If cancelling, restore the sold count
+    if (status === 'cancelled' && order.status !== 'cancelled') {
+      await prisma.ticketCategory.update({
+        where: { id: order.categoryId },
+        data: { sold: { decrement: order.quantity } },
+      });
+    }
+
+    // Update order
+    const updated = await prisma.ticketOrder.update({
+      where: { id: order.id },
+      data: { status },
+      include: {
+        category: true,
+        match: true,
+      },
+    });
+
+    // Log admin action
+    await logAdminAction(
+      auth.id,
+      'UPDATE_TICKET_ORDER',
+      'TicketOrder',
+      order.id,
+      `Updated status to ${status}`
     );
 
-    if (orderIndex === -1) {
-      return NextResponse.json({ error: 'Order not found' }, { status: 404 });
-    }
-
-    ticketOrders[orderIndex].status = status;
-    ticketOrders[orderIndex].updatedAt = new Date().toISOString();
-
-    return NextResponse.json(ticketOrders[orderIndex]);
+    return jsonResponse(updated);
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to update order' }, { status: 500 });
+    console.error('Update ticket order error:', error);
+    return errorResponse('Failed to update order', 500);
   }
 }

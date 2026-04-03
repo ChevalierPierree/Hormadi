@@ -1,65 +1,41 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
-import { isDemoMode, demoMatches } from '@/lib/demo-data';
 
 export const dynamic = 'force-dynamic';
 import { authenticateRequest, jsonResponse, errorResponse, sanitizeString, logAdminAction } from '@/lib/api-utils';
 
-async function formatMatch(m: any) {
-  // Fetch ticket categories for this match
-  const ticketCategories = await prisma.$queryRawUnsafe<any[]>(
-    `SELECT id, name, price, capacity, sold FROM TicketCategory WHERE matchId = '${m.id.replace(/'/g, "''")}'`
-  );
-
-  return {
-    id: m.id,
-    date: m.date,
-    homeTeam: m.homeTeam,
-    awayTeam: m.awayTeam,
-    homeScore: m.homeScore ?? null,
-    awayScore: m.awayScore ?? null,
-    venue: m.venue,
-    status: m.status,
-    isHomeGame: Boolean(m.isHomeGame),
-    competition: m.competition || 'Ligue Magnus',
-    createdAt: m.createdAt,
-    updatedAt: m.updatedAt,
-    ticketCategories: ticketCategories.map((tc: any) => ({
-      id: tc.id,
-      name: tc.name,
-      price: tc.price,
-      capacity: tc.capacity,
-      sold: tc.sold,
-      available: tc.capacity - tc.sold,
-    })),
-  };
-}
-
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
 
-    // Return demo data if database is unavailable
-    if (isDemoMode) {
-      const match = demoMatches.find(m => m.id === id);
-      if (!match) {
-        return errorResponse('Match not found', 404);
-      }
-      return jsonResponse({ match }, 200);
-    }
+    const match = await prisma.match.findUnique({
+      where: { id },
+      include: {
+        ticketCategories: true,
+      },
+    });
 
-    const rows = await prisma.$queryRawUnsafe<any[]>(
-      `SELECT * FROM Match WHERE id = '${id.replace(/'/g, "''")}'`
-    );
-
-    if (!rows.length) {
+    if (!match) {
       return errorResponse('Match not found', 404);
     }
 
-    return jsonResponse({ match: await formatMatch(rows[0]) }, 200);
+    // Format ticket categories with available count
+    const formattedMatch = {
+      ...match,
+      ticketCategories: match.ticketCategories.map((tc) => ({
+        id: tc.id,
+        name: tc.name,
+        price: tc.price,
+        capacity: tc.capacity,
+        sold: tc.sold,
+        available: tc.capacity - tc.sold,
+      })),
+    };
+
+    return jsonResponse({ match: formattedMatch }, 200);
   } catch (error) {
     console.error('Get match error:', error);
     return errorResponse('Internal server error', 500);
@@ -68,7 +44,7 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Authenticate request
@@ -77,44 +53,37 @@ export async function PUT(
       return auth;
     }
 
-    const { id } = params;
+    const { id } = await params;
     const body = await request.json();
     const { homeTeam, awayTeam, date, status, venue, homeScore, awayScore, competition, isHomeGame } = body;
 
     // Check if match exists
-    const existing = await prisma.$queryRawUnsafe<any[]>(
-      `SELECT id FROM Match WHERE id = '${id.replace(/'/g, "''")}'`
-    );
-    if (!existing.length) {
+    const existing = await prisma.match.findUnique({ where: { id } });
+    if (!existing) {
       return errorResponse('Match not found', 404);
     }
 
-    // Build SET clauses
-    const sets: string[] = [];
-    if (homeTeam !== undefined) sets.push(`homeTeam = '${sanitizeString(homeTeam).replace(/'/g, "''")}'`);
-    if (awayTeam !== undefined) sets.push(`awayTeam = '${sanitizeString(awayTeam).replace(/'/g, "''")}'`);
-    if (date !== undefined) sets.push(`date = '${new Date(date).toISOString()}'`);
-    if (status !== undefined) sets.push(`status = '${sanitizeString(status).replace(/'/g, "''")}'`);
-    if (venue !== undefined) sets.push(`venue = '${(venue ? sanitizeString(venue) : '').replace(/'/g, "''")}'`);
-    if (homeScore !== undefined) sets.push(`homeScore = ${homeScore === null ? 'NULL' : Number(homeScore)}`);
-    if (awayScore !== undefined) sets.push(`awayScore = ${awayScore === null ? 'NULL' : Number(awayScore)}`);
-    if (competition !== undefined) sets.push(`competition = '${sanitizeString(competition).replace(/'/g, "''")}'`);
-    if (isHomeGame !== undefined) sets.push(`isHomeGame = ${isHomeGame ? 1 : 0}`);
-    sets.push(`updatedAt = '${new Date().toISOString()}'`);
+    // Build update data
+    const updateData: any = {};
+    if (homeTeam !== undefined) updateData.homeTeam = sanitizeString(homeTeam);
+    if (awayTeam !== undefined) updateData.awayTeam = sanitizeString(awayTeam);
+    if (date !== undefined) updateData.date = new Date(date);
+    if (status !== undefined) updateData.status = sanitizeString(status);
+    if (venue !== undefined) updateData.venue = venue ? sanitizeString(venue) : '';
+    if (homeScore !== undefined) updateData.homeScore = homeScore === null ? null : Number(homeScore);
+    if (awayScore !== undefined) updateData.awayScore = awayScore === null ? null : Number(awayScore);
+    if (competition !== undefined) updateData.competition = sanitizeString(competition);
+    if (isHomeGame !== undefined) updateData.isHomeGame = Boolean(isHomeGame);
 
-    await prisma.$executeRawUnsafe(
-      `UPDATE Match SET ${sets.join(', ')} WHERE id = '${id.replace(/'/g, "''")}'`
-    );
+    const updated = await prisma.match.update({
+      where: { id },
+      data: updateData,
+      include: {
+        ticketCategories: true,
+      },
+    });
 
-    // Read back updated match
-    const updated = await prisma.$queryRawUnsafe<any[]>(
-      `SELECT * FROM Match WHERE id = '${id.replace(/'/g, "''")}'`
-    );
-
-    const updatedFields = [homeTeam && 'homeTeam', awayTeam && 'awayTeam', date && 'date',
-      status && 'status', venue !== undefined && 'venue', homeScore !== undefined && 'homeScore',
-      awayScore !== undefined && 'awayScore', competition && 'competition', isHomeGame !== undefined && 'isHomeGame'
-    ].filter(Boolean);
+    const updatedFields = Object.keys(updateData);
 
     // Log admin action
     await logAdminAction(
@@ -125,7 +94,7 @@ export async function PUT(
       `Updated ${updatedFields.join(', ')}`
     );
 
-    return jsonResponse({ match: updated.length ? await formatMatch(updated[0]) : { id } }, 200);
+    return jsonResponse({ match: updated }, 200);
   } catch (error) {
     console.error('Update match error:', error);
     if (error instanceof Error && error.message.includes('validation')) {
@@ -137,7 +106,7 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Authenticate request
@@ -146,21 +115,16 @@ export async function DELETE(
       return auth;
     }
 
-    const { id } = params;
+    const { id } = await params;
 
     // Find match
-    const rows = await prisma.$queryRawUnsafe<any[]>(
-      `SELECT * FROM Match WHERE id = '${id.replace(/'/g, "''")}'`
-    );
-
-    if (!rows.length) {
+    const match = await prisma.match.findUnique({ where: { id } });
+    if (!match) {
       return errorResponse('Match not found', 404);
     }
 
-    // Delete match
-    await prisma.$executeRawUnsafe(
-      `DELETE FROM Match WHERE id = '${id.replace(/'/g, "''")}'`
-    );
+    // Delete match (ticket categories cascade)
+    await prisma.match.delete({ where: { id } });
 
     // Log admin action
     await logAdminAction(
@@ -168,7 +132,7 @@ export async function DELETE(
       'DELETE_MATCH',
       'Match',
       id,
-      `Deleted match: ${rows[0].homeTeam} vs ${rows[0].awayTeam}`
+      `Deleted match: ${match.homeTeam} vs ${match.awayTeam}`
     );
 
     return jsonResponse({ message: 'Match deleted' }, 200);

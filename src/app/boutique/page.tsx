@@ -7,12 +7,26 @@ import CTASection from '@/components/sections/CTASection'
 import SocialCTA from '@/components/sections/SocialCTA'
 import { cn } from '@/lib/utils'
 import { formatPrice } from '@/lib/utils'
-import { demoProducts } from '@/lib/demo-products'
 import { useCart } from '@/lib/cart'
 
 // ─── Types ────────────────────────────────────────────
 
-type Product = (typeof demoProducts)[0]
+type Product = {
+  id: string
+  slug: string
+  name: string
+  description: string
+  price: number
+  category: string
+  imageUrl: string | null
+  sizes: string | null
+  stock: number
+  featured: boolean
+  published?: boolean
+  badge?: string | null
+  createdAt?: string
+  updatedAt?: string
+}
 
 // ─── Constants ────────────────────────────────────────
 
@@ -161,17 +175,13 @@ export default function BoutiquePage() {
         const response = await fetch('/api/products')
         if (response.ok) {
           const data = await response.json()
-          const list = Array.isArray(data) ? data : data?.products
-          if (Array.isArray(list) && list.length > 0) {
-            setProducts(list)
-          } else {
-            setProducts(demoProducts)
-          }
+          const list = Array.isArray(data) ? data : (data?.data || data?.products || [])
+          setProducts(Array.isArray(list) ? list : [])
         } else {
-          setProducts(demoProducts)
+          setProducts([])
         }
       } catch {
-        setProducts(demoProducts)
+        setProducts([])
       } finally {
         setLoading(false)
       }

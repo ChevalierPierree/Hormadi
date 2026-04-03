@@ -89,28 +89,29 @@ async function main() {
   ]
 
   const matchesData = [
-    // Past matches
-    { date: '2025-09-13T20:30:00', opp: 0, home: true, hs: 3, as: 2, status: 'finished' },
-    { date: '2025-09-20T20:00:00', opp: 5, home: false, hs: 4, as: 3, status: 'finished' },
-    { date: '2025-10-04T20:30:00', opp: 1, home: true, hs: 2, as: 4, status: 'finished' },
-    { date: '2025-10-18T20:00:00', opp: 3, home: false, hs: 3, as: 1, status: 'finished' },
-    { date: '2025-11-08T20:30:00', opp: 4, home: true, hs: 5, as: 2, status: 'finished' },
-    { date: '2025-11-22T20:00:00', opp: 6, home: false, hs: 2, as: 3, status: 'finished' },
-    { date: '2025-12-06T20:30:00', opp: 2, home: true, hs: 4, as: 1, status: 'finished' },
-    { date: '2025-12-20T20:00:00', opp: 7, home: false, hs: 6, as: 2, status: 'finished' },
-    { date: '2026-01-10T20:30:00', opp: 8, home: true, hs: 3, as: 3, status: 'finished' },
-    { date: '2026-01-24T20:00:00', opp: 9, home: false, hs: 5, as: 0, status: 'finished' },
-    { date: '2026-02-07T20:30:00', opp: 10, home: true, hs: 7, as: 1, status: 'finished' },
-    { date: '2026-02-21T20:00:00', opp: 0, home: false, hs: 1, as: 4, status: 'finished' },
-    { date: '2026-03-07T20:30:00', opp: 5, home: true, hs: 4, as: 2, status: 'finished' },
-    { date: '2026-03-21T20:30:00', opp: 1, home: true, hs: 3, as: 3, status: 'finished' },
-    { date: '2026-03-28T20:30:00', opp: 4, home: true, hs: 4, as: 2, status: 'finished' },
+    // Past matches — Ligue Magnus
+    { date: '2025-09-13T20:30:00', opp: 0, home: true, hs: 3, as: 2, status: 'finished', comp: 'Ligue Magnus' },
+    { date: '2025-09-20T20:00:00', opp: 5, home: false, hs: 4, as: 3, status: 'finished', comp: 'Ligue Magnus' },
+    { date: '2025-10-04T20:30:00', opp: 1, home: true, hs: 2, as: 4, status: 'finished', comp: 'Ligue Magnus' },
+    { date: '2025-10-18T20:00:00', opp: 3, home: false, hs: 3, as: 1, status: 'finished', comp: 'Ligue Magnus' },
+    { date: '2025-11-08T20:30:00', opp: 4, home: true, hs: 5, as: 2, status: 'finished', comp: 'Ligue Magnus' },
+    { date: '2025-11-22T20:00:00', opp: 6, home: false, hs: 2, as: 3, status: 'finished', comp: 'Ligue Magnus' },
+    { date: '2025-12-06T20:30:00', opp: 2, home: true, hs: 4, as: 1, status: 'finished', comp: 'Ligue Magnus' },
+    { date: '2025-12-20T20:00:00', opp: 7, home: false, hs: 6, as: 2, status: 'finished', comp: 'Ligue Magnus' },
+    { date: '2026-01-10T20:30:00', opp: 8, home: true, hs: 3, as: 3, status: 'finished', comp: 'Ligue Magnus' },
+    { date: '2026-01-24T20:00:00', opp: 9, home: false, hs: 5, as: 0, status: 'finished', comp: 'Ligue Magnus' },
+    { date: '2026-02-07T20:30:00', opp: 10, home: true, hs: 7, as: 1, status: 'finished', comp: 'Ligue Magnus' },
+    { date: '2026-02-21T20:00:00', opp: 0, home: false, hs: 1, as: 4, status: 'finished', comp: 'Ligue Magnus' },
+    // Poule de Maintien
+    { date: '2026-03-07T20:30:00', opp: 5, home: true, hs: 4, as: 2, status: 'finished', comp: 'Poule de Maintien' },
+    { date: '2026-03-21T20:30:00', opp: 1, home: true, hs: 3, as: 3, status: 'finished', comp: 'Poule de Maintien' },
+    { date: '2026-03-28T20:30:00', opp: 4, home: true, hs: 4, as: 2, status: 'finished', comp: 'Poule de Maintien' },
     // Upcoming
-    { date: '2026-04-05T20:30:00', opp: 0, home: true, hs: null, as: null, status: 'scheduled' },
-    { date: '2026-04-12T20:00:00', opp: 3, home: false, hs: null, as: null, status: 'scheduled' },
-    { date: '2026-04-19T20:30:00', opp: 2, home: true, hs: null, as: null, status: 'scheduled' },
-    { date: '2026-04-26T20:00:00', opp: 6, home: false, hs: null, as: null, status: 'scheduled' },
-    { date: '2026-05-03T20:30:00', opp: 8, home: true, hs: null, as: null, status: 'scheduled' },
+    { date: '2026-04-05T20:30:00', opp: 0, home: true, hs: null, as: null, status: 'scheduled', comp: 'Poule de Maintien' },
+    { date: '2026-04-12T20:00:00', opp: 3, home: false, hs: null, as: null, status: 'scheduled', comp: 'Poule de Maintien' },
+    { date: '2026-04-19T20:30:00', opp: 2, home: true, hs: null, as: null, status: 'scheduled', comp: 'Poule de Maintien' },
+    { date: '2026-04-26T20:00:00', opp: 6, home: false, hs: null, as: null, status: 'scheduled', comp: 'Poule de Maintien' },
+    { date: '2026-05-03T20:30:00', opp: 8, home: true, hs: null, as: null, status: 'scheduled', comp: 'Poule de Maintien' },
   ]
 
   for (const m of matchesData) {
@@ -125,6 +126,7 @@ async function main() {
         venue: m.home ? 'Patinoire de la Barre' : `Patinoire de ${oppName.split(' ').pop()}`,
         status: m.status,
         isHomeGame: m.home,
+        competition: m.comp,
       },
     })
 

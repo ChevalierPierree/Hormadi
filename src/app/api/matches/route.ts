@@ -1,119 +1,58 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
-import { isDemoMode, demoMatches } from '@/lib/demo-data';
 
 export const dynamic = 'force-dynamic';
 import { authenticateRequest, jsonResponse, errorResponse, validateRequired, sanitizeString, getPaginationParams, logAdminAction } from '@/lib/api-utils';
 
 export async function GET(request: NextRequest) {
   try {
-    // Return demo data if database is unavailable
-    if (isDemoMode) {
-      const url = new URL(request.url);
-      const status = url.searchParams.get('status');
-      const month = url.searchParams.get('month');
-      const { page, limit } = getPaginationParams(request);
-
-      // Filter demo data by status
-      let filtered = [...demoMatches];
-      if (status) {
-        const s = status === 'completed' ? 'finished' : status;
-        filtered = filtered.filter(m => m.status === s);
-      }
-
-      // Filter demo data by month
-      if (month) {
-        const [year, monthNum] = month.split('-');
-        if (year && monthNum) {
-          const monthStart = new Date(`${year}-${monthNum}-01T00:00:00Z`);
-          const monthEnd = new Date(parseInt(year), parseInt(monthNum), 1);
-          filtered = filtered.filter(m => {
-            const matchDate = new Date(m.date);
-            return matchDate >= monthStart && matchDate < monthEnd;
-          });
-        }
-      }
-
-      const total = filtered.length;
-      const offset = (page - 1) * limit;
-      const matches = filtered.slice(offset, offset + limit);
-
-      return jsonResponse(
-        {
-          matches,
-          pagination: {
-            page,
-            limit,
-            total,
-            pages: Math.ceil(total / limit),
-          },
-        },
-        200
-      );
-    }
-
     const url = new URL(request.url);
     const status = url.searchParams.get('status');
     const month = url.searchParams.get('month');
     const { page, limit } = getPaginationParams(request);
 
-    // Build raw SQL to ensure we get the competition column
-    // (Prisma client was generated before competition was added)
-    const conditions: string[] = [];
+    // Build where clause
+    const where: any = {};
 
     if (status) {
-      const s = sanitizeString(status);
-      if (s === 'completed') {
-        conditions.push(`status = 'finished'`);
-      } else if (s === 'upcoming') {
-        conditions.push(`status = 'scheduled'`);
+      if (status === 'completed') {
+        where.status = 'finished';
+      } else if (status === 'upcoming') {
+        where.status = 'scheduled';
       } else {
-        conditions.push(`status = '${s.replace(/'/g, "''")}'`);
+        where.status = status;
       }
     }
 
     if (month) {
-      const monthStr = sanitizeString(month);
-      const [year, monthNum] = monthStr.split('-');
+      const [year, monthNum] = month.split('-');
       if (year && monthNum) {
-        conditions.push(`date >= '${year}-${monthNum}-01T00:00:00Z'`);
+        const monthStart = new Date(`${year}-${monthNum}-01T00:00:00Z`);
         const endMonth = parseInt(monthNum) + 1;
         const endYear = endMonth > 12 ? parseInt(year) + 1 : parseInt(year);
         const endMonthStr = String(endMonth > 12 ? 1 : endMonth).padStart(2, '0');
-        conditions.push(`date < '${endYear}-${endMonthStr}-01T00:00:00Z'`);
+        const monthEnd = new Date(`${endYear}-${endMonthStr}-01T00:00:00Z`);
+        where.date = {
+          gte: monthStart,
+          lt: monthEnd,
+        };
       }
     }
 
-    const whereClause = conditions.length > 0 ? 'WHERE ' + conditions.join(' AND ') : '';
     const offset = (page - 1) * limit;
 
-    // Count total
-    const countResult = await prisma.$queryRawUnsafe<{ cnt: number }[]>(
-      `SELECT COUNT(*) as cnt FROM Match ${whereClause}`
-    );
-    const total = Number(countResult[0]?.cnt ?? 0);
-
-    // Fetch matches with raw SQL (includes competition column)
-    const rawMatches = await prisma.$queryRawUnsafe<any[]>(
-      `SELECT * FROM Match ${whereClause} ORDER BY date DESC LIMIT ${limit} OFFSET ${offset}`
-    );
-
-    // Format matches to match expected shape
-    const matches = rawMatches.map((m: any) => ({
-      id: m.id,
-      date: m.date,
-      homeTeam: m.homeTeam,
-      awayTeam: m.awayTeam,
-      homeScore: m.homeScore ?? null,
-      awayScore: m.awayScore ?? null,
-      venue: m.venue,
-      status: m.status,
-      isHomeGame: Boolean(m.isHomeGame),
-      competition: m.competition || 'Ligue Magnus',
-      createdAt: m.createdAt,
-      updatedAt: m.updatedAt,
-      ticketCategories: [],
-    }));
+    const [total, matches] = await Promise.all([
+      prisma.match.count({ where }),
+      prisma.match.findMany({
+        where,
+        orderBy: { date: 'desc' },
+        skip: offset,
+        take: limit,
+        include: {
+          ticketCategories: true,
+        },
+      }),
+    ]);
 
     return jsonResponse(
       {
@@ -153,40 +92,30 @@ export async function POST(request: NextRequest) {
       return errorResponse(validationError, 400);
     }
 
-    const sanitizedHomeTeam = sanitizeString(homeTeam);
-    const sanitizedAwayTeam = sanitizeString(awayTeam);
-    const sanitizedVenue = venue ? sanitizeString(venue) : 'Patinoire de la Barre';
-    const sanitizedStatus = sanitizeString(status);
-    const sanitizedComp = sanitizeString(competition);
-    const dateISO = new Date(date).toISOString();
-    const now = new Date().toISOString();
-    const id = 'clm' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-
-    // Create match with raw SQL to include competition
-    await prisma.$executeRawUnsafe(
-      `INSERT INTO Match (id, date, homeTeam, awayTeam, homeScore, awayScore, venue, status, isHomeGame, competition, createdAt, updatedAt)
-       VALUES ('${id}', '${dateISO}', '${sanitizedHomeTeam.replace(/'/g, "''")}', '${sanitizedAwayTeam.replace(/'/g, "''")}', ${homeScore !== undefined ? Number(homeScore) : 'NULL'}, ${awayScore !== undefined ? Number(awayScore) : 'NULL'}, '${sanitizedVenue.replace(/'/g, "''")}', '${sanitizedStatus}', ${isHomeGame ? 1 : 0}, '${sanitizedComp.replace(/'/g, "''")}', '${now}', '${now}')`
-    );
-
-    // Read back the created match
-    const created = await prisma.$queryRawUnsafe<any[]>(
-      `SELECT * FROM Match WHERE id = '${id}'`
-    );
-
-    const match = created[0] ? {
-      ...created[0],
-      isHomeGame: Boolean(created[0].isHomeGame),
-      competition: created[0].competition || 'Ligue Magnus',
-      ticketCategories: [],
-    } : { id };
+    const match = await prisma.match.create({
+      data: {
+        date: new Date(date),
+        homeTeam: sanitizeString(homeTeam),
+        awayTeam: sanitizeString(awayTeam),
+        homeScore: homeScore !== undefined ? Number(homeScore) : null,
+        awayScore: awayScore !== undefined ? Number(awayScore) : null,
+        venue: venue ? sanitizeString(venue) : 'Patinoire de la Barre',
+        status: sanitizeString(status),
+        competition: sanitizeString(competition),
+        isHomeGame: Boolean(isHomeGame),
+      },
+      include: {
+        ticketCategories: true,
+      },
+    });
 
     // Log admin action
     await logAdminAction(
       auth.id,
       'CREATE_MATCH',
       'Match',
-      id,
-      `Created match: ${sanitizedHomeTeam} vs ${sanitizedAwayTeam}`
+      match.id,
+      `Created match: ${match.homeTeam} vs ${match.awayTeam}`
     );
 
     return jsonResponse({ match }, 201);

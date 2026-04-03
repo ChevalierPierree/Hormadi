@@ -1,13 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
-import { isDemoMode, demoProducts } from '@/lib/demo-data'
 
 export const dynamic = 'force-dynamic'
 import {
   jsonResponse,
   errorResponse,
   authenticateRequest,
-  validateRequired,
   sanitizeString,
   logAdminAction,
 } from '@/lib/api-utils'
@@ -17,15 +15,6 @@ import {
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params
-
-    // Return demo data if database is unavailable
-    if (isDemoMode) {
-      const product = demoProducts.find(p => p.id === id || p.slug === id);
-      if (!product) {
-        return errorResponse('Produit non trouvé', 404);
-      }
-      return jsonResponse(product);
-    }
 
     const product = await prisma.product.findFirst({
       where: {

@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
-import { isDemoMode, demoArticles } from '@/lib/demo-data'
 
 export const dynamic = 'force-dynamic'
 import { authenticateRequest, jsonResponse, errorResponse } from '@/lib/api-utils'
@@ -8,39 +7,10 @@ import { authenticateRequest, jsonResponse, errorResponse } from '@/lib/api-util
 // ─── Public GET (by ID or slug) ─────────────────────────
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params
-
-    // Return demo data if database is unavailable
-    if (isDemoMode) {
-      // Try by ID first, then by slug
-      let article = demoArticles.find(a => a.id === id);
-      if (!article) {
-        article = demoArticles.find(a => a.slug === id);
-      }
-
-      if (!article) {
-        return errorResponse('Article non trouvé', 404);
-      }
-
-      // Get recent related articles for sidebar (published, not this article)
-      const recent = demoArticles
-        .filter(a => a.published && a.id !== article.id)
-        .sort((a, b) => new Date(b.publishedAt || b.createdAt).getTime() - new Date(a.publishedAt || a.createdAt).getTime())
-        .slice(0, 4)
-        .map(a => ({
-          id: a.id,
-          slug: a.slug,
-          title: a.title,
-          imageUrl: a.imageUrl,
-          publishedAt: a.publishedAt,
-          category: a.category,
-        }));
-
-      return jsonResponse({ article, recent });
-    }
+    const { id } = await params
 
     // Try by ID first, then by slug
     let article = await prisma.article.findUnique({ where: { id } })
@@ -70,13 +40,13 @@ export async function GET(
 // ─── Authenticated PUT ──────────────────────────────────
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const authResult = await authenticateRequest(request)
     if (authResult instanceof NextResponse) return authResult
 
-    const { id } = params
+    const { id } = await params
     const body = await request.json()
 
     const article = await prisma.article.findUnique({ where: { id } })
@@ -106,13 +76,13 @@ export async function PUT(
 // ─── Authenticated DELETE ───────────────────────────────
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const authResult = await authenticateRequest(request, ['super_admin'])
     if (authResult instanceof NextResponse) return authResult
 
-    const { id } = params
+    const { id } = await params
     await prisma.article.delete({ where: { id } })
     return jsonResponse({ success: true })
   } catch (error) {
