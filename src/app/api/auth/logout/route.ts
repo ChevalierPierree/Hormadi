@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { clearSessionCookie } from '@/lib/auth';
 import { jsonResponse } from '@/lib/api-utils';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: NextRequest) {
   try {
     // Create response
