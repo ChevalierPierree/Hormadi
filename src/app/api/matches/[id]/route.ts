@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
+import { isDemoMode, demoMatches } from '@/lib/demo-data';
 
 export const dynamic = 'force-dynamic';
 import { authenticateRequest, jsonResponse, errorResponse, sanitizeString, logAdminAction } from '@/lib/api-utils';
@@ -40,6 +41,15 @@ export async function GET(
 ) {
   try {
     const { id } = params;
+
+    // Return demo data if database is unavailable
+    if (isDemoMode) {
+      const match = demoMatches.find(m => m.id === id);
+      if (!match) {
+        return errorResponse('Match not found', 404);
+      }
+      return jsonResponse({ match }, 200);
+    }
 
     const rows = await prisma.$queryRawUnsafe<any[]>(
       `SELECT * FROM Match WHERE id = '${id.replace(/'/g, "''")}'`

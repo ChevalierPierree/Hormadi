@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
+import { isDemoMode, demoArticles } from '@/lib/demo-data'
 
 export const dynamic = 'force-dynamic'
 import { authenticateRequest, jsonResponse, errorResponse } from '@/lib/api-utils'
@@ -11,6 +12,35 @@ export async function GET(
 ) {
   try {
     const { id } = params
+
+    // Return demo data if database is unavailable
+    if (isDemoMode) {
+      // Try by ID first, then by slug
+      let article = demoArticles.find(a => a.id === id);
+      if (!article) {
+        article = demoArticles.find(a => a.slug === id);
+      }
+
+      if (!article) {
+        return errorResponse('Article non trouvé', 404);
+      }
+
+      // Get recent related articles for sidebar (published, not this article)
+      const recent = demoArticles
+        .filter(a => a.published && a.id !== article.id)
+        .sort((a, b) => new Date(b.publishedAt || b.createdAt).getTime() - new Date(a.publishedAt || a.createdAt).getTime())
+        .slice(0, 4)
+        .map(a => ({
+          id: a.id,
+          slug: a.slug,
+          title: a.title,
+          imageUrl: a.imageUrl,
+          publishedAt: a.publishedAt,
+          category: a.category,
+        }));
+
+      return jsonResponse({ article, recent });
+    }
 
     // Try by ID first, then by slug
     let article = await prisma.article.findUnique({ where: { id } })

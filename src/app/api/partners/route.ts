@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
+import { isDemoMode, demoPartners } from '@/lib/demo-data';
 
 export const dynamic = 'force-dynamic';
 
@@ -17,6 +18,29 @@ export async function GET(request: NextRequest) {
     const url = new URL(request.url);
     const category = url.searchParams.get('category');
     const visible = url.searchParams.get('visible');
+
+    // Return demo data if database is unavailable
+    if (isDemoMode) {
+      let filtered = [...demoPartners];
+
+      if (category) {
+        filtered = filtered.filter(p => p.category === category);
+      }
+
+      if (visible !== null) {
+        filtered = filtered.filter(p => p.visible === (visible === 'true'));
+      }
+
+      // Sort by order ASC, then name ASC
+      filtered.sort((a, b) => {
+        if (a.order !== b.order) {
+          return a.order - b.order;
+        }
+        return a.name.localeCompare(b.name);
+      });
+
+      return jsonResponse({ partners: filtered }, 200);
+    }
 
     const where: any = {};
 

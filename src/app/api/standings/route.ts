@@ -1,11 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
+import { isDemoMode, demoStandings } from '@/lib/demo-data';
 
 export const dynamic = 'force-dynamic';
 import { authenticateRequest, jsonResponse, errorResponse, validateRequired, sanitizeString, logAdminAction } from '@/lib/api-utils';
 
 export async function GET(request: NextRequest) {
   try {
+    // Return demo data if database is unavailable
+    if (isDemoMode) {
+      const standings = [...demoStandings].sort((a, b) => a.rank - b.rank);
+      return jsonResponse({ standings }, 200);
+    }
+
     // Fetch all standings sorted by rank
     const standings = await prisma.standing.findMany({
       orderBy: { rank: 'asc' },

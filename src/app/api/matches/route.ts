@@ -1,11 +1,57 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
+import { isDemoMode, demoMatches } from '@/lib/demo-data';
 
 export const dynamic = 'force-dynamic';
 import { authenticateRequest, jsonResponse, errorResponse, validateRequired, sanitizeString, getPaginationParams, logAdminAction } from '@/lib/api-utils';
 
 export async function GET(request: NextRequest) {
   try {
+    // Return demo data if database is unavailable
+    if (isDemoMode) {
+      const url = new URL(request.url);
+      const status = url.searchParams.get('status');
+      const month = url.searchParams.get('month');
+      const { page, limit } = getPaginationParams(request);
+
+      // Filter demo data by status
+      let filtered = [...demoMatches];
+      if (status) {
+        const s = status === 'completed' ? 'finished' : status;
+        filtered = filtered.filter(m => m.status === s);
+      }
+
+      // Filter demo data by month
+      if (month) {
+        const [year, monthNum] = month.split('-');
+        if (year && monthNum) {
+          const monthStart = new Date(`${year}-${monthNum}-01T00:00:00Z`);
+          const monthEnd = new Date(parseInt(year), parseInt(monthNum), 1);
+          filtered = filtered.filter(m => {
+            const matchDate = new Date(m.date);
+            return matchDate >= monthStart && matchDate < monthEnd;
+          });
+        }
+      }
+
+      const total = filtered.length;
+      const offset = (page - 1) * limit;
+      const matches = filtered.slice(offset, offset + limit);
+
+      return jsonResponse(
+        {
+          matches,
+          pagination: {
+            page,
+            limit,
+            total,
+            pages: Math.ceil(total / limit),
+          },
+        },
+        200
+      );
+    }
+
     const url = new URL(request.url);
     const status = url.searchParams.get('status');
     const month = url.searchParams.get('month');
