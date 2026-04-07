@@ -30,7 +30,7 @@ export async function GET(
       select: { id: true, slug: true, title: true, imageUrl: true, publishedAt: true, category: true },
     })
 
-    return jsonResponse({ article, recent })
+    return jsonResponse({ article, recentArticles: recent })
   } catch (error) {
     console.error('GET /api/articles/[id] error:', error)
     return errorResponse('Erreur serveur', 500)
