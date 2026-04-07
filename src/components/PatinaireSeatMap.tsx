@@ -172,13 +172,17 @@ export default function PatinaireSeatMap({
   const viewBoxWidth = 1450
   const viewBoxHeight = 640
 
-  // Zone label positions with background pill
+  // Zone label positions with background pill — prices from actual zones if available
+  const getZonePrice = (zoneId: string): string => {
+    const zone = zoneMap[zoneId]
+    return zone ? formatPrice(zone.price) : '—'
+  }
   const zoneLabels = [
-    { x: 50 + 20*11/2, y: 42, text: 'CAT. 3', subtext: '17€', color: '#ec4899', w: 70 },
-    { x: 280 + 25*11/2, y: 42, text: 'CAT. 2', subtext: '20€', color: '#1e40af', w: 70 },
-    { x: 570 + 30*11/2, y: 42, text: 'CAT. 1', subtext: '24€', color: '#e4002b', w: 70 },
-    { x: 920 + 25*11/2, y: 42, text: 'CAT. 2', subtext: '20€', color: '#1e40af', w: 70 },
-    { x: 1210 + 20*11/2, y: 42, text: 'CAT. 3', subtext: '17€', color: '#ec4899', w: 70 },
+    { x: 50 + 20*11/2, y: 42, text: 'CAT. 3', subtext: getZonePrice('cat3_left'), color: '#ec4899', w: 70 },
+    { x: 280 + 25*11/2, y: 42, text: 'CAT. 2', subtext: getZonePrice('cat2_left'), color: '#1e40af', w: 70 },
+    { x: 570 + 30*11/2, y: 42, text: 'CAT. 1', subtext: getZonePrice('cat1'), color: '#e4002b', w: 70 },
+    { x: 920 + 25*11/2, y: 42, text: 'CAT. 2', subtext: getZonePrice('cat2_right'), color: '#1e40af', w: 70 },
+    { x: 1210 + 20*11/2, y: 42, text: 'CAT. 3', subtext: getZonePrice('cat3_right'), color: '#ec4899', w: 70 },
   ]
 
   return (
@@ -308,7 +312,7 @@ export default function PatinaireSeatMap({
           {/* ═══ TRIBUNE PROPP LABEL ═══ */}
           <rect x="2" y="145" width="70" height="16" rx="8" fill="#ff69b4" fillOpacity="0.9" />
           <text x="37" y="156" textAnchor="middle" fill="white" fontSize="8" fontWeight="800">
-            PROPP · 27€
+            PROPP · {getZonePrice('propp')}
           </text>
 
           {/* ═══ DEBOUT ZONES (clickable) ═══ */}
@@ -321,7 +325,7 @@ export default function PatinaireSeatMap({
               setHoveredZone('debout_left')
               const zone = zoneMap['debout_left']
               const qty = standingSelections['debout_left'] || 0
-              setTooltip({ x: 107, y: 165, text: `Debout Gauche — ${zone ? formatPrice(zone.price) : '11€'} — Clic = +1 place${qty > 0 ? ` (${qty} sélectionnée${qty > 1 ? 's' : ''})` : ''}` })
+              setTooltip({ x: 107, y: 165, text: `Debout Gauche — ${zone ? formatPrice(zone.price) : '—'} — Clic = +1 place${qty > 0 ? ` (${qty} sélectionnée${qty > 1 ? 's' : ''})` : ''}` })
             }}
             onMouseLeave={() => { setHoveredZone(null); setTooltip(null) }}
           >
@@ -336,7 +340,7 @@ export default function PatinaireSeatMap({
               DEBOUT
             </text>
             <text x="107" y="290" textAnchor="middle" fill="#22c55e" fontSize="9" fontWeight="600" opacity="0.8" className="pointer-events-none">
-              11€
+              {getZonePrice('debout_left')}
             </text>
             {(standingSelections['debout_left'] || 0) > 0 && (
               <g className="pointer-events-none">
@@ -357,7 +361,7 @@ export default function PatinaireSeatMap({
               setHoveredZone('debout_right')
               const zone = zoneMap['debout_right']
               const qty = standingSelections['debout_right'] || 0
-              setTooltip({ x: 1342, y: 165, text: `Debout Droite — ${zone ? formatPrice(zone.price) : '11€'} — Clic = +1 place${qty > 0 ? ` (${qty} sélectionnée${qty > 1 ? 's' : ''})` : ''}` })
+              setTooltip({ x: 1342, y: 165, text: `Debout Droite — ${zone ? formatPrice(zone.price) : '—'} — Clic = +1 place${qty > 0 ? ` (${qty} sélectionnée${qty > 1 ? 's' : ''})` : ''}` })
             }}
             onMouseLeave={() => { setHoveredZone(null); setTooltip(null) }}
           >
@@ -372,7 +376,7 @@ export default function PatinaireSeatMap({
               DEBOUT
             </text>
             <text x="1342" y="290" textAnchor="middle" fill="#22c55e" fontSize="9" fontWeight="600" opacity="0.8" className="pointer-events-none">
-              11€
+              {getZonePrice('debout_right')}
             </text>
             {(standingSelections['debout_right'] || 0) > 0 && (
               <g className="pointer-events-none">

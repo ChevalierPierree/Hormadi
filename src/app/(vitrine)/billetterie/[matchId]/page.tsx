@@ -99,8 +99,13 @@ export default function TicketSelectionPage() {
   // Build zone configs from match ticket categories
   const zones: ZoneConfig[] = useMemo(() => {
     if (!match) return []
-    return match.ticketCategories
-      .filter((tc) => CATEGORY_TO_ZONE[tc.name]) // skip unknown categories
+    console.log('[Billetterie] ticketCategories:', match.ticketCategories?.map(tc => tc.name))
+    const mapped = match.ticketCategories
+      .filter((tc) => {
+        const mapped = CATEGORY_TO_ZONE[tc.name]
+        if (!mapped) console.warn(`[Billetterie] Category "${tc.name}" has no zone mapping`)
+        return !!mapped
+      })
       .map((tc) => ({
         id: CATEGORY_TO_ZONE[tc.name],
         name: tc.name,
@@ -110,6 +115,8 @@ export default function TicketSelectionPage() {
         type: tc.name.startsWith('Debout') ? 'standing' as const : 'seated' as const,
         capacity: tc.available,
       }))
+    console.log('[Billetterie] Zones mapped:', mapped.map(z => `${z.id} (${z.name})`))
+    return mapped
   }, [match])
 
   // Generate fake sold seats (demo purposes — seats that are "sold")
@@ -359,15 +366,28 @@ export default function TicketSelectionPage() {
                   </p>
                 </div>
 
-                <PatinaireSeatMap
-                  zones={zones}
-                  soldSeats={soldSeats}
-                  selectedSeats={selectedSeats}
-                  standingSelections={standingSelections}
-                  onSeatClick={handleSeatClick}
-                  onStandingChange={handleStandingChange}
-                  maxSeats={10}
-                />
+                {zones.length === 0 && match ? (
+                  <div className="bg-[#f59e0b]/10 border border-[#f59e0b]/30 rounded-xl p-8 text-center">
+                    <AlertCircle size={40} className="text-[#f59e0b] mx-auto mb-4" />
+                    <h3 className="text-white font-bold text-lg mb-2">Billetterie non disponible</h3>
+                    <p className="text-hormadi-muted text-sm">
+                      La vente de billets n'est pas encore ouverte pour ce match.
+                      {match.ticketCategories?.length === 0
+                        ? ' Aucune catégorie de billet n\'a été configurée.'
+                        : ` Catégories trouvées : ${match.ticketCategories.map(tc => tc.name).join(', ')}`}
+                    </p>
+                  </div>
+                ) : (
+                  <PatinaireSeatMap
+                    zones={zones}
+                    soldSeats={soldSeats}
+                    selectedSeats={selectedSeats}
+                    standingSelections={standingSelections}
+                    onSeatClick={handleSeatClick}
+                    onStandingChange={handleStandingChange}
+                    maxSeats={10}
+                  />
+                )}
               </div>
 
               {/* ─── Right: Order summary sidebar ─── */}
