@@ -46,8 +46,9 @@ function formatPrice(cents: number) {
   return (cents / 100).toFixed(2).replace('.', ',') + ' €'
 }
 
-// Map DB category names to zone IDs
+// Map DB category names to zone IDs (supports both naming schemes)
 const CATEGORY_TO_ZONE: Record<string, string> = {
+  // New naming scheme
   'Tribune Propp': 'propp',
   'Catégorie 1': 'cat1',
   'Catégorie 2 Gauche': 'cat2_left',
@@ -56,6 +57,12 @@ const CATEGORY_TO_ZONE: Record<string, string> = {
   'Catégorie 3 Droite': 'cat3_right',
   'Debout Gauche': 'debout_left',
   'Debout Droite': 'debout_right',
+  // Legacy naming scheme (from seed)
+  'Tribune Est': 'cat2_right',
+  'Tribune Ouest': 'cat2_left',
+  'Virage Nord': 'cat3_left',
+  'Virage Sud': 'cat3_right',
+  'Espace VIP': 'propp',
 }
 
 export default function TicketSelectionPage() {

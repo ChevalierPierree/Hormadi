@@ -127,13 +127,11 @@ export default function AdminProductsPage() {
   }
 
   return (
-    <main className="min-h-screen bg-hormadi-dark">
-      <div className="section-padding">
-        <div className="max-w-7xl mx-auto">
-          {/* Header */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-            <div>
-              <h1 className="text-3xl font-bold text-white mb-2">Gestion des produits</h1>
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold text-white mb-1">Gestion des produits</h1>
               <p className="text-hormadi-muted">
                 {filteredProducts.length} article{filteredProducts.length !== 1 ? 's' : ''}
               </p>
@@ -147,8 +145,8 @@ export default function AdminProductsPage() {
             </button>
           </div>
 
-          {/* Filters */}
-          <div className="card mb-8">
+      {/* Filters */}
+      <div className="bg-hormadi-surface border border-hormadi-border rounded-xl p-5">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {/* Search */}
               <div className="md:col-span-2 relative">
@@ -178,8 +176,8 @@ export default function AdminProductsPage() {
             </div>
           </div>
 
-          {/* Products Table */}
-          <div className="card overflow-x-auto">
+      {/* Products Table */}
+      <div className="bg-hormadi-surface border border-hormadi-border rounded-xl overflow-x-auto">
             {filteredProducts.length === 0 ? (
               <div className="text-center py-12">
                 <p className="text-hormadi-muted mb-4">Aucun produit trouvé</p>
@@ -285,8 +283,8 @@ export default function AdminProductsPage() {
             )}
           </div>
 
-          {/* Product Form Modal */}
-          {showForm && (
+      {/* Product Form Modal */}
+      {showForm && (
             <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
               <div className="bg-hormadi-dark border border-hormadi-border rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
                 <div className="p-6 border-b border-hormadi-border flex items-center justify-between sticky top-0 bg-hormadi-dark">
@@ -447,9 +445,7 @@ export default function AdminProductsPage() {
                 </form>
               </div>
             </div>
-          )}
-        </div>
-      </div>
-    </main>
+      )}
+    </div>
   )
 }

@@ -120,19 +120,17 @@ export default function AdminShopDashboard() {
   const lowStockProducts = products.filter((p) => p.stock > 0 && p.stock < 10)
 
   return (
-    <main className="min-h-screen bg-hormadi-dark">
-      <div className="section-padding">
-        <div className="max-w-7xl mx-auto">
-          {/* Header */}
-          <div className="mb-12">
-            <h1 className="text-4xl font-bold text-white mb-2">Tableau de Bord Boutique</h1>
-            <p className="text-hormadi-muted">Gérez vos produits et commandes</p>
-          </div>
+    <div className="space-y-6">
+      {/* Header */}
+      <div>
+        <h1 className="text-3xl font-bold text-white mb-1">Tableau de Bord Boutique</h1>
+        <p className="text-hormadi-muted text-sm">Gérez vos produits et commandes</p>
+      </div>
 
-          {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
             {/* Total Revenue */}
-            <div className="card">
+            <div className="bg-hormadi-surface border border-hormadi-border rounded-xl p-5">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-hormadi-muted text-sm font-semibold uppercase">
                   Chiffre d'affaires
@@ -148,7 +146,7 @@ export default function AdminShopDashboard() {
             </div>
 
             {/* Orders In Progress */}
-            <div className="card">
+            <div className="bg-hormadi-surface border border-hormadi-border rounded-xl p-5">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-hormadi-muted text-sm font-semibold uppercase">
                   Commandes en cours
@@ -162,7 +160,7 @@ export default function AdminShopDashboard() {
             </div>
 
             {/* Products In Stock */}
-            <div className="card">
+            <div className="bg-hormadi-surface border border-hormadi-border rounded-xl p-5">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-hormadi-muted text-sm font-semibold uppercase">
                   Articles en stock
@@ -176,7 +174,7 @@ export default function AdminShopDashboard() {
             </div>
 
             {/* Stock Alerts */}
-            <div className="card">
+            <div className="bg-hormadi-surface border border-hormadi-border rounded-xl p-5">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-hormadi-muted text-sm font-semibold uppercase">
                   Alertes stock
@@ -190,9 +188,9 @@ export default function AdminShopDashboard() {
             </div>
           </div>
 
-          {/* Quick Actions */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-            <Link href="/admin/boutique/produits" className="card group cursor-pointer hover:border-hormadi-red/50">
+      {/* Quick Actions */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <Link href="/admin/boutique/produits" className="bg-hormadi-surface border border-hormadi-border rounded-xl p-5 group cursor-pointer hover:border-hormadi-red/50 transition-all">
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-white font-semibold mb-1">Nouveau produit</h3>
@@ -202,7 +200,7 @@ export default function AdminShopDashboard() {
               </div>
             </Link>
 
-            <Link href="/admin/boutique/commandes" className="card group cursor-pointer hover:border-hormadi-red/50">
+            <Link href="/admin/boutique/commandes" className="bg-hormadi-surface border border-hormadi-border rounded-xl p-5 group cursor-pointer hover:border-hormadi-red/50 transition-all">
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-white font-semibold mb-1">Voir commandes</h3>
@@ -212,7 +210,7 @@ export default function AdminShopDashboard() {
               </div>
             </Link>
 
-            <Link href="/admin/boutique/produits" className="card group cursor-pointer hover:border-hormadi-red/50">
+            <Link href="/admin/boutique/produits" className="bg-hormadi-surface border border-hormadi-border rounded-xl p-5 group cursor-pointer hover:border-hormadi-red/50 transition-all">
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-white font-semibold mb-1">Gérer stock</h3>
@@ -223,10 +221,10 @@ export default function AdminShopDashboard() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Recent Orders */}
             <div className="lg:col-span-2">
-              <div className="card">
+              <div className="bg-hormadi-surface border border-hormadi-border rounded-xl p-5">
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-xl font-bold text-white">Commandes récentes</h2>
                   <Link href="/admin/boutique/commandes" className="text-hormadi-red text-sm hover:text-hormadi-red/80">
@@ -282,7 +280,7 @@ export default function AdminShopDashboard() {
 
             {/* Low Stock Alerts */}
             <div>
-              <div className="card">
+              <div className="bg-hormadi-surface border border-hormadi-border rounded-xl p-5">
                 <h2 className="text-lg font-bold text-white mb-6 flex items-center gap-2">
                   <AlertTriangle size={20} className="text-yellow-500" />
                   Stock faible
@@ -311,8 +309,6 @@ export default function AdminShopDashboard() {
               </div>
             </div>
           </div>
-        </div>
-      </div>
-    </main>
+    </div>
   )
 }

@@ -201,33 +201,31 @@ async function main() {
   console.log('Creating partners...')
   const partners = [
     // Partenaires Principaux
-    { name: 'MJ Développement', category: 'partenaire_principal', website: 'https://www.mj-developpement.com', logoUrl: '/images/partners/mj-developpement.png', order: 1, visible: true },
-    { name: 'Communauté Pays Basque', category: 'partenaire_principal', website: 'https://www.communaute-paysbasque.fr', logoUrl: '/images/partners/communaute-pays-basque.png', order: 2, visible: true },
-    { name: 'Ville d\'Anglet', category: 'partenaire_principal', website: 'https://www.anglet.fr', logoUrl: '/images/partners/ville-anglet.png', order: 3, visible: true },
+    { name: 'MJ Développement', category: 'partenaire_principal', website: 'https://www.mj-developpement.com', logoUrl: null, order: 1, visible: true },
+    { name: 'Communauté Pays Basque', category: 'partenaire_principal', website: 'https://www.communaute-paysbasque.fr', logoUrl: null, order: 2, visible: true },
+    { name: 'Ville d\'Anglet', category: 'partenaire_principal', website: 'https://www.anglet.fr', logoUrl: null, order: 3, visible: true },
 
     // Partenaires Officiels
-    { name: 'Synerglace', category: 'partenaire_officiel', website: 'https://www.synerglace.com', logoUrl: '/images/partners/synerglace.png', order: 1, visible: true },
-    { name: 'Région Nouvelle-Aquitaine', category: 'partenaire_officiel', website: 'https://www.nouvelle-aquitaine.fr', logoUrl: '/images/partners/region-nouvelle-aquitaine.png', order: 2, visible: true },
-    { name: 'Département Pyrénées-Atlantiques', category: 'partenaire_officiel', website: 'https://www.le64.fr', logoUrl: '/images/partners/departement-64.png', order: 3, visible: true },
-    { name: 'Keolis', category: 'partenaire_officiel', website: 'https://www.keolis.com', logoUrl: '/images/partners/keolis.png', order: 4, visible: true },
+    { name: 'Synerglace', category: 'partenaire_officiel', website: 'https://www.synerglace.com', logoUrl: null, order: 1, visible: true },
+    { name: 'Région Nouvelle-Aquitaine', category: 'partenaire_officiel', website: 'https://www.nouvelle-aquitaine.fr', logoUrl: '/images/partenaires/Nouvelle-Aquitaine.png', order: 2, visible: true },
+    { name: 'Département Pyrénées-Atlantiques', category: 'partenaire_officiel', website: 'https://www.le64.fr', logoUrl: null, order: 3, visible: true },
+    { name: 'Keolis', category: 'partenaire_officiel', website: 'https://www.keolis.com', logoUrl: null, order: 4, visible: true },
 
     // Fournisseurs Officiels
-    { name: 'BASK Sport', category: 'fournisseur_officiel', website: 'https://www.basksport.com', logoUrl: '/images/partners/bask-sport.png', order: 1, visible: true },
-    { name: 'Côte Basque Sport Santé', category: 'fournisseur_officiel', website: null, logoUrl: '/images/partners/cote-basque-sport-sante.png', order: 2, visible: true },
+    { name: 'Burger King', category: 'fournisseur_officiel', website: null, logoUrl: '/images/partenaires/Burger-King.png', order: 1, visible: true },
+    { name: 'ESG', category: 'fournisseur_officiel', website: null, logoUrl: '/images/partenaires/ESG.png', order: 2, visible: true },
+    { name: 'Eiffage', category: 'fournisseur_officiel', website: null, logoUrl: '/images/partenaires/Eiffage.png', order: 3, visible: true },
 
     // Partenaires Institutionnels
-    { name: 'Fédération Française de Hockey sur Glace', category: 'partenaire_institutionnel', website: 'https://www.hockeyfrance.com', logoUrl: '/images/partners/ffhg.png', order: 1, visible: true },
-    { name: 'Comité National Olympique', category: 'partenaire_institutionnel', website: 'https://www.comiteolympique.fr', logoUrl: '/images/partners/cnosf.png', order: 2, visible: true },
+    { name: 'Fédération Française de Hockey sur Glace', category: 'partenaire_institutionnel', website: 'https://www.hockeyfrance.com', logoUrl: null, order: 1, visible: true },
+    { name: 'Krys', category: 'partenaire_institutionnel', website: null, logoUrl: '/images/partenaires/Krys.png', order: 2, visible: true },
 
     // Partenaires
-    { name: 'Adour Nettoyage', category: 'partenaire', website: null, logoUrl: '/images/partners/adour-nettoyage.png', order: 1, visible: true },
-    { name: 'Auto Basque', category: 'partenaire', website: null, logoUrl: '/images/partners/auto-basque.png', order: 2, visible: true },
-    { name: 'Mutuelle du Pays Basque', category: 'partenaire', website: null, logoUrl: '/images/partners/mutuelle-pays-basque.png', order: 3, visible: true },
-    { name: 'Biarritz Tourisme', category: 'partenaire', website: 'https://www.tourisme.biarritz.fr', logoUrl: '/images/partners/biarritz-tourisme.png', order: 4, visible: true },
-    { name: 'Hôtel de la Barre', category: 'partenaire', website: null, logoUrl: '/images/partners/hotel-de-la-barre.png', order: 5, visible: true },
-    { name: 'Salon 707', category: 'partenaire', website: null, logoUrl: '/images/partners/salon-707.png', order: 6, visible: true },
-    { name: 'Pizzeria du Port', category: 'partenaire', website: null, logoUrl: '/images/partners/pizzeria-du-port.png', order: 7, visible: true },
-    { name: 'Cave des Vignerons', category: 'partenaire', website: null, logoUrl: '/images/partners/cave-vignerons.png', order: 8, visible: true },
+    { name: 'Ibis', category: 'partenaire', website: null, logoUrl: '/images/partenaires/Ibis.png', order: 1, visible: true },
+    { name: 'Pull-in', category: 'partenaire', website: null, logoUrl: '/images/partenaires/Pull-in.png', order: 2, visible: true },
+    { name: 'Société Générale', category: 'partenaire', website: null, logoUrl: '/images/partenaires/Societe-Generale.png', order: 3, visible: true },
+    { name: 'Sud Ouest', category: 'partenaire', website: null, logoUrl: '/images/partenaires/Sud-Ouest.png', order: 4, visible: true },
+    { name: 'V and B', category: 'partenaire', website: null, logoUrl: '/images/partenaires/VandB.png', order: 5, visible: true },
   ]
 
   for (const p of partners) {

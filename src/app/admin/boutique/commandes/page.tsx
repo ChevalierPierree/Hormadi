@@ -142,20 +142,18 @@ export default function AdminOrdersPage() {
   }
 
   return (
-    <main className="min-h-screen bg-hormadi-dark">
-      <div className="section-padding">
-        <div className="max-w-7xl mx-auto">
-          {/* Header */}
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-white mb-2">Gestion des commandes</h1>
-            <p className="text-hormadi-muted">
-              {filteredOrders.length} commande{filteredOrders.length !== 1 ? 's' : ''}
-              {selectedStatus && ` - ${getStatusLabel(selectedStatus)}`}
-            </p>
-          </div>
+    <div className="space-y-6">
+      {/* Header */}
+      <div>
+        <h1 className="text-3xl font-bold text-white mb-1">Gestion des commandes</h1>
+        <p className="text-hormadi-muted text-sm">
+          {filteredOrders.length} commande{filteredOrders.length !== 1 ? 's' : ''}
+          {selectedStatus && ` - ${getStatusLabel(selectedStatus)}`}
+        </p>
+      </div>
 
-          {/* Status Filters */}
-          <div className="card mb-8">
+      {/* Status Filters */}
+      <div className="bg-hormadi-surface border border-hormadi-border rounded-xl p-6">
             <div className="flex items-center gap-3 mb-4">
               <Filter size={20} className="text-hormadi-red" />
               <h2 className="text-white font-semibold">Filtrer par statut</h2>
@@ -214,8 +212,8 @@ export default function AdminOrdersPage() {
             </div>
           </div>
 
-          {/* Orders Table */}
-          <div className="card overflow-x-auto">
+      {/* Orders Table */}
+      <div className="bg-hormadi-surface border border-hormadi-border rounded-xl overflow-x-auto">
             <table className="w-full">
               <thead className="border-b border-hormadi-border">
                 <tr>
@@ -290,8 +288,8 @@ export default function AdminOrdersPage() {
             </table>
           </div>
 
-          {/* Order Detail Modal */}
-          {selectedOrder && (
+      {/* Order Detail Modal */}
+      {selectedOrder && (
             <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
               <div className="bg-hormadi-dark border border-hormadi-border rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
                 <div className="p-6 border-b border-hormadi-border flex items-center justify-between sticky top-0 bg-hormadi-dark">
@@ -409,9 +407,7 @@ export default function AdminOrdersPage() {
                 </div>
               </div>
             </div>
-          )}
-        </div>
-      </div>
-    </main>
+      )}
+    </div>
   )
 }
