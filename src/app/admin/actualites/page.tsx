@@ -221,7 +221,7 @@ export default function AdminArticlesPage() {
         </button>
       </div>
 
-      <div className="card glass">
+      <div className="card glass p-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="md:col-span-2 relative">
             <Search className="absolute left-3 top-3 text-hormadi-muted" size={20} />
@@ -249,7 +249,7 @@ export default function AdminArticlesPage() {
         </div>
       </div>
 
-      <div className="card glass overflow-x-auto">
+      <div className="card glass p-6 overflow-x-auto">
         {loading ? (
           <div className="text-center py-12">
             <Loader className="inline-block animate-spin text-hormadi-red mb-4" size={32} />

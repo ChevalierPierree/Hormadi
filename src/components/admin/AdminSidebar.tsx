@@ -33,12 +33,12 @@ export default function AdminSidebar({ user }: AdminSidebarProps) {
 
   const navItems = [
     { label: 'Tableau de bord', href: '/admin/dashboard', icon: LayoutDashboard },
-    { label: 'Actualités', href: '/admin/news', icon: Newspaper },
-    { label: 'Matchs', href: '/admin/matches', icon: Calendar },
-    { label: 'Classement', href: '/admin/standings', icon: Trophy },
-    { label: 'Partenaires', href: '/admin/partners', icon: Users },
-    { label: 'Billetterie', href: '/admin/tickets', icon: Ticket },
-    { label: 'Boutique', href: '/admin/shop', icon: ShoppingBag },
+    { label: 'Actualités', href: '/admin/actualites', icon: Newspaper },
+    { label: 'Matchs', href: '/admin/matchs', icon: Calendar },
+    { label: 'Classement', href: '/admin/classement', icon: Trophy },
+    { label: 'Partenaires', href: '/admin/partenaires', icon: Users },
+    { label: 'Billetterie', href: '/admin/billetterie', icon: Ticket },
+    { label: 'Boutique', href: '/admin/boutique', icon: ShoppingBag },
   ];
 
   const handleLogout = async () => {
@@ -52,7 +52,7 @@ export default function AdminSidebar({ user }: AdminSidebarProps) {
     }
   };
 
-  const isActive = (href: string) => pathname === href;
+  const isActive = (href: string) => pathname === href || (href !== '/admin/dashboard' && pathname.startsWith(href));
 
   const SidebarContent = () => (
     <div className="flex flex-col h-full">

@@ -172,21 +172,19 @@ export default function AdminMatchsPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-hormadi-dark via-hormadi-surface to-hormadi-dark">
-      <section className="section-padding border-b border-hormadi-border bg-hormadi-surface">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-white mb-1">Gestion des matchs</h1>
-            <p className="text-hormadi-muted text-sm">Créez et gérez les matchs, entrez les scores</p>
-          </div>
-          <button onClick={fetchMatches} className="text-hormadi-muted hover:text-white transition-colors">
-            <RefreshCw size={20} className={loading ? 'animate-spin' : ''} />
-          </button>
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-white mb-1">Gestion des matchs</h1>
+          <p className="text-hormadi-muted text-sm">Créez et gérez les matchs, entrez les scores</p>
         </div>
-      </section>
+        <button onClick={fetchMatches} className="text-hormadi-muted hover:text-white transition-colors">
+          <RefreshCw size={20} className={loading ? 'animate-spin' : ''} />
+        </button>
+      </div>
 
-      <section className="section-padding">
-        <div className="max-w-7xl mx-auto mb-6">
+      <div>
+        <div className="mb-6">
           {!showForm && (
             <button
               onClick={() => { setEditingId(null); setForm(EMPTY_FORM); setShowForm(true) }}
@@ -198,7 +196,7 @@ export default function AdminMatchsPage() {
         </div>
 
         {showForm && (
-          <div className="max-w-7xl mx-auto mb-8">
+          <div className="mb-8">
             <div className="bg-hormadi-surface border border-hormadi-border rounded-xl p-6">
               <h3 className="text-xl font-bold text-white mb-6">
                 {editingId ? 'Modifier le match' : 'Nouveau match'}
@@ -303,11 +301,9 @@ export default function AdminMatchsPage() {
             </div>
           </div>
         )}
-      </section>
+      </div>
 
-      <section className="section-padding">
-        <div className="max-w-7xl mx-auto">
-          <div className="bg-hormadi-surface border border-hormadi-border rounded-xl overflow-hidden">
+      <div className="bg-hormadi-surface border border-hormadi-border rounded-xl overflow-hidden">
             <div className="p-6 border-b border-hormadi-border">
               <h3 className="text-xl font-bold text-white">
                 Tous les matchs ({matches.length})
@@ -412,9 +408,7 @@ export default function AdminMatchsPage() {
                 </table>
               </div>
             )}
-          </div>
-        </div>
-      </section>
-    </main>
+      </div>
+    </div>
   )
 }
