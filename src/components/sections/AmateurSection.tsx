@@ -66,7 +66,7 @@ export default function AmateurSection() {
               </ul>
 
               <Link
-                href="/club"
+                href="/amateur"
                 className="inline-flex items-center justify-center gap-2 bg-hormadi-ocean text-white font-bold
                            px-8 py-3.5 rounded-lg hover:bg-hormadi-ocean/90 transition-all
                            hover:shadow-lg hover:shadow-hormadi-ocean/30 text-sm uppercase tracking-wider group w-fit"
