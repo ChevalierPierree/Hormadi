@@ -112,17 +112,54 @@ export default function AdminProductsPage() {
     setEditingProduct(null)
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // In real app, would call API
-    alert(editingProduct ? 'Produit mis à jour (simulé)' : 'Produit créé (simulé)')
-    handleCloseForm()
+    const priceInCents = Math.round(parseFloat(formData.price) * 100)
+    const payload = {
+      name: formData.name,
+      slug: formData.slug,
+      description: formData.description,
+      price: priceInCents,
+      category: formData.category,
+      stock: parseInt(formData.stock, 10),
+      featured: formData.featured,
+      published: formData.published,
+    }
+
+    try {
+      if (editingProduct) {
+        const res = await fetch(`/api/products/${editingProduct.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        })
+        if (!res.ok) throw new Error('Erreur lors de la mise à jour')
+        const data = await res.json()
+        setProducts((prev) => prev.map((p) => (p.id === editingProduct.id ? { ...p, ...data.product || data } : p)))
+      } else {
+        const res = await fetch('/api/products', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        })
+        if (!res.ok) throw new Error('Erreur lors de la création')
+        const data = await res.json()
+        setProducts((prev) => [...prev, data.product || data])
+      }
+      handleCloseForm()
+    } catch (err: any) {
+      alert(err.message || 'Erreur')
+    }
   }
 
-  const handleDeleteProduct = (productId: string) => {
-    if (confirm('Êtes-vous sûr de vouloir supprimer ce produit?')) {
-      // In real app, would call API
-      alert('Produit supprimé (simulé)')
+  const handleDeleteProduct = async (productId: string) => {
+    if (!confirm('Êtes-vous sûr de vouloir supprimer ce produit ?')) return
+    try {
+      const res = await fetch(`/api/products/${productId}`, { method: 'DELETE' })
+      if (!res.ok) throw new Error('Erreur lors de la suppression')
+      setProducts((prev) => prev.filter((p) => p.id !== productId))
+    } catch (err: any) {
+      alert(err.message || 'Erreur')
     }
   }
 

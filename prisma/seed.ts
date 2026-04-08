@@ -130,14 +130,17 @@ async function main() {
       },
     })
 
-    // Add ticket categories for upcoming home games
+    // Add ticket categories for upcoming home games (matches PatinaireSeatMap zones)
     if (m.status === 'scheduled' && m.home) {
       const categories = [
-        { name: 'Tribune Est', price: 1500, capacity: 350, sold: Math.floor(Math.random() * 200) },
-        { name: 'Tribune Ouest', price: 1500, capacity: 350, sold: Math.floor(Math.random() * 200) },
-        { name: 'Virage Nord', price: 1200, capacity: 200, sold: Math.floor(Math.random() * 100) },
-        { name: 'Virage Sud', price: 1200, capacity: 200, sold: Math.floor(Math.random() * 100) },
-        { name: 'Espace VIP', price: 5000, capacity: 50, sold: Math.floor(Math.random() * 30) },
+        { name: 'Tribune Propp', price: 2700, capacity: 80, sold: 0 },
+        { name: 'Catégorie 1', price: 2400, capacity: 120, sold: 0 },
+        { name: 'Catégorie 2 Gauche', price: 2000, capacity: 100, sold: 0 },
+        { name: 'Catégorie 2 Droite', price: 2000, capacity: 100, sold: 0 },
+        { name: 'Catégorie 3 Gauche', price: 1700, capacity: 80, sold: 0 },
+        { name: 'Catégorie 3 Droite', price: 1700, capacity: 80, sold: 0 },
+        { name: 'Debout Gauche', price: 1100, capacity: 150, sold: 0 },
+        { name: 'Debout Droite', price: 1100, capacity: 150, sold: 0 },
       ]
 
       for (const cat of categories) {

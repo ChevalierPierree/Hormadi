@@ -1,6 +1,6 @@
 'use client'
 
-import React, { createContext, useContext, useState } from 'react'
+import React, { createContext, useContext, useState, useEffect } from 'react'
 
 // ─── Types ───────────────────────────────────────────────
 
@@ -30,8 +30,35 @@ const CartContext = createContext<CartContextType | undefined>(undefined)
 
 // ─── Cart Provider ───────────────────────────────────────
 
+const CART_STORAGE_KEY = 'hormadi-cart'
+
+function loadCartFromStorage(): CartItem[] {
+  if (typeof window === 'undefined') return []
+  try {
+    const stored = localStorage.getItem(CART_STORAGE_KEY)
+    return stored ? JSON.parse(stored) : []
+  } catch {
+    return []
+  }
+}
+
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([])
+  const [loaded, setLoaded] = useState(false)
+
+  // Load cart from localStorage on mount
+  useEffect(() => {
+    setItems(loadCartFromStorage())
+    setLoaded(true)
+  }, [])
+
+  // Save cart to localStorage on change
+  useEffect(() => {
+    if (!loaded) return
+    try {
+      localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items))
+    } catch { /* quota exceeded or private browsing */ }
+  }, [items, loaded])
 
   const addToCart = (item: CartItem) => {
     setItems((prevItems) => {
@@ -69,6 +96,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const clearCart = () => {
     setItems([])
+    try { localStorage.removeItem(CART_STORAGE_KEY) } catch {}
   }
 
   const getTotal = () => {

@@ -119,47 +119,9 @@ export default function TicketSelectionPage() {
     return mapped
   }, [match])
 
-  // Generate fake sold seats (demo purposes — seats that are "sold")
-  const soldSeats = useMemo(() => {
-    const sold = new Set<string>()
-    if (!match) return sold
-
-    // For each seated category, mark some seats as sold based on sold count
-    match.ticketCategories.forEach((tc) => {
-      const zoneId = CATEGORY_TO_ZONE[tc.name]
-      if (!zoneId || tc.name.startsWith('Debout')) return
-
-      // Deterministically "sell" some seats
-      const prefixMap: Record<string, string> = {
-        'propp': 'propp',
-        'cat1': 'cat1',
-        'cat2_left': 'cat2l',
-        'cat2_right': 'cat2r',
-        'cat3_left': 'cat3l',
-        'cat3_right': 'cat3r',
-      }
-      const prefix = prefixMap[zoneId]
-      if (!prefix) return
-
-      // Simple deterministic pattern: mark some seats sold
-      let soldCount = 0
-      const maxSold = tc.sold
-      const rows = 4
-      const seatsPerRow = zoneId === 'cat1' ? 30 : zoneId.startsWith('cat2') ? 25 : zoneId === 'propp' ? 20 : 20
-      for (let r = 1; r <= rows && soldCount < maxSold; r++) {
-        for (let s = 1; s <= seatsPerRow && soldCount < maxSold; s++) {
-          // Pseudo-random pattern based on seat position
-          const hash = (r * 17 + s * 31 + zoneId.length * 7) % 5
-          if (hash === 0 || hash === 2) {
-            sold.add(`${prefix}-R${r}-S${s}`)
-            soldCount++
-          }
-        }
-      }
-    })
-
-    return sold
-  }, [match])
+  // Sold seats: currently no real seat-level tracking, so this is empty
+  // When a real ticketing system is integrated, this would fetch actual sold seat IDs
+  const soldSeats = useMemo(() => new Set<string>(), [])
 
   const handleSeatClick = (seatId: string, zone: ZoneConfig) => {
     setSelectedSeats((prev) => {

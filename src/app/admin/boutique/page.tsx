@@ -5,50 +5,7 @@ import Link from 'next/link'
 import { AlertTriangle, ShoppingCart, Package, TrendingUp, ArrowRight } from 'lucide-react'
 import { formatPrice } from '@/lib/utils'
 type Product = { id: string; name: string; stock: number; price: number; category: string; slug: string; [key: string]: any }
-
-// Mock data - in production this would come from API
-const mockOrders = [
-  {
-    id: 'ord-1',
-    reference: 'HOR-ABC123-XYZ1',
-    customer: 'Jean Dupont',
-    email: 'jean@example.com',
-    items: 3,
-    total: 18999,
-    status: 'pending',
-    date: '2024-03-28',
-  },
-  {
-    id: 'ord-2',
-    reference: 'HOR-DEF456-XYZ2',
-    customer: 'Marie Martin',
-    email: 'marie@example.com',
-    items: 2,
-    total: 12499,
-    status: 'confirmed',
-    date: '2024-03-27',
-  },
-  {
-    id: 'ord-3',
-    reference: 'HOR-GHI789-XYZ3',
-    customer: 'Pierre Lefebvre',
-    email: 'pierre@example.com',
-    items: 1,
-    total: 6999,
-    status: 'shipped',
-    date: '2024-03-26',
-  },
-  {
-    id: 'ord-4',
-    reference: 'HOR-JKL012-XYZ4',
-    customer: 'Sophie Bernard',
-    email: 'sophie@example.com',
-    items: 4,
-    total: 24599,
-    status: 'confirmed',
-    date: '2024-03-25',
-  },
-]
+type Order = { id: string; reference: string; customerName: string; customerEmail: string; items: any[]; totalPrice: number; status: string; createdAt: string }
 
 const getStatusBadgeColor = (status: string) => {
   switch (status) {
@@ -86,6 +43,7 @@ const getStatusLabel = (status: string) => {
 
 export default function AdminShopDashboard() {
   const [products, setProducts] = useState<Product[]>([])
+  const [recentOrders, setRecentOrders] = useState<Order[]>([])
   const [stats, setStats] = useState({
     totalRevenue: 0,
     ordersInProgress: 0,
@@ -105,9 +63,19 @@ export default function AdminShopDashboard() {
         const productsInStock = prods.filter((p) => p.stock > 0).length
         const lowStockAlerts = prods.filter((p) => p.stock > 0 && p.stock < 10).length
 
-        // Calculate stats from mock orders (in production, fetch from API)
-        const totalRevenue = mockOrders.reduce((sum, order) => sum + order.total, 0)
-        const ordersInProgress = mockOrders.filter((o) => o.status !== 'delivered' && o.status !== 'cancelled').length
+        // Fetch real orders from API
+        let orders: Order[] = []
+        try {
+          const ordRes = await fetch('/api/orders?limit=50')
+          if (ordRes.ok) {
+            const ordData = await ordRes.json()
+            orders = ordData?.data || []
+          }
+        } catch { /* no orders yet */ }
+
+        setRecentOrders(orders.slice(0, 5))
+        const totalRevenue = orders.reduce((sum, o) => sum + o.totalPrice, 0)
+        const ordersInProgress = orders.filter((o) => o.status !== 'delivered' && o.status !== 'cancelled').length
 
         setStats({ totalRevenue, ordersInProgress, productsInStock, lowStockAlerts })
       } catch {
@@ -141,7 +109,7 @@ export default function AdminShopDashboard() {
                 <p className="text-3xl font-bold text-white">
                   {formatPrice(stats.totalRevenue)}
                 </p>
-                <p className="text-hormadi-muted text-xs mt-2">+12% ce mois</p>
+                <p className="text-hormadi-muted text-xs mt-2">Total des commandes</p>
               </div>
             </div>
 
@@ -251,19 +219,25 @@ export default function AdminShopDashboard() {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-hormadi-border">
-                      {mockOrders.slice(0, 5).map((order) => (
+                      {recentOrders.length === 0 ? (
+                        <tr>
+                          <td colSpan={4} className="py-8 px-4 text-center text-hormadi-muted text-sm">
+                            Aucune commande pour le moment
+                          </td>
+                        </tr>
+                      ) : recentOrders.map((order) => (
                         <tr key={order.id} className="hover:bg-hormadi-surface/30">
                           <td className="py-4 px-4 font-mono text-white text-xs">
                             {order.reference}
                           </td>
                           <td className="py-4 px-4">
                             <div>
-                              <p className="text-white font-medium">{order.customer}</p>
-                              <p className="text-hormadi-muted text-xs">{order.email}</p>
+                              <p className="text-white font-medium">{order.customerName}</p>
+                              <p className="text-hormadi-muted text-xs">{order.customerEmail}</p>
                             </div>
                           </td>
                           <td className="py-4 px-4 text-hormadi-red font-semibold">
-                            {formatPrice(order.total)}
+                            {formatPrice(order.totalPrice)}
                           </td>
                           <td className="py-4 px-4">
                             <span className={`badge ${getStatusBadgeColor(order.status)}`}>

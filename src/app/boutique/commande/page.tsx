@@ -73,7 +73,7 @@ export default function CheckoutPage() {
     return Object.keys(newErrors).length === 0
   }
 
-  // Handle form submit
+  // Handle form submit — creates a real order via API
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
@@ -81,26 +81,53 @@ export default function CheckoutPage() {
 
     setLoading(true)
 
-    // Simulate payment processing
-    await new Promise((resolve) => setTimeout(resolve, 1500))
+    try {
+      // Build order payload for API
+      const orderPayload = {
+        customerName: `${formData.firstName} ${formData.lastName}`,
+        customerEmail: formData.email,
+        customerPhone: formData.phone,
+        shippingAddress: formData.address,
+        shippingCity: formData.city,
+        shippingZip: formData.zip,
+        items: items.map((item) => ({
+          productId: item.productId,
+          quantity: item.quantity,
+          size: item.size || null,
+        })),
+      }
 
-    // Generate order reference
-    const timestamp = Date.now().toString(36).toUpperCase()
-    const random = Math.random().toString(36).substring(2, 6).toUpperCase()
-    const reference = `HOR-${timestamp}-${random}`
+      const res = await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orderPayload),
+      })
 
-    // Set success data
-    setOrderData({
-      ...formData,
-      reference,
-      total,
-      subtotal,
-      shipping,
-    })
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}))
+        throw new Error(errorData.error || 'Erreur lors de la création de la commande')
+      }
 
-    setStatus('success')
-    setLoading(false)
-    clearCart()
+      const data = await res.json()
+      const reference = data.reference || data.id?.substring(0, 8).toUpperCase() || `HOR-${Date.now().toString(36).toUpperCase()}`
+
+      // Set success data
+      setOrderData({
+        ...formData,
+        reference,
+        total,
+        subtotal,
+        shipping,
+      })
+
+      setStatus('success')
+      clearCart()
+    } catch (err: any) {
+      console.error('Order error:', err)
+      setErrors({ submit: err.message || 'Erreur lors de la commande. Veuillez réessayer.' })
+    } finally {
+      setLoading(false)
+    }
   }
 
   // Handle field change
@@ -506,6 +533,16 @@ export default function CheckoutPage() {
                     </p>
                   </div>
                 </div>
+
+                {/* Submit Error */}
+                {errors.submit && (
+                  <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-lg">
+                    <p className="text-red-400 text-sm font-semibold flex items-center gap-2">
+                      <AlertCircle size={16} />
+                      {errors.submit}
+                    </p>
+                  </div>
+                )}
 
                 {/* Submit Button */}
                 <button
