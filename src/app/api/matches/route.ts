@@ -19,6 +19,11 @@ export async function GET(request: NextRequest) {
         where.status = 'finished';
       } else if (status === 'upcoming') {
         where.status = 'scheduled';
+        // Only return matches that are actually in the future
+        where.date = {
+          ...where.date,
+          gt: new Date(),
+        };
       } else {
         where.status = status;
       }
@@ -45,7 +50,7 @@ export async function GET(request: NextRequest) {
       prisma.match.count({ where }),
       prisma.match.findMany({
         where,
-        orderBy: { date: 'desc' },
+        orderBy: { date: status === 'upcoming' ? 'asc' : 'desc' },
         skip: offset,
         take: limit,
         include: {

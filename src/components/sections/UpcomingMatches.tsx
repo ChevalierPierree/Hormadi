@@ -141,10 +141,11 @@ function mapApiMatch(m: any): Match {
 }
 
 export default function UpcomingMatches() {
-  const [matches, setMatches] = useState<Match[]>(DEMO_MATCHES)
+  const [matches, setMatches] = useState<Match[]>([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetch('/api/matches?status=upcoming')
+    fetch('/api/matches?status=upcoming&limit=10')
       .then(res => res.json())
       .then(data => {
         if (data.matches && Array.isArray(data.matches) && data.matches.length > 0) {
@@ -153,21 +154,46 @@ export default function UpcomingMatches() {
             .filter((m: any) => {
               const isHome = m.isHomeGame === true || m.isHomeGame === 1
               const venue = (m.venue || '').toLowerCase()
-              // Si isHomeGame est défini, l'utiliser. Sinon vérifier le venue
               return isHome || venue.includes('barre') || venue.includes('anglet')
             })
             .map(mapApiMatch)
             .slice(0, 3)
 
-          if (homeMatches.length > 0) {
-            setMatches(homeMatches)
-          }
+          setMatches(homeMatches)
         }
       })
-      .catch(() => {
-        // Garde les demo matches en cas d'erreur
-      })
+      .catch(() => {})
+      .finally(() => setLoading(false))
   }, [])
+
+  // Don't render the section at all if loading or no matches
+  if (loading) return null
+  if (matches.length === 0) {
+    return (
+      <section className="py-20">
+        <div className="section-padding">
+          <div className="flex items-end justify-between mb-12">
+            <div className="border-l-4 border-hormadi-red pl-6">
+              <h2 className="text-3xl sm:text-4xl font-black text-white">
+                PROCHAINS MATCHS
+              </h2>
+              <p className="text-hormadi-muted text-sm sm:text-base mt-1">
+                À domicile — Patinoire de la Barre
+              </p>
+            </div>
+          </div>
+          <div className="bg-hormadi-surface/50 border border-hormadi-border rounded-xl p-12 text-center">
+            <p className="text-hormadi-muted text-lg mb-2">Pas de match à domicile à venir pour le moment.</p>
+            <p className="text-hormadi-muted/60 text-sm">Consultez le calendrier complet pour retrouver tous les résultats de la saison.</p>
+            <Link href="/calendrier" className="inline-flex items-center gap-2 text-hormadi-red hover:text-white transition-colors font-semibold text-sm mt-4">
+              Voir le calendrier complet
+              <ChevronRight size={16} />
+            </Link>
+          </div>
+        </div>
+      </section>
+    )
+  }
 
   return (
     <section className="py-20">

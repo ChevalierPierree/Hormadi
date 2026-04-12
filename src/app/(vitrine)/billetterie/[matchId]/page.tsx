@@ -243,6 +243,39 @@ export default function TicketSelectionPage() {
     )
   }
 
+  // Block ticket sales for past matches
+  const matchDate = new Date(match.date)
+  const isPastMatch = matchDate.getTime() < Date.now()
+
+  if (isPastMatch) {
+    return (
+      <div className="-mt-[5.5rem] pt-[5.5rem] min-h-screen flex items-center justify-center">
+        <div className="text-center max-w-md">
+          <Clock size={48} className="text-hormadi-muted mx-auto mb-4" />
+          <h1 className="text-2xl font-black text-white mb-2">Match terminé</h1>
+          <p className="text-hormadi-muted mb-6">
+            Ce match a déjà eu lieu le {matchDate.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}. La réservation de billets n&apos;est plus possible.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <Link
+              href="/billetterie"
+              className="inline-flex items-center gap-2 bg-hormadi-red text-white font-bold px-6 py-3 rounded-xl hover:bg-hormadi-red/80 transition-colors"
+            >
+              <Ticket size={16} />
+              Voir les prochains matchs
+            </Link>
+            <Link
+              href="/calendrier"
+              className="inline-flex items-center gap-2 bg-hormadi-surface border border-hormadi-border text-white font-bold px-6 py-3 rounded-xl hover:border-hormadi-red/50 transition-colors"
+            >
+              Calendrier & Résultats
+            </Link>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   const awayTeam = findTeam(match.awayTeam)
   const { full: dateStr, time } = formatMatchDate(match.date)
 

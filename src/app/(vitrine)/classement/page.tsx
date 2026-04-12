@@ -367,9 +367,11 @@ export default function ClassementPage() {
           </div>
 
           {/* Label badge — absolute top-left corner */}
-          <div className="absolute top-0 left-0 z-20 bg-hormadi-red text-white text-[11px] font-bold uppercase tracking-wider px-5 py-2">
-            Le prochain match à domicile
-          </div>
+          {nextMatch && (
+            <div className="absolute top-0 left-0 z-20 bg-hormadi-red text-white text-[11px] font-bold uppercase tracking-wider px-5 py-2">
+              {nextMatch.isHomeGame ? 'Le prochain match à domicile' : 'Le prochain match'}
+            </div>
+          )}
 
           <div className="relative z-10 px-6 sm:px-8 lg:px-12 py-8 sm:py-10">
             {nextMatch ? (
@@ -450,11 +452,13 @@ export default function ClassementPage() {
                 </div>
               </div>
             ) : (
-              <div className="flex flex-col items-center py-6 text-hormadi-muted">
-                <Clock size={28} className="mb-2 opacity-50" />
-                <p className="text-sm">Aucun match à domicile programmé pour le moment.</p>
-                <Link href="/calendrier" className="mt-3 text-hormadi-red text-sm font-bold hover:underline">
-                  Voir le calendrier complet
+              <div className="flex flex-col items-center py-8 text-hormadi-muted">
+                <Clock size={32} className="mb-3 opacity-40" />
+                <p className="text-base font-semibold text-white mb-1">Pas de match à venir</p>
+                <p className="text-sm">La saison est terminée ou le calendrier n&apos;est pas encore publié.</p>
+                <Link href="/calendrier" className="mt-4 inline-flex items-center gap-2 text-hormadi-red text-sm font-bold hover:text-white transition-colors">
+                  Voir le calendrier & résultats
+                  <ChevronRight size={14} />
                 </Link>
               </div>
             )}

@@ -241,10 +241,19 @@ export default function BilletteriePage() {
               <span className="ml-3 text-hormadi-muted">Chargement des matchs...</span>
             </div>
           ) : matches.length === 0 ? (
-            <div className="bg-hormadi-surface/50 border border-hormadi-border rounded-xl p-8 text-center">
-              <Calendar size={40} className="text-hormadi-muted mx-auto mb-4" />
-              <p className="text-hormadi-muted text-lg">Aucun match à domicile programmé pour le moment.</p>
-              <p className="text-hormadi-muted/60 text-sm mt-2">Revenez bientôt pour les prochaines dates !</p>
+            <div className="bg-hormadi-surface/50 border border-hormadi-border rounded-xl p-12 text-center">
+              <Ticket size={40} className="text-hormadi-muted/40 mx-auto mb-4" />
+              <h3 className="text-white font-bold text-lg mb-2">Pas de match à venir</h3>
+              <p className="text-hormadi-muted text-sm max-w-md mx-auto">
+                Il n&apos;y a plus de match à domicile programmé pour cette saison. Retrouvez tous les résultats dans le calendrier.
+              </p>
+              <Link
+                href="/calendrier"
+                className="inline-flex items-center gap-2 text-hormadi-red hover:text-white transition-colors font-semibold text-sm mt-6"
+              >
+                Voir le calendrier & résultats
+                <ArrowRight size={16} />
+              </Link>
             </div>
           ) : (
             <div className="space-y-4">

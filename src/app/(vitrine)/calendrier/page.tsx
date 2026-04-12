@@ -103,11 +103,13 @@ export default function CalendrierPage() {
     if (selectedComp !== 'all') {
       matches = matches.filter(m => m.competition === selectedComp)
     }
-    return matches.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    return matches.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
   }, [allMatches, selectedMonth, selectedComp])
 
-  const upcoming = filtered.filter(m => m.status === 'scheduled')
-  const finished = filtered.filter(m => m.status === 'finished')
+  const now = new Date()
+  const upcoming = filtered.filter(m => m.status === 'scheduled' && new Date(m.date) > now)
+  const pastScheduled = filtered.filter(m => m.status === 'scheduled' && new Date(m.date) <= now)
+  const finished = [...filtered.filter(m => m.status === 'finished'), ...pastScheduled]
 
   // Stats
   const totalPlayed = allMatches.filter(m => m.status === 'finished').length
@@ -248,7 +250,7 @@ export default function CalendrierPage() {
         ) : (
           <>
             {/* Upcoming */}
-            {upcoming.length > 0 && (
+            {upcoming.length > 0 ? (
               <div className="mb-12">
                 <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
                   <span className="w-1 h-6 bg-hormadi-red rounded-full" />
@@ -257,6 +259,14 @@ export default function CalendrierPage() {
                 <div className="space-y-2">
                   {upcoming.map(match => <MatchRow key={match.id} match={match} />)}
                 </div>
+              </div>
+            ) : (
+              <div className="mb-12 bg-hormadi-surface/50 border border-hormadi-border rounded-xl p-8 text-center">
+                <p className="text-hormadi-muted text-base">
+                  {selectedMonth !== 'all' || selectedComp !== 'all'
+                    ? 'Aucun match à venir pour cette sélection.'
+                    : 'Plus de match à venir pour cette saison. Rendez-vous la saison prochaine !'}
+                </p>
               </div>
             )}
 

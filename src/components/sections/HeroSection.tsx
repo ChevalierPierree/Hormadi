@@ -161,6 +161,8 @@ export default function HeroSection() {
 
 function NextMatchCard() {
   const [nextMatch, setNextMatch] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
+  const [countdown, setCountdown] = useState({ days: 0, hours: 0, mins: 0 })
 
   useEffect(() => {
     fetch('/api/matches?status=upcoming&limit=1')
@@ -169,24 +171,53 @@ function NextMatchCard() {
         if (data.matches?.[0]) setNextMatch(data.matches[0])
       })
       .catch(() => {})
+      .finally(() => setLoading(false))
   }, [])
 
-  // Fallback demo data
-  const match = nextMatch || {
-    date: '2026-04-03T20:00:00',
-    homeTeam: 'Rapaces de Gap',
-    awayTeam: 'Hormadi Anglet',
-    venue: "L'ALP Aréna",
-    isHomeGame: false,
-    competition: 'Poule de Maintien',
+  // Live countdown timer
+  useEffect(() => {
+    if (!nextMatch) return
+    const update = () => {
+      const diff = new Date(nextMatch.date).getTime() - Date.now()
+      if (diff <= 0) {
+        setCountdown({ days: 0, hours: 0, mins: 0 })
+        return
+      }
+      setCountdown({
+        days: Math.floor(diff / (1000 * 60 * 60 * 24)),
+        hours: Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+        mins: Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)),
+      })
+    }
+    update()
+    const interval = setInterval(update, 30000) // update every 30s
+    return () => clearInterval(interval)
+  }, [nextMatch])
+
+  // No upcoming match — show end of season message
+  if (!loading && !nextMatch) {
+    return (
+      <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-hormadi-surface/90 backdrop-blur-xl">
+        <div className="h-1 bg-gradient-to-r from-hormadi-red to-red-700" />
+        <div className="p-5 sm:p-6 text-center">
+          <Calendar size={32} className="text-hormadi-muted mx-auto mb-3" />
+          <p className="text-white font-bold text-sm mb-1">Pas de match à venir</p>
+          <p className="text-hormadi-muted text-xs mb-4">
+            La saison est terminée ou le calendrier n&apos;est pas encore publié.
+          </p>
+          <Link href="/calendrier" className="btn-outline w-full text-sm gap-2">
+            Voir le calendrier
+            <ChevronRight size={14} />
+          </Link>
+        </div>
+      </div>
+    )
   }
 
+  if (loading || !nextMatch) return null
+
+  const match = nextMatch
   const matchDate = new Date(match.date)
-  const now = new Date()
-  const diff = matchDate.getTime() - now.getTime()
-  const days = Math.max(0, Math.floor(diff / (1000 * 60 * 60 * 24)))
-  const hours = Math.max(0, Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)))
-  const mins = Math.max(0, Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)))
 
   return (
     <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-hormadi-surface/90 backdrop-blur-xl">
@@ -238,16 +269,16 @@ function NextMatchCard() {
           </div>
           <div className="flex items-center gap-2">
             <MapPin size={14} className="text-hormadi-ocean" />
-            Patinoire de la Barre, Anglet
+            {match.venue || 'Patinoire de la Barre, Anglet'}
           </div>
         </div>
 
         {/* Countdown */}
         <div className="grid grid-cols-3 gap-2 mb-5">
           {[
-            { value: days, label: 'Jours' },
-            { value: hours, label: 'Heures' },
-            { value: mins, label: 'Min' },
+            { value: countdown.days, label: 'Jours' },
+            { value: countdown.hours, label: 'Heures' },
+            { value: countdown.mins, label: 'Min' },
           ].map((unit, i) => (
             <div key={i} className="bg-hormadi-dark/60 rounded-lg py-2.5 text-center border border-white/5">
               <div className="text-xl sm:text-2xl font-black text-white">{unit.value}</div>
@@ -257,11 +288,19 @@ function NextMatchCard() {
         </div>
 
         {/* CTA */}
-        <Link href="/billetterie" className="btn-primary w-full text-sm gap-2">
-          <Ticket size={16} />
-          Réserver mes places
-          <ChevronRight size={14} />
-        </Link>
+        {match.isHomeGame ? (
+          <Link href={`/billetterie/${match.id}`} className="btn-primary w-full text-sm gap-2">
+            <Ticket size={16} />
+            Réserver mes places
+            <ChevronRight size={14} />
+          </Link>
+        ) : (
+          <Link href="/calendrier" className="btn-outline w-full text-sm gap-2">
+            <Calendar size={16} />
+            Voir le calendrier
+            <ChevronRight size={14} />
+          </Link>
+        )}
       </div>
     </div>
   )
