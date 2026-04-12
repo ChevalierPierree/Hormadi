@@ -73,9 +73,19 @@ async function main() {
 
   for (const t of teams) {
     await prisma.standing.upsert({
-      where: { team: t.team },
+      where: {
+        team_competition_season: {
+          team: t.team,
+          competition: 'Ligue Magnus',
+          season: '2025-2026',
+        },
+      },
       update: t,
-      create: t,
+      create: {
+        ...t,
+        competition: 'Ligue Magnus',
+        season: '2025-2026',
+      },
     })
   }
 
