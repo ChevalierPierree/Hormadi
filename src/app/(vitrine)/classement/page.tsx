@@ -21,10 +21,8 @@ interface TeamStanding {
   isHormadi?: boolean;
 }
 
-// Classement officiel Ligue Magnus 2025-2026 — Saison régulière (44 matchs)
-// Sources : liguemagnus.com, passionhockey.com, francebleu.fr
-// Système de points : V=3pts, VP=2pts, DP=1pt, D=0pt
-const STANDINGS: TeamStanding[] = [
+// Fallback hardcoded standings (used when DB is empty or API fails)
+const FALLBACK_STANDINGS: TeamStanding[] = [
   { rang: 1,  nom: 'Rouen',          pj: 44, v: 31, vp: 6,  dp: 3, d: 4,  bp: 168, bc: 90,  diff: 78,  pts: 105 },
   { rang: 2,  nom: 'Grenoble',       pj: 44, v: 28, vp: 6,  dp: 2, d: 8,  bp: 155, bc: 102, diff: 53,  pts: 96 },
   { rang: 3,  nom: 'Angers',         pj: 44, v: 27, vp: 6,  dp: 4, d: 7,  bp: 151, bc: 107, diff: 44,  pts: 93 },
@@ -39,6 +37,13 @@ const STANDINGS: TeamStanding[] = [
   { rang: 12, nom: 'Gap',            pj: 44, v: 11, vp: 4,  dp: 3, d: 26, bp: 95,  bc: 160, diff: -65, pts: 41 },
 ];
 
+const HORMADI_KEYWORDS = ['anglet', 'hormadi'];
+
+function isHormadiTeam(name: string): boolean {
+  const lower = name.toLowerCase();
+  return HORMADI_KEYWORDS.some(k => lower.includes(k));
+}
+
 type SortColumn = 'rang' | 'pts' | 'pj' | 'v' | 'd' | 'diff';
 
 interface NextMatch {
@@ -50,11 +55,49 @@ interface NextMatch {
 }
 
 export default function ClassementPage() {
-  const [standings] = useState<TeamStanding[]>(STANDINGS);
+  const [standings, setStandings] = useState<TeamStanding[]>(FALLBACK_STANDINGS);
+  const [isLoading, setIsLoading] = useState(true);
   const [sortColumn, setSortColumn] = useState<SortColumn>('rang');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [nextMatch, setNextMatch] = useState<NextMatch | null>(null);
   const [countdown, setCountdown] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+
+  // Fetch standings from DB
+  useEffect(() => {
+    const fetchStandings = async () => {
+      try {
+        const res = await fetch('/api/standings');
+        const data = await res.json();
+        const dbStandings = data.standings || [];
+
+        if (Array.isArray(dbStandings) && dbStandings.length > 0) {
+          // Map DB fields to page fields
+          const mapped: TeamStanding[] = dbStandings.map((s: any) => ({
+            rang: s.rank,
+            nom: s.team,
+            pj: s.gp,
+            v: s.w,
+            d: s.l,
+            vp: s.otw,
+            dp: s.otl,
+            bp: s.gf,
+            bc: s.ga,
+            diff: s.diff,
+            pts: s.pts,
+            isHormadi: isHormadiTeam(s.team),
+          }));
+          setStandings(mapped);
+        }
+        // If DB is empty, keep FALLBACK_STANDINGS
+      } catch (err) {
+        console.error('Failed to fetch standings:', err);
+        // Keep fallback standings
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchStandings();
+  }, []);
 
   // Fetch next match
   useEffect(() => {

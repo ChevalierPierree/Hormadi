@@ -54,6 +54,7 @@ model Article {
 
 model Match {
   id           String   @id @default(cuid())
+  externalId   String?  @unique // ID from external source (scraping)
   date         DateTime
   homeTeam     String
   awayTeam     String
@@ -71,19 +72,24 @@ model Match {
 }
 
 model Standing {
-  id    String @id @default(cuid())
-  team  String @unique
-  rank  Int
-  gp    Int    @default(0) // games played
-  w     Int    @default(0) // wins
-  l     Int    @default(0) // losses
-  otw   Int    @default(0) // overtime wins
-  otl   Int    @default(0) // overtime losses
-  gf    Int    @default(0) // goals for
-  ga    Int    @default(0) // goals against
-  pts   Int    @default(0) // points
+  id          String @id @default(cuid())
+  team        String
+  competition String @default("Ligue Magnus") // Ligue Magnus, Poule de Maintien
+  season      String @default("2025-2026")
+  rank        Int
+  gp          Int    @default(0) // games played
+  w           Int    @default(0) // wins
+  l           Int    @default(0) // losses
+  otw         Int    @default(0) // overtime wins (VP)
+  otl         Int    @default(0) // overtime losses (DP)
+  gf          Int    @default(0) // goals for (BP)
+  ga          Int    @default(0) // goals against (BC)
+  diff        Int    @default(0) // goal difference
+  pts         Int    @default(0) // points
 
   updatedAt DateTime @updatedAt
+
+  @@unique([team, competition, season])
 }
 
 // ─── Ticketing ───────────────────────────────────────────
