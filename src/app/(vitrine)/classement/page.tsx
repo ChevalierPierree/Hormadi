@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import TeamLogo from '@/components/ui/TeamLogo';
+import { CLUB } from '@/lib/constants';
 import { ArrowUp, ArrowDown, ChevronRight, Trophy, Ticket, ShoppingBag, Clock, MapPin } from 'lucide-react';
 
 interface TeamStanding {
@@ -21,20 +22,20 @@ interface TeamStanding {
   isHormadi?: boolean;
 }
 
-// Fallback hardcoded standings (used when DB is empty or API fails)
+// Fallback hardcoded standings (used when DB is empty or API fails) — classement final Ligue Magnus 2025-2026
 const FALLBACK_STANDINGS: TeamStanding[] = [
-  { rang: 1,  nom: 'Rouen',          pj: 44, v: 31, vp: 6,  dp: 3, d: 4,  bp: 168, bc: 90,  diff: 78,  pts: 105 },
-  { rang: 2,  nom: 'Grenoble',       pj: 44, v: 28, vp: 6,  dp: 2, d: 8,  bp: 155, bc: 102, diff: 53,  pts: 96 },
-  { rang: 3,  nom: 'Angers',         pj: 44, v: 27, vp: 6,  dp: 4, d: 7,  bp: 151, bc: 107, diff: 44,  pts: 93 },
-  { rang: 4,  nom: 'Bordeaux',       pj: 44, v: 21, vp: 6,  dp: 5, d: 12, bp: 134, bc: 118, diff: 16,  pts: 75 },
-  { rang: 5,  nom: 'Marseille',      pj: 44, v: 19, vp: 5,  dp: 4, d: 16, bp: 125, bc: 129, diff: -4,  pts: 68 },
-  { rang: 6,  nom: 'Nice',           pj: 44, v: 18, vp: 5,  dp: 3, d: 18, bp: 118, bc: 132, diff: -14, pts: 64 },
-  { rang: 7,  nom: 'Briançon',       pj: 44, v: 17, vp: 5,  dp: 4, d: 18, bp: 121, bc: 135, diff: -14, pts: 62 },
-  { rang: 8,  nom: 'Amiens',         pj: 44, v: 15, vp: 5,  dp: 5, d: 19, bp: 112, bc: 138, diff: -26, pts: 56 },
-  { rang: 9,  nom: 'Cergy-Pontoise', pj: 44, v: 12, vp: 5,  dp: 3, d: 24, bp: 105, bc: 152, diff: -47, pts: 46 },
-  { rang: 10, nom: 'Anglet',         pj: 44, v: 12, vp: 4,  dp: 5, d: 23, bp: 103, bc: 148, diff: -45, pts: 45, isHormadi: true },
-  { rang: 11, nom: 'Chamonix',       pj: 44, v: 11, vp: 4,  dp: 3, d: 26, bp: 98,  bc: 162, diff: -64, pts: 41 },
-  { rang: 12, nom: 'Gap',            pj: 44, v: 11, vp: 4,  dp: 3, d: 26, bp: 95,  bc: 160, diff: -65, pts: 41 },
+  { rang: 1,  nom: 'Dragons de Rouen',               pj: 44, v: 32, vp: 2, dp: 5, d: 5,  bp: 184, bc: 90,  diff: 94,  pts: 105 },
+  { rang: 2,  nom: 'Brûleurs de Loups de Grenoble',  pj: 44, v: 29, vp: 3, dp: 3, d: 9,  bp: 196, bc: 101, diff: 95,  pts: 96 },
+  { rang: 3,  nom: "Ducs d'Angers",                  pj: 44, v: 26, vp: 7, dp: 1, d: 11, bp: 159, bc: 101, diff: 58,  pts: 93 },
+  { rang: 4,  nom: 'Boxers de Bordeaux',             pj: 44, v: 22, vp: 3, dp: 3, d: 15, bp: 136, bc: 120, diff: 16,  pts: 75 },
+  { rang: 5,  nom: 'Spartiates de Marseille',        pj: 44, v: 18, vp: 4, dp: 5, d: 18, bp: 132, bc: 135, diff: -3,  pts: 68 },
+  { rang: 6,  nom: 'Aigles de Nice',                 pj: 44, v: 15, vp: 7, dp: 5, d: 17, bp: 130, bc: 143, diff: -13, pts: 64 },
+  { rang: 7,  nom: 'Diables Rouges de Briançon',     pj: 44, v: 13, vp: 9, dp: 5, d: 18, bp: 120, bc: 144, diff: -24, pts: 62 },
+  { rang: 8,  nom: "Gothiques d'Amiens",             pj: 44, v: 16, vp: 1, dp: 7, d: 19, bp: 112, bc: 150, diff: -38, pts: 56 },
+  { rang: 9,  nom: 'Jokers de Cergy-Pontoise',       pj: 44, v: 11, vp: 4, dp: 5, d: 24, bp: 134, bc: 146, diff: -12, pts: 46 },
+  { rang: 10, nom: 'Hormadi Anglet',                 pj: 44, v: 11, vp: 4, dp: 4, d: 25, bp: 112, bc: 166, diff: -54, pts: 45, isHormadi: true },
+  { rang: 11, nom: 'Rapaces de Gap',                 pj: 44, v: 9,  vp: 4, dp: 6, d: 25, bp: 112, bc: 167, diff: -55, pts: 41 },
+  { rang: 12, nom: 'Pionniers de Chamonix',          pj: 44, v: 11, vp: 3, dp: 2, d: 27, bp: 102, bc: 166, diff: -64, pts: 41 },
 ];
 
 const HORMADI_KEYWORDS = ['anglet', 'hormadi'];
@@ -61,6 +62,7 @@ export default function ClassementPage() {
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [nextMatch, setNextMatch] = useState<NextMatch | null>(null);
   const [countdown, setCountdown] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+  const [season, setSeason] = useState(CLUB.season);
 
   // Fetch standings from DB
   useEffect(() => {
@@ -69,6 +71,8 @@ export default function ClassementPage() {
         const res = await fetch('/api/standings');
         const data = await res.json();
         const dbStandings = data.standings || [];
+
+        if (data.season) setSeason(data.season);
 
         if (Array.isArray(dbStandings) && dbStandings.length > 0) {
           // Map DB fields to page fields
@@ -223,7 +227,7 @@ export default function ClassementPage() {
                   <Trophy size={20} className="text-hormadi-red" />
                 </div>
                 <span className="text-xs font-semibold uppercase tracking-widest text-hormadi-red">
-                  Saison 2025-2026
+                  Saison {season}
                 </span>
               </div>
               <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black leading-none tracking-tight">
@@ -257,7 +261,10 @@ export default function ClassementPage() {
       {/* ═══════════════════════════════════════════════════════
           STANDINGS TABLE
       ═══════════════════════════════════════════════════════ */}
-      <section className="px-6 sm:px-8 lg:px-12 pt-24 pb-12 max-w-7xl mx-auto">
+      <section className="relative overflow-hidden bg-gradient-to-b from-hormadi-dark via-hormadi-forest/25 to-hormadi-dark ice-pattern noise-overlay">
+        <div className="absolute top-1/3 left-0 w-80 h-80 bg-hormadi-ocean/10 rounded-full blur-3xl -translate-x-1/2 pointer-events-none" />
+        <div className="absolute bottom-0 right-0 w-96 h-96 bg-hormadi-red/10 rounded-full blur-3xl translate-y-1/3 translate-x-1/4 pointer-events-none" />
+        <div className="relative z-10 px-6 sm:px-8 lg:px-12 pt-24 pb-12 max-w-7xl mx-auto">
         <div className="bg-hormadi-surface border border-hormadi-border rounded-2xl overflow-hidden shadow-lg">
           <div className="overflow-x-auto">
             <table className="w-full text-sm md:text-base">
@@ -393,6 +400,7 @@ export default function ClassementPage() {
               </div>
             </div>
           </div>
+        </div>
         </div>
       </section>
 
@@ -606,18 +614,25 @@ export default function ClassementPage() {
             </div>
           </div>
 
-          {/* ── CTA Boutique — 1/4 width, fond neutre ── */}
-          <div className="relative overflow-hidden rounded-2xl border border-hormadi-border bg-hormadi-surface lg:w-1/4 flex flex-col">
-            <div className="p-6 sm:p-8 flex flex-col items-center justify-center text-center flex-1">
+          {/* ── CTA Boutique — 1/4 width, même wording/image que la home (CTASection.tsx) ── */}
+          <div className="relative overflow-hidden rounded-2xl border border-hormadi-border lg:w-1/4 flex flex-col min-h-[320px] lg:min-h-0">
+            <img
+              src="/images/cta-boutique-bg.jpg"
+              alt="Boutique Hormadi"
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-br from-hormadi-forest via-emerald-600 to-hormadi-dark opacity-40" />
+            <div className="absolute inset-0 bg-black/45" />
+
+            <div className="relative z-10 p-6 sm:p-8 flex flex-col items-center justify-center text-center flex-1">
               <div className="inline-block bg-hormadi-red text-white text-[11px] font-bold uppercase tracking-wider px-3 py-1 mb-5">
                 <span className="inline-flex items-center gap-1.5"><ShoppingBag size={11} /> Boutique</span>
               </div>
-              <h3 className="text-xl font-black uppercase mb-3 leading-tight">
-                Portez les<br />couleurs de<br />
-                <span className="text-hormadi-red">l&apos;Hormadi</span>
+              <h3 className="text-xl font-black uppercase mb-3 leading-tight text-white">
+                Boutique
               </h3>
-              <p className="text-hormadi-muted text-xs mb-6 leading-relaxed">
-                Maillots, écharpes,<br />casquettes et plus.
+              <p className="text-white/80 text-xs mb-6 leading-relaxed">
+                Maillots, écharpes et accessoires aux couleurs du club.
               </p>
 
               <Link

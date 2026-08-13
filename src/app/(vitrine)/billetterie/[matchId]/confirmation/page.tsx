@@ -204,7 +204,7 @@ export default function ConfirmationPage() {
                     <h2 className="text-xl font-black text-white">
                       Anglet vs {awayTeam ? awayTeam.name : order.awayTeam}
                     </h2>
-                    <p className="text-hormadi-muted text-sm">Ligue Magnus — Saison 2025-2026</p>
+                    <p className="text-hormadi-muted text-sm">Ligue Magnus — Saison 2026-2027</p>
                   </div>
                 </div>
 
@@ -276,7 +276,7 @@ export default function ConfirmationPage() {
               {/* Footer */}
               <div className="bg-hormadi-dark/50 px-6 py-4 flex items-center justify-between text-xs text-hormadi-muted/60">
                 <span>Total payé : <span className="text-white font-bold">{formatPrice(order.totalPrice)}</span></span>
-                <span>Hormadi Anglet — Saison 2025-2026</span>
+                <span>Hormadi Anglet — Saison 2026-2027</span>
               </div>
             </div>
 

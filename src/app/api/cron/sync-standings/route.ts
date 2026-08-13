@@ -10,11 +10,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { scrapeStandings, LIGUE_MAGNUS_URLS } from '@/lib/scraper'
+import { CLUB } from '@/lib/constants'
 
 export const dynamic = 'force-dynamic'
 export const maxDuration = 30 // seconds
 
-const SEASON = '2025-2026'
+const SEASON = CLUB.season
 
 export async function GET(request: NextRequest) {
   try {

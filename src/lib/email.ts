@@ -94,7 +94,7 @@ function generateEmailHTML(data: TicketEmailData): string {
                       ${data.homeTeam} vs ${data.awayTeam}
                     </h2>
                     <p style="margin:0;color:#009681;font-size:13px;">
-                      Synerglace Ligue Magnus — Saison 2025-2026
+                      Synerglace Ligue Magnus — Saison 2026-2027
                     </p>
 
                     <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-top:20px;">

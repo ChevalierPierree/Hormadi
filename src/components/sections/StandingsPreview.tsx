@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
 import TeamLogo from '@/components/ui/TeamLogo'
@@ -16,29 +17,65 @@ type Standing = {
   isHormadi?: boolean
 }
 
-// Classement officiel Ligue Magnus 2025-2026 — Saison régulière (44 matchs)
-const DEMO_STANDINGS: Standing[] = [
-  { rank: 1,  team: 'Rouen',          pj: 44, v: 31, d: 4,  bp: 168, bc: 90,  pts: 105 },
-  { rank: 2,  team: 'Grenoble',       pj: 44, v: 28, d: 8,  bp: 155, bc: 102, pts: 96 },
-  { rank: 3,  team: 'Angers',         pj: 44, v: 27, d: 7,  bp: 151, bc: 107, pts: 93 },
-  { rank: 4,  team: 'Bordeaux',       pj: 44, v: 21, d: 12, bp: 134, bc: 118, pts: 75 },
-  { rank: 5,  team: 'Marseille',      pj: 44, v: 19, d: 16, bp: 125, bc: 129, pts: 68 },
-  { rank: 6,  team: 'Nice',           pj: 44, v: 18, d: 18, bp: 118, bc: 132, pts: 64 },
-  { rank: 7,  team: 'Briançon',       pj: 44, v: 17, d: 18, bp: 121, bc: 135, pts: 62 },
-  { rank: 8,  team: 'Amiens',         pj: 44, v: 15, d: 19, bp: 112, bc: 138, pts: 56 },
-  { rank: 9,  team: 'Cergy-Pontoise', pj: 44, v: 12, d: 24, bp: 105, bc: 152, pts: 46 },
-  { rank: 10, team: 'Anglet',         pj: 44, v: 12, d: 23, bp: 103, bc: 148, pts: 45, isHormadi: true },
-  { rank: 11, team: 'Chamonix',       pj: 44, v: 11, d: 26, bp: 98,  bc: 162, pts: 41 },
-  { rank: 12, team: 'Gap',            pj: 44, v: 11, d: 26, bp: 95,  bc: 160, pts: 41 },
+function isHormadiTeam(name: string): boolean {
+  const lower = name.toLowerCase()
+  return lower.includes('anglet') || lower.includes('hormadi')
+}
+
+// Fallback (classement final Ligue Magnus 2025-2026) — utilisé si l'API est indisponible
+const FALLBACK_STANDINGS: Standing[] = [
+  { rank: 1,  team: 'Dragons de Rouen',               pj: 44, v: 32, d: 5,  bp: 184, bc: 90,  pts: 105 },
+  { rank: 2,  team: 'Brûleurs de Loups de Grenoble',  pj: 44, v: 29, d: 9,  bp: 196, bc: 101, pts: 96 },
+  { rank: 3,  team: "Ducs d'Angers",                  pj: 44, v: 26, d: 11, bp: 159, bc: 101, pts: 93 },
+  { rank: 4,  team: 'Boxers de Bordeaux',             pj: 44, v: 22, d: 15, bp: 136, bc: 120, pts: 75 },
+  { rank: 5,  team: 'Spartiates de Marseille',        pj: 44, v: 18, d: 18, bp: 132, bc: 135, pts: 68 },
+  { rank: 6,  team: 'Aigles de Nice',                 pj: 44, v: 15, d: 17, bp: 130, bc: 143, pts: 64 },
+  { rank: 7,  team: 'Diables Rouges de Briançon',     pj: 44, v: 13, d: 18, bp: 120, bc: 144, pts: 62 },
+  { rank: 8,  team: "Gothiques d'Amiens",             pj: 44, v: 16, d: 19, bp: 112, bc: 150, pts: 56 },
+  { rank: 9,  team: 'Jokers de Cergy-Pontoise',       pj: 44, v: 11, d: 24, bp: 134, bc: 146, pts: 46 },
+  { rank: 10, team: 'Hormadi Anglet',                 pj: 44, v: 11, d: 25, bp: 112, bc: 166, pts: 45, isHormadi: true },
+  { rank: 11, team: 'Rapaces de Gap',                 pj: 44, v: 9,  d: 25, bp: 112, bc: 167, pts: 41 },
+  { rank: 12, team: 'Pionniers de Chamonix',          pj: 44, v: 11, d: 27, bp: 102, bc: 166, pts: 41 },
 ]
 
 export default function StandingsPreview() {
-  const standings = DEMO_STANDINGS
+  const [standings, setStandings] = useState<Standing[]>(FALLBACK_STANDINGS)
+
+  useEffect(() => {
+    fetch('/api/standings')
+      .then(res => res.json())
+      .then(data => {
+        const rows = data.standings || []
+        if (Array.isArray(rows) && rows.length > 0) {
+          setStandings(
+            rows.map((s: any) => ({
+              rank: s.rank,
+              team: s.team,
+              pj: s.gp,
+              v: s.w,
+              d: s.l,
+              bp: s.gf,
+              bc: s.ga,
+              pts: s.pts,
+              isHormadi: isHormadiTeam(s.team),
+            }))
+          )
+        }
+      })
+      .catch(() => {
+        // Keep fallback standings
+      })
+  }, [])
+
   const displayStandings = standings.slice(0, 6)
 
   return (
-    <section className="py-16 sm:py-20 bg-hormadi-surface/50">
-      <div className="section-padding">
+    <section className="relative py-16 sm:py-20 overflow-hidden bg-gradient-to-br from-hormadi-dark via-hormadi-forest/40 to-hormadi-dark ice-pattern noise-overlay">
+      {/* Halos flous — même langage visuel que le Hero */}
+      <div className="absolute top-0 right-0 w-96 h-96 bg-hormadi-red/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-72 h-72 bg-hormadi-ocean/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/3 pointer-events-none" />
+
+      <div className="relative z-10 section-padding">
         {/* Header with section red bar */}
         <div className="mb-10 border-l-4 border-hormadi-red pl-6">
           <h2 className="text-3xl sm:text-4xl font-black text-white">

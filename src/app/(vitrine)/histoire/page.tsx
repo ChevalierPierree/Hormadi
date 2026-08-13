@@ -1,6 +1,8 @@
 'use client';
 
+import { useRef } from 'react';
 import Link from 'next/link';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import {
   ChevronRight,
@@ -104,14 +106,86 @@ const timelineEvents = [
     accent: 'ocean' as const,
   },
   {
-    year: 2025,
-    title: 'Saison 2025-2026 — Ligue Magnus',
+    year: 2026,
+    title: 'Saison 2026-2027 — Ligue Magnus',
     description:
       'L\'Hormadi poursuit son aventure au plus haut niveau du hockey français. Chaque match à la Patinoire de la Barre est une fête, portée par des supporters passionnés et l\'âme du Pays Basque.',
     icon: Trophy,
     accent: 'red' as const,
   },
 ];
+
+function Timeline() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ['start center', 'end center'],
+  });
+  const lineScale = useTransform(scrollYProgress, [0, 1], [0, 1]);
+
+  return (
+    <div ref={containerRef} className="relative">
+      {/* Central line — trace fixe en fond + trait qui se dessine au scroll */}
+      <div className="absolute left-6 md:left-1/2 top-0 bottom-0 w-px bg-white/10 md:-translate-x-px" />
+      <motion.div
+        style={{ scaleY: lineScale }}
+        className="absolute left-6 md:left-1/2 top-0 bottom-0 w-px origin-top bg-gradient-to-b from-hormadi-red via-hormadi-ocean to-hormadi-red md:-translate-x-px"
+      />
+
+      <div className="space-y-12 md:space-y-16">
+        {timelineEvents.map((event, idx) => {
+          const isLeft = idx % 2 === 0;
+
+          return (
+            <motion.div
+              key={idx}
+              className="relative"
+              initial={{ opacity: 0, y: 60 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-120px' }}
+              transition={{ duration: 0.6, delay: (idx % 4) * 0.12, ease: 'easeOut' }}
+            >
+              {/* Dot */}
+              <motion.div
+                initial={{ scale: 0 }}
+                whileInView={{ scale: 1 }}
+                viewport={{ once: true, margin: '-120px' }}
+                transition={{ duration: 0.4, delay: (idx % 4) * 0.12 + 0.2 }}
+                className={cn(
+                  'absolute left-6 md:left-1/2 top-8 w-3 h-3 rounded-full border-2 z-10 -translate-x-1/2',
+                  event.accent === 'red'
+                    ? 'bg-hormadi-red border-hormadi-red/50 shadow-lg shadow-hormadi-red/30'
+                    : 'bg-hormadi-ocean border-hormadi-ocean/50 shadow-lg shadow-hormadi-ocean/30'
+                )}
+              />
+
+              {/* Card */}
+              <div className={cn(
+                'ml-14 md:ml-0 md:w-[calc(50%-1.5rem)]',
+                isLeft ? 'md:mr-auto md:pr-0' : 'md:ml-auto md:pl-0'
+              )}>
+                <div className="bg-hormadi-surface border border-hormadi-border rounded-xl p-6 md:p-8 hover:border-white/20 transition-all duration-300 group">
+                  <span className={cn(
+                    'text-3xl md:text-4xl font-black',
+                    event.accent === 'red' ? 'text-hormadi-red' : 'text-hormadi-ocean'
+                  )}>
+                    {event.year}
+                  </span>
+                  <h3 className="text-lg md:text-xl font-bold text-white mt-1 leading-snug">
+                    {event.title}
+                  </h3>
+                  <p className="text-hormadi-ice leading-relaxed text-sm md:text-base mt-3">
+                    {event.description}
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
 
 export default function ClubPage() {
   return (
@@ -173,57 +247,20 @@ export default function ClubPage() {
       {/* ═══════════════════════════════════════════════════════
           TIMELINE SECTION
       ═══════════════════════════════════════════════════════ */}
-      <section className="px-6 sm:px-8 lg:px-12 py-20 md:py-28 max-w-7xl mx-auto">
-        <div className="text-center mb-16">
-          <span className="text-xs font-semibold uppercase tracking-widest text-hormadi-red">Chronologie</span>
-          <h2 className="text-4xl md:text-5xl font-black mt-3 leading-tight">
-            Les Grandes Dates
-          </h2>
-          <div className="w-16 h-1 bg-gradient-to-r from-hormadi-red to-hormadi-ocean mx-auto mt-4" />
-        </div>
+      <section className="relative overflow-hidden bg-gradient-to-b from-hormadi-dark via-hormadi-forest/25 to-hormadi-dark ice-pattern noise-overlay">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-hormadi-red/10 rounded-full blur-3xl -translate-y-1/3 translate-x-1/4 pointer-events-none" />
+        <div className="absolute bottom-1/4 left-0 w-80 h-80 bg-hormadi-ocean/10 rounded-full blur-3xl -translate-x-1/2 pointer-events-none" />
 
-        <div className="relative">
-          {/* Central line */}
-          <div className="absolute left-6 md:left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-hormadi-red/60 via-hormadi-ocean/40 to-hormadi-red/60 md:-translate-x-px" />
-
-          <div className="space-y-12 md:space-y-16">
-            {timelineEvents.map((event, idx) => {
-              const isLeft = idx % 2 === 0;
-
-              return (
-                <div key={idx} className="relative">
-                  {/* Dot */}
-                  <div className={cn(
-                    'absolute left-6 md:left-1/2 top-8 w-3 h-3 rounded-full border-2 z-10 -translate-x-1/2',
-                    event.accent === 'red'
-                      ? 'bg-hormadi-red border-hormadi-red/50 shadow-lg shadow-hormadi-red/30'
-                      : 'bg-hormadi-ocean border-hormadi-ocean/50 shadow-lg shadow-hormadi-ocean/30'
-                  )} />
-
-                  {/* Card */}
-                  <div className={cn(
-                    'ml-14 md:ml-0 md:w-[calc(50%-1.5rem)]',
-                    isLeft ? 'md:mr-auto md:pr-0' : 'md:ml-auto md:pl-0'
-                  )}>
-                    <div className="bg-hormadi-surface border border-hormadi-border rounded-xl p-6 md:p-8 hover:border-white/20 transition-all duration-300 group">
-                      <span className={cn(
-                        'text-3xl md:text-4xl font-black',
-                        event.accent === 'red' ? 'text-hormadi-red' : 'text-hormadi-ocean'
-                      )}>
-                        {event.year}
-                      </span>
-                      <h3 className="text-lg md:text-xl font-bold text-white mt-1 leading-snug">
-                        {event.title}
-                      </h3>
-                      <p className="text-hormadi-ice leading-relaxed text-sm md:text-base mt-3">
-                        {event.description}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
+        <div className="relative z-10 px-6 sm:px-8 lg:px-12 py-20 md:py-28 max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <span className="text-xs font-semibold uppercase tracking-widest text-hormadi-red">Chronologie</span>
+            <h2 className="text-4xl md:text-5xl font-black mt-3 leading-tight">
+              Les Grandes Dates
+            </h2>
+            <div className="w-16 h-1 bg-gradient-to-r from-hormadi-red to-hormadi-ocean mx-auto mt-4" />
           </div>
+
+          <Timeline />
         </div>
       </section>
 

@@ -176,7 +176,7 @@ function FeaturedArticleCard({ article }: { article: Article }) {
 
           {/* Title & Excerpt */}
           <div>
-            <h3 className="text-xl sm:text-2xl lg:text-3xl font-black mb-3 sm:mb-4
+            <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-3 sm:mb-4
                            text-gray-900 group-hover:text-hormadi-red transition-colors
                            leading-tight line-clamp-3">
               {article.title}

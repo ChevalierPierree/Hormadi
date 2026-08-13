@@ -267,7 +267,7 @@ export default function AmateurPage() {
                       REJOIGNEZ L'AVENTURE
                     </h2>
                     <p className="text-hormadi-muted leading-relaxed mb-6">
-                      Les inscriptions pour la saison 2025-2026 sont ouvertes. Venez découvrir le hockey sur glace
+                      Les inscriptions pour la saison 2026-2027 sont ouvertes. Venez découvrir le hockey sur glace
                       avec une séance d'essai gratuite ! L'équipement est prêté pour les débutants.
                     </p>
 
@@ -317,7 +317,7 @@ export default function AmateurPage() {
 
                   <div className="hidden lg:block">
                     <div className="bg-hormadi-surface/50 border border-hormadi-border rounded-xl p-8">
-                      <h3 className="text-white font-bold text-lg mb-6">Tarifs indicatifs 2025-2026</h3>
+                      <h3 className="text-white font-bold text-lg mb-6">Tarifs indicatifs 2026-2027</h3>
                       <div className="space-y-4">
                         <div className="flex justify-between items-center pb-3 border-b border-hormadi-border">
                           <span className="text-hormadi-muted">Baby Hockey (3-5 ans)</span>

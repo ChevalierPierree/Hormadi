@@ -8,7 +8,7 @@ export const CLUB = {
   arenaCapacity: 1200,
   address: '299 avenue de l\'Adour, 64600 Anglet',
   league: 'Synerglace Ligue Magnus',
-  season: '2025-2026',
+  season: '2026-2027',
   hashtags: ['#GoHormadi', '#JoTaKelrabaziArte'],
 } as const
 

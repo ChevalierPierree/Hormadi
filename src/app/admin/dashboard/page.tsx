@@ -125,7 +125,7 @@ export default function AdminDashboard() {
         <StatCard label="Articles publiés" value={publishedArticles.length} icon={Newspaper} subtext={`${articles.length - publishedArticles.length} brouillons`} />
         <StatCard label="Produits en boutique" value={products.length} icon={ShoppingBag} subtext="Boutique en ligne" />
         <StatCard label="Partenaires actifs" value={visiblePartners.length} icon={Users} subtext={`${partners.length} partenaires au total`} />
-        <StatCard label="Total matchs saison" value={matches.length} icon={BarChart3} subtext="Saison 2025-2026" />
+        <StatCard label="Total matchs saison" value={matches.length} icon={BarChart3} subtext="Saison 2026-2027" />
       </div>
 
       {/* Quick actions */}

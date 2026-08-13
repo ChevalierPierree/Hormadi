@@ -156,7 +156,7 @@ export default function ActualitesPage() {
                   <Newspaper size={20} className="text-hormadi-red" />
                 </div>
                 <span className="text-xs font-semibold uppercase tracking-widest text-hormadi-red">
-                  Saison 2025-2026
+                  Saison 2026-2027
                 </span>
               </div>
               <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black leading-none tracking-tight">

@@ -1,16 +1,40 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
+import { CLUB } from '@/lib/constants';
 
 export const dynamic = 'force-dynamic';
 import { authenticateRequest, jsonResponse, errorResponse, validateRequired, sanitizeString, logAdminAction } from '@/lib/api-utils';
 
 export async function GET(request: NextRequest) {
   try {
-    const standings = await prisma.standing.findMany({
+    const { searchParams } = new URL(request.url);
+    const competition = searchParams.get('competition') === 'pm' ? 'Poule de Maintien' : 'Ligue Magnus';
+    const requestedSeason = searchParams.get('season') || CLUB.season;
+
+    let season = requestedSeason;
+    let standings = await prisma.standing.findMany({
+      where: { competition, season },
       orderBy: { rank: 'asc' },
     });
 
-    return jsonResponse({ standings }, 200);
+    // The new season has no results yet (pre-season / just started) — fall back to the
+    // most recent season that actually has standings, so the page never shows empty.
+    if (standings.length === 0) {
+      const latest = await prisma.standing.findFirst({
+        where: { competition },
+        orderBy: { season: 'desc' },
+        select: { season: true },
+      });
+      if (latest && latest.season !== season) {
+        season = latest.season;
+        standings = await prisma.standing.findMany({
+          where: { competition, season },
+          orderBy: { rank: 'asc' },
+        });
+      }
+    }
+
+    return jsonResponse({ standings, season }, 200);
   } catch (error) {
     console.error('Get standings error:', error);
     return errorResponse('Internal server error', 500);

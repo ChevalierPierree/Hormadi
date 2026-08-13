@@ -488,7 +488,7 @@ export default function ProductDetailPage() {
                 <div className="space-y-3">
                   {[
                     ['Marque', 'Hormadi Anglet'],
-                    ['Collection', 'Saison 2025-2026'],
+                    ['Collection', 'Saison 2026-2027'],
                     ['Catégorie', CATEGORY_LABELS[product.category]],
                     ['Référence', product.id.toUpperCase()],
                     ...(sizes ? [['Tailles disponibles', sizes.join(', ')]] : []),

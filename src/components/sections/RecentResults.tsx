@@ -80,7 +80,7 @@ export default function RecentResults() {
               DERNIERS RÉSULTATS
             </h2>
             <p className="text-hormadi-muted text-sm sm:text-base mt-1">
-              Saison 2025-2026
+              Ligue Magnus
             </p>
           </div>
           <Link

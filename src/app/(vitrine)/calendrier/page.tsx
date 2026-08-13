@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils'
 import TeamLogo from '@/components/ui/TeamLogo'
 import Link from 'next/link'
 import CTASection from '@/components/sections/CTASection'
+import { CLUB } from '@/lib/constants'
 
 interface Match {
   id: string
@@ -52,14 +53,15 @@ const COMPETITIONS = [
 ]
 
 const MONTHS = [
-  { label: 'Sep', value: '2025-09' },
-  { label: 'Oct', value: '2025-10' },
-  { label: 'Nov', value: '2025-11' },
-  { label: 'Déc', value: '2025-12' },
-  { label: 'Jan', value: '2026-01' },
-  { label: 'Fév', value: '2026-02' },
-  { label: 'Mar', value: '2026-03' },
-  { label: 'Avr', value: '2026-04' },
+  { label: 'Sep', value: '2026-09' },
+  { label: 'Oct', value: '2026-10' },
+  { label: 'Nov', value: '2026-11' },
+  { label: 'Déc', value: '2026-12' },
+  { label: 'Jan', value: '2027-01' },
+  { label: 'Fév', value: '2027-02' },
+  { label: 'Mar', value: '2027-03' },
+  { label: 'Avr', value: '2027-04' },
+  { label: 'Mai', value: '2027-05' },
 ]
 
 function getCompBadge(comp: string) {
@@ -161,7 +163,7 @@ export default function CalendrierPage() {
                   <Calendar size={20} className="text-hormadi-red" />
                 </div>
                 <span className="text-xs font-semibold uppercase tracking-widest text-hormadi-red">
-                  Saison 2025-2026
+                  Saison {CLUB.season}
                 </span>
               </div>
               <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black leading-none tracking-tight">
