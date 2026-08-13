@@ -70,8 +70,15 @@ export default function StandingsPreview() {
   const displayStandings = standings.slice(0, 6)
 
   return (
-    <section className="relative py-16 sm:py-20 overflow-hidden bg-gradient-to-br from-hormadi-dark via-hormadi-forest/40 to-hormadi-dark ice-pattern noise-overlay">
-      {/* Halos flous — même langage visuel que le Hero */}
+    <section className="relative py-16 sm:py-20 overflow-hidden noise-overlay"
+             style={{ background: 'linear-gradient(135deg, #0c0c0c 0%, #1a1a1a 30%, #111 50%, #1a1a1a 70%, #0c0c0c 100%)' }}>
+      {/* Formes géométriques diagonales — même langage visuel que CTASection */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-0 left-[30%] w-[40%] h-full bg-white/[0.02] -skew-x-12" />
+        <div className="absolute top-0 left-[35%] w-[30%] h-full bg-white/[0.015] -skew-x-12" />
+        <div className="absolute top-0 right-[10%] w-[25%] h-full bg-white/[0.02] skew-x-12" />
+      </div>
+      {/* Halos flous — accent couleur sur fond noir */}
       <div className="absolute top-0 right-0 w-96 h-96 bg-hormadi-red/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-72 h-72 bg-hormadi-ocean/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/3 pointer-events-none" />
 
