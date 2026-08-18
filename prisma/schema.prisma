@@ -186,3 +186,30 @@ model Partner {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+// ─── Club: organigramme & effectif ───────────────────────
+
+model StaffMember {
+  id        String   @id @default(cuid())
+  name      String
+  role      String   // ex: Président, Entraîneur principal, Directeur sportif
+  category  String   @default("direction") // direction, staff_technique, encadrement
+  photoUrl  String?
+  order     Int      @default(0)
+  visible   Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Player {
+  id          String   @id @default(cuid())
+  name        String
+  number      Int?
+  position    String   @default("attaquant") // gardien, defenseur, attaquant
+  nationality String?
+  photoUrl    String?
+  order       Int      @default(0)
+  visible     Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

@@ -4,6 +4,7 @@ import { useRef } from 'react';
 import Link from 'next/link';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import { CLUB } from '@/lib/constants';
 import {
   ChevronRight,
   Trophy,
@@ -242,6 +243,34 @@ export default function ClubPage() {
         </div>
 
         <div className="absolute z-[5] bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-hormadi-red/30 to-transparent" />
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════
+          QUICK LINKS — Organigramme & Effectif
+      ═══════════════════════════════════════════════════════ */}
+      <section className="py-12 border-b border-hormadi-border/30">
+        <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <Link
+            href="/organigramme"
+            className="group flex items-center justify-between gap-4 bg-hormadi-surface border border-hormadi-border rounded-xl p-6 hover:border-hormadi-red/40 transition-all duration-300"
+          >
+            <div>
+              <h3 className="text-white font-black text-lg uppercase">Organigramme</h3>
+              <p className="text-hormadi-muted text-sm mt-1">Direction, staff technique &amp; encadrement</p>
+            </div>
+            <ChevronRight size={20} className="text-hormadi-red group-hover:translate-x-1 transition-transform flex-shrink-0" />
+          </Link>
+          <Link
+            href="/effectif"
+            className="group flex items-center justify-between gap-4 bg-hormadi-surface border border-hormadi-border rounded-xl p-6 hover:border-hormadi-red/40 transition-all duration-300"
+          >
+            <div>
+              <h3 className="text-white font-black text-lg uppercase">Effectif</h3>
+              <p className="text-hormadi-muted text-sm mt-1">Le roster de l'équipe pro {CLUB.season}</p>
+            </div>
+            <ChevronRight size={20} className="text-hormadi-red group-hover:translate-x-1 transition-transform flex-shrink-0" />
+          </Link>
+        </div>
       </section>
 
       {/* ═══════════════════════════════════════════════════════

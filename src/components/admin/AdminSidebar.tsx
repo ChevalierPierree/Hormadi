@@ -14,6 +14,8 @@ import {
   LogOut,
   Menu,
   X,
+  Network,
+  Shirt,
 } from 'lucide-react';
 
 interface User {
@@ -36,6 +38,8 @@ export default function AdminSidebar({ user }: AdminSidebarProps) {
     { label: 'Actualités', href: '/admin/actualites', icon: Newspaper },
     { label: 'Matchs', href: '/admin/matchs', icon: Calendar },
     { label: 'Classement', href: '/admin/classement', icon: Trophy },
+    { label: 'Organigramme', href: '/admin/organigramme', icon: Network },
+    { label: 'Effectif', href: '/admin/effectif', icon: Shirt },
     { label: 'Partenaires', href: '/admin/partenaires', icon: Users },
     { label: 'Billetterie', href: '/admin/billetterie', icon: Ticket },
     { label: 'Boutique', href: '/admin/boutique', icon: ShoppingBag },
