@@ -160,7 +160,7 @@ export const HOSPITALITY_PACKAGES = [
   },
   {
     id: 'chalet-coach',
-    name: 'Chalet du Coach',
+    name: 'Chalet Bouney',
     tagline: 'Le match en face-à-face.',
     capacity: 10,
     description: 'Dans une atmosphère boisée et chaleureuse, plongez au cœur du match avec une vue directe sur la glace. Cet espace exclusif mêle convivialité, proximité avec le jeu et instants gourmands. Une expérience au centre de l\'action.',

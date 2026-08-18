@@ -122,7 +122,7 @@ const SALONS = [
   },
   {
     id: 'chalet-coach',
-    name: 'Chalet du Coach',
+    name: 'Chalet Bouney',
     tagline: 'Le match en face-à-face.',
     capacity: 10,
     isChalet: true,
