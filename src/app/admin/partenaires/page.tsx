@@ -17,10 +17,11 @@ import {
 
 type PartnerCategory =
   | 'partenaire_principal'
-  | 'partenaire_officiel'
-  | 'fournisseur_officiel'
   | 'partenaire_institutionnel'
   | 'partenaire'
+  | 'fournisseur_officiel'
+  | 'equipementier'
+  | 'media'
 
 interface Partner {
   id: string
@@ -42,19 +43,21 @@ interface PartnerFormData {
 }
 
 const CATEGORY_LABELS: Record<PartnerCategory, string> = {
-  partenaire_principal: 'Partenaire Principal',
-  partenaire_officiel: 'Partenaire Officiel',
-  fournisseur_officiel: 'Fournisseur Officiel',
-  partenaire_institutionnel: 'Partenaire Institutionnel',
+  partenaire_principal: 'Labellisé',
+  partenaire_institutionnel: 'Institutionnel',
   partenaire: 'Partenaire',
+  fournisseur_officiel: 'Fournisseur Officiel',
+  equipementier: 'Équipementier',
+  media: 'Média',
 }
 
 const CATEGORY_COLORS: Record<PartnerCategory, string> = {
   partenaire_principal: 'bg-hormadi-red/20 text-hormadi-red border-hormadi-red/30',
-  partenaire_officiel: 'bg-hormadi-ocean/20 text-hormadi-ocean border-hormadi-ocean/30',
-  fournisseur_officiel: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
   partenaire_institutionnel: 'bg-purple-500/20 text-purple-400 border-purple-500/30',
   partenaire: 'bg-hormadi-forest/20 text-hormadi-ice border-hormadi-forest/30',
+  fournisseur_officiel: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
+  equipementier: 'bg-hormadi-ocean/20 text-hormadi-ocean border-hormadi-ocean/30',
+  media: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
 }
 
 export default function AdminPartenairesPage() {

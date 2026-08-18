@@ -1,16 +1,21 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
 import { ChevronRight, Handshake, ExternalLink, ArrowRight, Mail, Phone } from 'lucide-react'
 
-/* ─── Partner data by category (from pro.hormadi.fr) ──────────── */
+/* ─── Partner data now lives in the DB (Partner table), managed via /admin/partenaires.
+   This page only maps DB categories to display copy. ──────────── */
 
 interface Partner {
   name: string
   logoUrl?: string
   website?: string
+}
+
+interface DbPartner extends Partner {
+  category: string
 }
 
 interface PartnerCategory {
@@ -20,148 +25,19 @@ interface PartnerCategory {
   partners: Partner[]
 }
 
-const CATEGORIES: PartnerCategory[] = [
-  {
-    id: 'labellises',
-    title: 'Nos partenaires',
-    subtitle: 'LABELLISÉS',
-    partners: [
-      { name: 'B comme bois Bouney', logoUrl: '/images/partenaires/BOUNEY.png' },
-      { name: 'DOC E-MAJ', logoUrl: '/images/partenaires/DOCEMAJ.png' },
-      { name: 'AXP', logoUrl: '/images/partenaires/AXP.png' },
-      { name: 'Alday Immobilier' },
-      { name: 'Tekniaero', logoUrl: '/images/partenaires/Tekniaero.png' },
-      { name: 'edenauto' },
-      { name: 'Burger King', logoUrl: '/images/partenaires/Burger-King.png' },
-      { name: 'V and B', logoUrl: '/images/partenaires/VandB.png' },
-    ],
-  },
-  {
-    id: 'institutionnels',
-    title: 'Nos partenaires',
-    subtitle: 'INSTITUTIONNELS',
-    partners: [
-      { name: 'Ville d\'Anglet', logoUrl: '/images/partenaires/Ville-Anglet.png' },
-      { name: 'Pays Basque Euskal Herria', logoUrl: '/images/partenaires/Pays-Basque.png' },
-      { name: 'Pyrénées Atlantiques', logoUrl: '/images/partenaires/Pyrenees-Atlantiques.png' },
-      { name: 'Nouvelle Aquitaine', logoUrl: '/images/partenaires/Nouvelle-Aquitaine.png' },
-    ],
-  },
-  {
-    id: 'partenaires',
-    title: 'Nos',
-    subtitle: 'PARTENAIRES',
-    partners: [
-      { name: 'AEDIFIM', logoUrl: '/images/partenaires/AEDIFIM.png' },
-      { name: 'Alday Immobilier' },
-      { name: 'Fill Up Media', logoUrl: '/images/partenaires/Fill-Up-Media.png' },
-      { name: 'Bouygues Immobilier', logoUrl: '/images/partenaires/Bouygues-Immobilier.png' },
-      { name: 'Cryotera', logoUrl: '/images/partenaires/Cryotera.png' },
-      { name: 'Renault Bayonne' },
-      { name: 'edenauto Anglet' },
-      { name: 'MJ Développement', logoUrl: '/images/partenaires/MJ-Developpement.png' },
-      { name: 'DOC E-MAJ', logoUrl: '/images/partenaires/DOCEMAJ.png' },
-      { name: 'AXP', logoUrl: '/images/partenaires/AXP.png' },
-      { name: 'Oz\'Art', logoUrl: '/images/partenaires/Ozart.png' },
-      { name: 'B comme bois Bouney', logoUrl: '/images/partenaires/BOUNEY.png' },
-      { name: 'Tekniaero', logoUrl: '/images/partenaires/Tekniaero.png' },
-      { name: 'Cabinet Forgeard', logoUrl: '/images/partenaires/Cabinet-Forgeard.jpeg' },
-      { name: 'V and B', logoUrl: '/images/partenaires/VandB.png' },
-      { name: 'Fill Up Media', logoUrl: '/images/partenaires/Fill-Up-Media.png' },
-      { name: 'Krys', logoUrl: '/images/partenaires/Krys.png' },
-      { name: 'JCDecaux', logoUrl: '/images/partenaires/JCDecaux.png' },
-      { name: 'SiliGom Centre Auto' },
-      { name: 'Maison Pommiers', logoUrl: '/images/partenaires/Maison-Pommiers.png' },
-      { name: 'Eiffage Construction', logoUrl: '/images/partenaires/Eiffage.png' },
-      { name: 'ETPM', logoUrl: '/images/partenaires/ETPM.png' },
-      { name: 'Gan Assurances', logoUrl: '/images/partenaires/Gan-Assurances.png' },
-      { name: 'Office Notarial des Arènes', logoUrl: '/images/partenaires/Office-Notarial-des-Arenes.png' },
-      { name: 'LJS Notaires' },
-      { name: 'Pierre Oteiza', logoUrl: '/images/partenaires/Pierre-Oteiza.png' },
-      { name: 'Pariès', logoUrl: '/images/partenaires/Paries.png' },
-      { name: 'Safran Helicopter Engines', logoUrl: '/images/partenaires/Safran.png' },
-      { name: 'Sogeca', logoUrl: '/images/partenaires/Sogeca.png' },
-      { name: 'Les Pins', logoUrl: '/images/partenaires/Les-Pins.png' },
-      { name: 'Martinez TPE', logoUrl: '/images/partenaires/Martinez-TPE.jpg' },
-      { name: 'Pizzacosy', logoUrl: '/images/partenaires/Pizzacosy.png' },
-      { name: 'Le 707', logoUrl: '/images/partenaires/Le-707.png' },
-      { name: 'Generali', logoUrl: '/images/partenaires/Generali.jpg' },
-      { name: 'Larré Cartonnages', logoUrl: '/images/partenaires/Larre-Cartonnages.png' },
-      { name: 'Académie Basque du Sport' },
-      { name: 'Aéroport Biarritz', logoUrl: '/images/partenaires/Aeroport-Biarritz.png' },
-      { name: 'AGEC', logoUrl: '/images/partenaires/AGEC.png' },
-      { name: 'APRS', logoUrl: '/images/partenaires/APRS.png' },
-      { name: 'Cancé', logoUrl: '/images/partenaires/Cance.png' },
-      { name: 'CIRFA' },
-      { name: 'Century 21', logoUrl: '/images/partenaires/Century-21.png' },
-      { name: 'Cangrand', logoUrl: '/images/partenaires/Cangrand.png' },
-      { name: 'Chistera' },
-      { name: 'City and Co' },
-      { name: 'Dream Immo' },
-      { name: 'Cyfit', logoUrl: '/images/partenaires/Cyfit.png' },
-      { name: 'Los Dos Hermanos', logoUrl: '/images/partenaires/Los-Dos-Hermanos.png' },
-      { name: 'Eiffage Énergie Systèmes' },
-      { name: 'Euskola', logoUrl: '/images/partenaires/Euskola.png' },
-      { name: 'Etchart Énergies' },
-      { name: 'Burger King', logoUrl: '/images/partenaires/Burger-King.png' },
-      { name: 'Kostaldea', logoUrl: '/images/partenaires/Kostaldea.png' },
-      { name: 'ESG', logoUrl: '/images/partenaires/ESG.png' },
-      { name: 'Fenêtres et Confort' },
-      { name: 'Ibis', logoUrl: '/images/partenaires/Ibis.png' },
-      { name: 'Solutions' },
-      { name: 'SERS Walter France', logoUrl: '/images/partenaires/SERS-Walter-France.png' },
-      { name: 'Société Générale', logoUrl: '/images/partenaires/Societe-Generale.png' },
-      { name: 'Talis Business School', logoUrl: '/images/partenaires/Talis.png' },
-      { name: 'UNSS', logoUrl: '/images/partenaires/UNSS.png' },
-      { name: 'Usta Info', logoUrl: '/images/partenaires/Usta-Info.png' },
-      { name: 'Toma Interim', logoUrl: '/images/partenaires/Toma-Interim.jpeg' },
-      { name: 'Xalelec' },
-      { name: 'De Betelu Xabier' },
-      { name: 'Yon Évasion', logoUrl: '/images/partenaires/Yon-Evasion.png' },
-      { name: 'Zubieta Constructions', logoUrl: '/images/partenaires/Zubieta.webp' },
-      { name: 'Turbo Fonte' },
-      { name: 'Duhalde', logoUrl: '/images/partenaires/Duhalde.png' },
-      { name: 'EVA', logoUrl: '/images/partenaires/Eva.png' },
-      { name: 'Pause Pub' },
-    ],
-  },
-  {
-    id: 'fournisseurs',
-    title: 'Nos fournisseurs',
-    subtitle: 'OFFICIELS',
-    partners: [
-      { name: 'La Brasserie du Pays Basque', logoUrl: '/images/partenaires/Brasserie-Pays-Basque.png' },
-      { name: 'Egarri', logoUrl: '/images/partenaires/Egarri.png' },
-      { name: 'Fromages & Compagnies', logoUrl: '/images/partenaires/Fromages-Compagnies.png' },
-      { name: 'Tono Traiteur' },
-      { name: 'Champagne Haton' },
-      { name: 'La Fromagerie Onetik', logoUrl: '/images/partenaires/Onetik.png' },
-      { name: 'Maison Montauzer' },
-    ],
-  },
-  {
-    id: 'equipementiers',
-    title: 'Nos partenaires',
-    subtitle: 'ÉQUIPEMENTIERS',
-    partners: [
-      { name: 'Bauer', logoUrl: '/images/partenaires/Bauer.png' },
-      { name: 'Macron' },
-      { name: 'Pull In', logoUrl: '/images/partenaires/Pull-in.png' },
-    ],
-  },
-  {
-    id: 'media',
-    title: 'Nos partenaires',
-    subtitle: 'MÉDIA',
-    partners: [
-      { name: 'Europe 2', logoUrl: '/images/partenaires/Europe-2.png' },
-      { name: 'RFM', logoUrl: '/images/partenaires/RFM.png' },
-      { name: 'RTL2', logoUrl: '/images/partenaires/RTL2.png' },
-      { name: 'La Semaine du Pays Basque', logoUrl: '/images/partenaires/La-Semaine.png' },
-      { name: 'Sud Ouest', logoUrl: '/images/partenaires/Sud-Ouest.png' },
-    ],
-  },
-]
+// DB `category` value -> section id/title/subtitle shown on the page.
+// Keep in sync with the PartnerCategory type in src/app/admin/partenaires/page.tsx.
+const CATEGORY_META: Record<string, { id: string; title: string; subtitle: string }> = {
+  partenaire_principal: { id: 'labellises', title: 'Nos partenaires', subtitle: 'LABELLISÉS' },
+  partenaire_institutionnel: { id: 'institutionnels', title: 'Nos partenaires', subtitle: 'INSTITUTIONNELS' },
+  partenaire: { id: 'partenaires', title: 'Nos', subtitle: 'PARTENAIRES' },
+  fournisseur_officiel: { id: 'fournisseurs', title: 'Nos fournisseurs', subtitle: 'OFFICIELS' },
+  equipementier: { id: 'equipementiers', title: 'Nos partenaires', subtitle: 'ÉQUIPEMENTIERS' },
+  media: { id: 'media', title: 'Nos partenaires', subtitle: 'MÉDIA' },
+}
+
+// Display order for the top category sections
+const CATEGORY_ORDER = ['partenaire_principal', 'partenaire_institutionnel', 'partenaire', 'fournisseur_officiel', 'equipementier', 'media']
 
 /* ─── Filter tabs for "Tous nos partenaires" ──────────────────── */
 const FILTER_TABS = [
@@ -176,6 +52,24 @@ const FILTER_TABS = [
 
 export default function PartenairesPage() {
   const [activeFilter, setActiveFilter] = useState('tous')
+  const [dbPartners, setDbPartners] = useState<DbPartner[]>([])
+
+  useEffect(() => {
+    fetch('/api/partners?visible=true')
+      .then(res => res.json())
+      .then(data => setDbPartners(data.partners || []))
+      .catch(() => {})
+  }, [])
+
+  const CATEGORIES: PartnerCategory[] = CATEGORY_ORDER
+    .map(category => {
+      const meta = CATEGORY_META[category]
+      const partners = dbPartners
+        .filter(p => p.category === category)
+        .map(p => ({ name: p.name, logoUrl: p.logoUrl, website: p.website }))
+      return { ...meta, partners }
+    })
+    .filter(cat => cat.partners.length > 0)
 
   // Get all unique partners for the grid (deduplicated by name)
   const allPartners = CATEGORIES.flatMap(cat =>
