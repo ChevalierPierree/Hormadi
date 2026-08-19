@@ -1,14 +1,14 @@
 'use client'
 
 import Link from 'next/link'
-import { useParams, useRouter } from 'next/navigation'
+import { useParams } from 'next/navigation'
 import { useState, useEffect, useMemo } from 'react'
 import {
   ChevronRight, Ticket, Clock, MapPin, ArrowRight, AlertCircle,
-  Loader2, Shield, Check, X, Users
+  Loader2, Shield, Check, X, Users, ExternalLink
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { findTeam } from '@/lib/constants'
+import { findTeam, SULF_BILLETTERIE_URL } from '@/lib/constants'
 import PatinaireSeatMap, { ZoneConfig } from '@/components/PatinaireSeatMap'
 
 interface TicketCategory {
@@ -67,7 +67,6 @@ const CATEGORY_TO_ZONE: Record<string, string> = {
 
 export default function TicketSelectionPage() {
   const params = useParams()
-  const router = useRouter()
   const matchId = params.matchId as string
 
   const [match, setMatch] = useState<MatchData | null>(null)
@@ -198,21 +197,9 @@ export default function TicketSelectionPage() {
   }, [selectedSeats, seatZones, standingSelections, zones])
 
   function handleContinue() {
-    if (orderSummary.totalQty === 0) return
-    // Encode order in URL params
-    const data = JSON.stringify(orderSummary.items.map((item) => ({
-      categoryId: item.categoryId,
-      categoryName: item.zoneName,
-      quantity: item.quantity,
-      unitPrice: item.unitPrice,
-      seatIds: item.seatIds,
-    })))
-    const params = new URLSearchParams({
-      items: data,
-      totalPrice: String(orderSummary.total),
-      totalQty: String(orderSummary.totalQty),
-    })
-    router.push(`/billetterie/${matchId}/checkout?${params.toString()}`)
+    // La billetterie réelle est opérée par SULF (pas d'API/lien par match disponible) —
+    // on affiche les tarifs par zone pour info, puis on renvoie vers la billetterie officielle.
+    window.open(SULF_BILLETTERIE_URL, '_blank', 'noopener,noreferrer')
   }
 
   if (loading) {
@@ -442,7 +429,7 @@ export default function TicketSelectionPage() {
                     </>
                   )}
 
-                  {/* Continue button */}
+                  {/* Continue button — redirige vers la billetterie officielle (SULF) */}
                   <button
                     onClick={handleContinue}
                     disabled={orderSummary.totalQty === 0}
@@ -453,9 +440,12 @@ export default function TicketSelectionPage() {
                         : 'bg-hormadi-surface border border-hormadi-border text-hormadi-muted cursor-not-allowed'
                     )}
                   >
-                    Continuer
-                    <ArrowRight size={18} />
+                    Acheter sur la billetterie officielle
+                    <ExternalLink size={18} />
                   </button>
+                  <p className="text-hormadi-muted text-xs text-center mt-3">
+                    Vous serez redirigé vers notre partenaire billetterie pour finaliser votre achat.
+                  </p>
 
                   {/* Clear selection */}
                   {orderSummary.totalQty > 0 && (

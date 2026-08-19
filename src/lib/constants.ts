@@ -32,6 +32,10 @@ export const CTA_LINKS = {
   twitter: 'https://twitter.com/HormadiOfficiel',
 } as const
 
+// Billetterie réelle opérée par SULF — pas d'API/embed disponible publiquement,
+// intégration = redirection externe (même principe que le site officiel actuel).
+export const SULF_BILLETTERIE_URL = 'https://hormadi.billetterie-club.fr/home'
+
 // ─── Ligue Magnus Teams with logo paths ─────────────────
 export const TEAMS: Record<string, { name: string; fullName: string; short: string; logo: string }> = {
   anglet: { name: 'Anglet', fullName: 'Hormadi Anglet', short: 'ANG', logo: '/images/teams/Anglet.png' },
