@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
-import { ChevronRight, Handshake, ExternalLink, ArrowRight, Mail, Phone } from 'lucide-react'
+import { ChevronRight, Handshake, ExternalLink, ArrowRight, Mail, Phone, FileText } from 'lucide-react'
 
 /* ─── Partner data now lives in the DB (Partner table), managed via /admin/partenaires.
    This page only maps DB categories to display copy. ──────────── */
@@ -258,6 +258,30 @@ export default function PartenairesPage() {
                       </a>
                     </div>
                   </div>
+                </div>
+
+                {/* Plaquettes */}
+                <div className="flex flex-wrap gap-3 mb-8">
+                  <a
+                    href="/documents/plaquette-visibilites-hormadi.pdf"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 bg-white/[0.05] border border-white/10 text-white font-semibold
+                               px-5 py-3 rounded-lg hover:border-hormadi-red/40 hover:bg-white/[0.08] transition-all text-sm"
+                  >
+                    <FileText className="w-4 h-4 text-hormadi-red flex-shrink-0" />
+                    Plaquette Visibilités
+                  </a>
+                  <a
+                    href="/documents/plaquette-hospitalites-hormadi.pdf"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 bg-white/[0.05] border border-white/10 text-white font-semibold
+                               px-5 py-3 rounded-lg hover:border-hormadi-red/40 hover:bg-white/[0.08] transition-all text-sm"
+                  >
+                    <FileText className="w-4 h-4 text-hormadi-red flex-shrink-0" />
+                    Plaquette Hospitalités
+                  </a>
                 </div>
 
                 <Link
