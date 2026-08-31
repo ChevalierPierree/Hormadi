@@ -94,7 +94,7 @@ const timelineEvents = [
     year: 2012,
     title: 'Rénovation de la Patinoire',
     description:
-      'La Patinoire de la Barre est entièrement restructurée : 6 000 m² rénovés et 800 m² d\'extension au nord pour créer des loges VIP. Le "Chaudron de la Barre" se modernise tout en gardant son âme.',
+      'La Patinoire de la Barre est entièrement restructurée : 6 000 m² rénovés et 800 m² d\'extension au nord pour créer des loges VIP. Une modernisation complète qui garde l\'âme du lieu.',
     icon: Building2,
     accent: 'red' as const,
   },
@@ -126,11 +126,14 @@ function Timeline() {
 
   return (
     <div ref={containerRef} className="relative">
-      {/* Central line — trace fixe en fond + trait qui se dessine au scroll */}
-      <div className="absolute left-6 md:left-1/2 top-0 bottom-0 w-px bg-white/10 md:-translate-x-px" />
+      {/* Central line — trace fixe en fond + trait qui se dessine au scroll.
+          Le centrage passe par style.x (géré par Framer Motion) et non une classe
+          Tailwind : sur un motion.div, un transform inline (ex. scaleY) écrase
+          entièrement tout translateX défini en CSS/className. */}
+      <div className="absolute left-6 md:left-1/2 top-0 bottom-0 w-px bg-white/10 -translate-x-1/2" />
       <motion.div
-        style={{ scaleY: lineScale }}
-        className="absolute left-6 md:left-1/2 top-0 bottom-0 w-px origin-top bg-gradient-to-b from-hormadi-red via-hormadi-ocean to-hormadi-red md:-translate-x-px"
+        style={{ scaleY: lineScale, x: '-50%' }}
+        className="absolute left-6 md:left-1/2 top-0 bottom-0 w-px origin-top bg-gradient-to-b from-hormadi-red via-hormadi-ocean to-hormadi-red"
       />
 
       <div className="space-y-12 md:space-y-16">
@@ -148,12 +151,12 @@ function Timeline() {
             >
               {/* Dot */}
               <motion.div
-                initial={{ scale: 0 }}
-                whileInView={{ scale: 1 }}
+                initial={{ scale: 0, x: '-50%' }}
+                whileInView={{ scale: 1, x: '-50%' }}
                 viewport={{ once: true, margin: '-120px' }}
                 transition={{ duration: 0.4, delay: (idx % 4) * 0.12 + 0.2 }}
                 className={cn(
-                  'absolute left-6 md:left-1/2 top-8 w-3 h-3 rounded-full border-2 z-10 -translate-x-1/2',
+                  'absolute left-6 md:left-1/2 top-8 w-3 h-3 rounded-full border-2 z-10',
                   event.accent === 'red'
                     ? 'bg-hormadi-red border-hormadi-red/50 shadow-lg shadow-hormadi-red/30'
                     : 'bg-hormadi-ocean border-hormadi-ocean/50 shadow-lg shadow-hormadi-ocean/30'
@@ -308,8 +311,8 @@ export default function ClubPage() {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-hormadi-dark/80 via-transparent to-transparent" />
               <div className="absolute bottom-0 left-0 right-0 p-6">
-                <p className="text-white font-black text-xl">&quot;Le Chaudron de la Barre&quot;</p>
-                <p className="text-hormadi-ice text-sm">Surnom donné par les supporters</p>
+                <p className="text-white font-black text-xl">&quot;Palais des Glaces&quot;</p>
+                <p className="text-hormadi-ice text-sm">Nom d&apos;origine de la patinoire, à son ouverture en 1969</p>
               </div>
             </div>
 
@@ -427,7 +430,7 @@ export default function ClubPage() {
             <div className="relative">
               <img
                 src="/images/identite-basque.jpg"
-                alt="L'identité basque de l'Hormadi"
+                alt="Basajaun, la mascotte de l'Hormadi"
                 className="w-full h-auto block"
               />
               <div className="absolute inset-0 bg-hormadi-dark/35" />
@@ -435,11 +438,11 @@ export default function ClubPage() {
 
             {/* Text content below photo */}
             <div className="bg-hormadi-surface p-8 md:p-10 text-center">
-              <p className="text-hormadi-red font-black text-lg uppercase tracking-widest mb-2">Hormadi</p>
-              <p className="text-5xl md:text-6xl font-black text-white mb-3">Glace</p>
+              <p className="text-hormadi-red font-black text-lg uppercase tracking-widest mb-2">Notre mascotte</p>
+              <p className="text-5xl md:text-6xl font-black text-white mb-3">Basajaun</p>
               <div className="w-12 h-1 bg-gradient-to-r from-hormadi-red to-hormadi-ocean mx-auto mb-4" />
               <p className="text-hormadi-ice text-base leading-relaxed max-w-sm mx-auto">
-                Du basque <span className="text-white font-semibold">hor</span> (froid) et <span className="text-white font-semibold">madi</span> (surface). Symbole de force, de pureté et de l&apos;esprit indomptable du Pays Basque.
+                Dans la mythologie basque, le <span className="text-white font-semibold">Basajaun</span> — &quot;le seigneur de la forêt&quot; — est une créature protectrice, poilue et sauvage, qui veille sur les Pyrénées basques. L&apos;esprit indomptable qui anime chaque match à la Barre.
               </p>
             </div>
           </div>
