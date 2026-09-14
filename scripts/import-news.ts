@@ -15,6 +15,7 @@ import { PrismaClient } from '@prisma/client'
 import * as fs from 'fs'
 import * as path from 'path'
 import * as https from 'https'
+import { normalizeUnicodeText } from '../src/lib/text'
 
 const prisma = new PrismaClient()
 
@@ -86,13 +87,18 @@ function stripHtml(html: string): string {
     .replace(/<[^>]+>/g, '')
     .replace(/&nbsp;/g, ' ')
     .replace(/&amp;/g, '&')
+    .replace(/&#0*38;/g, '&')
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
     .replace(/&quot;/g, '"')
-    .replace(/&#8217;/g, "'")
-    .replace(/&#8211;/g, '–')
-    .replace(/&#8230;/g, '…')
-    .replace(/&#8216;/g, "'")
+    .replace(/&rsquo;|&#0*8217;/g, "'")
+    .replace(/&lsquo;|&#0*8216;/g, "'")
+    .replace(/&rdquo;|&#0*8221;/g, '"')
+    .replace(/&ldquo;|&#0*8220;/g, '"')
+    .replace(/&ndash;|&#0*8211;/g, '–')
+    .replace(/&mdash;|&#0*8212;/g, '—')
+    .replace(/&hellip;|&#0*8230;/g, '…')
+    .replace(/&#(\d+);/g, (_m, code) => String.fromCodePoint(parseInt(code, 10)))
     .replace(/\s+/g, ' ')
     .trim()
 }
@@ -188,7 +194,7 @@ async function main() {
   let imageFailed = 0
 
   for (const post of allPosts) {
-    const titleRaw = stripHtml(post.title?.rendered || '')
+    const titleRaw = normalizeUnicodeText(stripHtml(post.title?.rendered || ''))
     if (!titleRaw) { skipped++; continue }
 
     // Generate a clean slug
@@ -211,13 +217,14 @@ async function main() {
     const category = mapCategory(wpCats)
 
     // Excerpt
-    const excerpt = stripHtml(post.excerpt?.rendered || '').substring(0, 300)
+    const excerpt = normalizeUnicodeText(stripHtml(post.excerpt?.rendered || '')).substring(0, 300)
 
     // Content — keep the HTML but clean it up slightly
     let content = post.content?.rendered || ''
     // Remove WordPress-specific classes but keep structure
     content = content.replace(/class="[^"]*"/g, '')
     content = content.replace(/style="[^"]*"/g, '')
+    content = normalizeUnicodeText(content)
 
     // Download featured image
     let imageUrl: string | null = null
