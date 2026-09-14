@@ -71,11 +71,11 @@ const SEASON_START = new Date('2026-08-01T00:00:00Z')
 function getCompBadge(comp: string) {
   switch (comp) {
     case 'Poule de Maintien':
-      return { label: 'Maintien', cls: 'bg-amber-500/20 text-amber-400' }
+      return { label: 'Poule de Maintien', cls: 'bg-amber-500 text-black' }
     case 'Coupe de France':
-      return { label: 'CDF', cls: 'bg-blue-500/20 text-blue-400' }
+      return { label: 'Coupe de France', cls: 'bg-blue-500 text-white' }
     default:
-      return { label: 'LM', cls: 'bg-hormadi-red/20 text-hormadi-red' }
+      return { label: 'Ligue Magnus', cls: 'bg-hormadi-red text-white' }
   }
 }
 
@@ -320,81 +320,88 @@ function MatchCard({ match }: { match: Match }) {
   // Billets vendus par Hormadi uniquement pour ses matchs à domicile à venir
   const showTicketButton = isUpcoming && match.isHomeGame && match.status === 'scheduled'
 
+  const accent = isFinished ? (isWin ? 'border-emerald-500' : 'border-hormadi-red') : 'border-hormadi-ocean'
+
   return (
     <div className={cn(
-      'relative overflow-hidden rounded-2xl border transition-all duration-300 group',
-      'bg-gradient-to-b from-hormadi-surface to-hormadi-surface/40',
-      isFinished
-        ? (isWin ? 'border-emerald-500/25 hover:border-emerald-500/50' : 'border-hormadi-red/25 hover:border-hormadi-red/50')
-        : 'border-hormadi-border hover:border-hormadi-ocean/50'
-    )}>
-      {/* Top ribbon: Domicile/Extérieur + competition */}
-      <div className={cn(
-        'flex items-center justify-between px-4 py-2 text-[11px] font-bold uppercase tracking-wider',
-        match.isHomeGame ? 'bg-emerald-500/15 text-emerald-400' : 'bg-hormadi-ocean/15 text-hormadi-ocean'
-      )}>
-        <span>{match.isHomeGame ? '🏠 Domicile' : '✈️ Extérieur'}</span>
-        <span className={cn('px-2 py-0.5 rounded-full', badge.cls)}>{badge.label}</span>
-      </div>
-
-      <div className="p-5">
-        {/* Date/heure */}
-        <div className="flex items-center justify-center gap-2 text-hormadi-muted text-xs font-semibold uppercase tracking-wide mb-4">
-          <span>{date.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}</span>
-          <span className="w-1 h-1 rounded-full bg-hormadi-muted/50" />
-          <span>{date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</span>
+      'relative overflow-hidden bg-hormadi-surface border-t-4 group',
+      'shadow-lg shadow-black/30 transition-transform duration-300 hover:-translate-y-1',
+      accent
+    )}
+    style={{ clipPath: 'polygon(0 0, 100% 0, 100% 100%, 14px 100%, 0 calc(100% - 14px))' }}
+    >
+      <div className="pt-4 px-5 pb-5">
+        {/* Domicile/Extérieur + Compétition — badges obliques */}
+        <div className="flex items-center justify-between mb-3 gap-2">
+          <span className={cn(
+            'inline-block -skew-x-12 px-3 py-0.5 text-[10px] font-black uppercase tracking-wider text-white',
+            match.isHomeGame ? 'bg-emerald-600' : 'bg-hormadi-ocean'
+          )}>
+            <span className="inline-block skew-x-12">{match.isHomeGame ? 'Domicile' : 'Extérieur'}</span>
+          </span>
+          <span className={cn('inline-block -skew-x-12 px-3 py-0.5 text-[10px] font-black uppercase tracking-wider', badge.cls)}>
+            <span className="inline-block skew-x-12">{badge.label}</span>
+          </span>
         </div>
 
         {/* Teams row */}
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex flex-col items-center gap-2 flex-1">
-            <TeamLogo team={getShortName(match.homeTeam)} size={56} isHormadi={match.isHomeGame} />
-            <span className={cn('text-xs font-bold text-center leading-tight', match.isHomeGame ? 'text-white' : 'text-hormadi-muted')}>
+        <div className="flex items-center justify-between gap-1">
+          <div className="flex flex-col items-center gap-2 flex-1 min-w-0">
+            <TeamLogo team={getShortName(match.homeTeam)} size={60} isHormadi={match.isHomeGame} />
+            <span className={cn('text-xs font-black uppercase text-center leading-tight truncate w-full', match.isHomeGame ? 'text-white' : 'text-hormadi-muted')}>
               {match.homeTeam}
             </span>
           </div>
 
-          <div className="flex flex-col items-center px-2 min-w-[64px]">
+          <div className="flex flex-col items-center px-1 min-w-[60px] shrink-0">
             {isFinished ? (
               <>
-                <span className="text-2xl font-black text-white leading-none">
-                  {match.homeScore}-{match.awayScore}
+                <span className="text-3xl font-black italic text-white leading-none tracking-tighter">
+                  {match.homeScore}<span className="text-hormadi-red mx-0.5">/</span>{match.awayScore}
                 </span>
                 <span className={cn(
-                  'mt-2 text-[10px] font-bold px-2 py-0.5 rounded-full text-white',
+                  'mt-2 text-[10px] font-black px-2 py-0.5 -skew-x-12 text-white',
                   isWin ? 'bg-emerald-500' : 'bg-hormadi-red'
                 )}>
-                  {isWin ? 'VICTOIRE' : 'DÉFAITE'}
+                  <span className="inline-block skew-x-12">{isWin ? 'VICTOIRE' : 'DÉFAITE'}</span>
                 </span>
               </>
             ) : (
-              <span className="text-lg font-black text-hormadi-muted/60">VS</span>
+              <span className="text-2xl font-black italic text-hormadi-muted/40 tracking-tighter">VS</span>
             )}
           </div>
 
-          <div className="flex flex-col items-center gap-2 flex-1">
-            <TeamLogo team={getShortName(match.awayTeam)} size={56} isHormadi={!match.isHomeGame} />
-            <span className={cn('text-xs font-bold text-center leading-tight', !match.isHomeGame ? 'text-white' : 'text-hormadi-muted')}>
+          <div className="flex flex-col items-center gap-2 flex-1 min-w-0">
+            <TeamLogo team={getShortName(match.awayTeam)} size={60} isHormadi={!match.isHomeGame} />
+            <span className={cn('text-xs font-black uppercase text-center leading-tight truncate w-full', !match.isHomeGame ? 'text-white' : 'text-hormadi-muted')}>
               {match.awayTeam}
             </span>
           </div>
         </div>
 
-        {/* Venue */}
-        <div className="mt-4 pt-4 border-t border-hormadi-border/60 text-center">
-          <span className="text-hormadi-muted text-xs">{match.venue}</span>
-        </div>
+        {/* Date · heure · lieu + billetterie, regroupés sur une ligne */}
+        <div className="mt-4 pt-3 border-t border-hormadi-border/60 flex items-center justify-between gap-2">
+          <div className="text-hormadi-muted text-[11px] leading-tight min-w-0">
+            <span className="font-bold text-white/80">
+              {date.toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' })}
+            </span>
+            {' · '}
+            {date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
+            {' · '}
+            <span className="truncate">{match.venue}</span>
+          </div>
 
-        {/* Ticket CTA */}
-        {showTicketButton && (
-          <Link
-            href={`/billetterie/${match.id}`}
-            className="mt-4 flex items-center justify-center gap-2 bg-hormadi-red text-white font-bold text-sm py-2.5 rounded-xl hover:bg-hormadi-red/80 transition-colors"
-          >
-            <Ticket size={16} />
-            Billets pour ce match
-          </Link>
-        )}
+          {showTicketButton && (
+            <Link
+              href={`/billetterie/${match.id}`}
+              title="Acheter des billets pour ce match"
+              className="shrink-0 flex items-center gap-1 text-hormadi-red hover:text-white text-[11px] font-bold px-2 py-1 rounded-md border border-hormadi-red/40 hover:bg-hormadi-red transition-colors"
+            >
+              <Ticket size={12} />
+              Billets
+            </Link>
+          )}
+        </div>
       </div>
     </div>
   )
