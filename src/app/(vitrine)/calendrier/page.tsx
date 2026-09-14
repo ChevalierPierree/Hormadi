@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils'
 import TeamLogo from '@/components/ui/TeamLogo'
 import Link from 'next/link'
 import CTASection from '@/components/sections/CTASection'
-import { CLUB } from '@/lib/constants'
+import { CLUB, SULF_BILLETTERIE_URL } from '@/lib/constants'
 
 interface Match {
   id: string
@@ -392,14 +392,16 @@ function MatchCard({ match }: { match: Match }) {
           </div>
 
           {showTicketButton && (
-            <Link
-              href={`/billetterie/${match.id}`}
-              title="Acheter des billets pour ce match"
+            <a
+              href={SULF_BILLETTERIE_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Acheter des billets sur la billetterie officielle SULF"
               className="shrink-0 flex items-center gap-1 text-hormadi-red hover:text-white text-[11px] font-bold px-2 py-1 rounded-md border border-hormadi-red/40 hover:bg-hormadi-red transition-colors"
             >
               <Ticket size={12} />
               Billets
-            </Link>
+            </a>
           )}
         </div>
       </div>
