@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useMemo } from 'react'
-import { Calendar, Filter, Ticket, ShoppingBag, ChevronRight } from 'lucide-react'
+import { Calendar, Filter, Ticket, ChevronRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import TeamLogo from '@/components/ui/TeamLogo'
 import Link from 'next/link'
@@ -64,6 +64,10 @@ const MONTHS = [
   { label: 'Mai', value: '2027-05' },
 ]
 
+// Les matchs antérieurs à cette date appartiennent à une saison précédente
+// (pas de champ "season" en base — le calendrier n'a que des dates).
+const SEASON_START = new Date('2026-08-01T00:00:00Z')
+
 function getCompBadge(comp: string) {
   switch (comp) {
     case 'Poule de Maintien':
@@ -98,7 +102,7 @@ export default function CalendrierPage() {
   }, [])
 
   const filtered = useMemo(() => {
-    let matches = [...allMatches]
+    let matches = allMatches.filter(m => new Date(m.date) >= SEASON_START)
     if (selectedMonth !== 'all') {
       matches = matches.filter(m => m.date.substring(0, 7) === selectedMonth)
     }
@@ -113,9 +117,10 @@ export default function CalendrierPage() {
   const pastScheduled = filtered.filter(m => m.status === 'scheduled' && new Date(m.date) <= now)
   const finished = [...filtered.filter(m => m.status === 'finished'), ...pastScheduled]
 
-  // Stats
-  const totalPlayed = allMatches.filter(m => m.status === 'finished').length
-  const wins = allMatches.filter(m => {
+  // Stats — saison en cours uniquement
+  const seasonMatches = allMatches.filter(m => new Date(m.date) >= SEASON_START)
+  const totalPlayed = seasonMatches.filter(m => m.status === 'finished').length
+  const wins = seasonMatches.filter(m => {
     if (m.status !== 'finished' || m.homeScore === null || m.awayScore === null) return false
     const hormScore = m.isHomeGame ? m.homeScore : m.awayScore
     const oppScore = m.isHomeGame ? m.awayScore : m.homeScore
@@ -258,8 +263,8 @@ export default function CalendrierPage() {
                   <span className="w-1 h-6 bg-hormadi-red rounded-full" />
                   Prochains matchs ({upcoming.length})
                 </h2>
-                <div className="space-y-2">
-                  {upcoming.map(match => <MatchRow key={match.id} match={match} />)}
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+                  {upcoming.map(match => <MatchCard key={match.id} match={match} />)}
                 </div>
               </div>
             ) : (
@@ -279,8 +284,8 @@ export default function CalendrierPage() {
                   <span className="w-1 h-6 bg-hormadi-ocean rounded-full" />
                   Résultats ({finished.length})
                 </h2>
-                <div className="space-y-2">
-                  {finished.map(match => <MatchRow key={match.id} match={match} />)}
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+                  {finished.map(match => <MatchCard key={match.id} match={match} />)}
                 </div>
               </div>
             )}
@@ -302,86 +307,95 @@ export default function CalendrierPage() {
   )
 }
 
-function MatchRow({ match }: { match: Match }) {
+function MatchCard({ match }: { match: Match }) {
   const date = new Date(match.date)
   const isFinished = match.status === 'finished'
+  const isUpcoming = !isFinished
   const badge = getCompBadge(match.competition)
 
   const hormScore = match.isHomeGame ? match.homeScore : match.awayScore
   const oppScore = match.isHomeGame ? match.awayScore : match.homeScore
   const isWin = isFinished && (hormScore ?? 0) > (oppScore ?? 0)
 
+  // Billets vendus par Hormadi uniquement pour ses matchs à domicile à venir
+  const showTicketButton = isUpcoming && match.isHomeGame && match.status === 'scheduled'
+
   return (
     <div className={cn(
-      'flex items-center gap-3 sm:gap-4 py-3 px-4 rounded-lg transition-colors',
-      'bg-hormadi-surface/50 hover:bg-hormadi-surface',
-      isFinished && isWin && 'border-l-2 border-emerald-500',
-      isFinished && !isWin && 'border-l-2 border-hormadi-red',
-      !isFinished && 'border-l-2 border-hormadi-ocean'
+      'relative overflow-hidden rounded-2xl border transition-all duration-300 group',
+      'bg-gradient-to-b from-hormadi-surface to-hormadi-surface/40',
+      isFinished
+        ? (isWin ? 'border-emerald-500/25 hover:border-emerald-500/50' : 'border-hormadi-red/25 hover:border-hormadi-red/50')
+        : 'border-hormadi-border hover:border-hormadi-ocean/50'
     )}>
-      {/* Date */}
-      <div className="text-center min-w-[50px] sm:min-w-[70px]">
-        <div className="text-xs text-hormadi-muted uppercase">
-          {date.toLocaleDateString('fr-FR', { weekday: 'short' })}
-        </div>
-        <div className="text-sm font-bold text-white">
-          {date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
-        </div>
+      {/* Top ribbon: Domicile/Extérieur + competition */}
+      <div className={cn(
+        'flex items-center justify-between px-4 py-2 text-[11px] font-bold uppercase tracking-wider',
+        match.isHomeGame ? 'bg-emerald-500/15 text-emerald-400' : 'bg-hormadi-ocean/15 text-hormadi-ocean'
+      )}>
+        <span>{match.isHomeGame ? '🏠 Domicile' : '✈️ Extérieur'}</span>
+        <span className={cn('px-2 py-0.5 rounded-full', badge.cls)}>{badge.label}</span>
       </div>
 
-      {/* Competition badge */}
-      <span className={cn('text-[10px] font-semibold px-2 py-0.5 rounded-full hidden sm:inline', badge.cls)}>
-        {badge.label}
-      </span>
+      <div className="p-5">
+        {/* Date/heure */}
+        <div className="flex items-center justify-center gap-2 text-hormadi-muted text-xs font-semibold uppercase tracking-wide mb-4">
+          <span>{date.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}</span>
+          <span className="w-1 h-1 rounded-full bg-hormadi-muted/50" />
+          <span>{date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</span>
+        </div>
 
-      {/* Home team */}
-      <div className="flex items-center gap-2 flex-1 min-w-0 justify-end">
-        <span className={cn('text-sm font-semibold truncate', match.isHomeGame ? 'text-white' : 'text-hormadi-muted')}>
-          {match.homeTeam}
-        </span>
-        <TeamLogo team={getShortName(match.homeTeam)} size={28} isHormadi={match.isHomeGame} />
-      </div>
+        {/* Teams row */}
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex flex-col items-center gap-2 flex-1">
+            <TeamLogo team={getShortName(match.homeTeam)} size={56} isHormadi={match.isHomeGame} />
+            <span className={cn('text-xs font-bold text-center leading-tight', match.isHomeGame ? 'text-white' : 'text-hormadi-muted')}>
+              {match.homeTeam}
+            </span>
+          </div>
 
-      {/* Score or time */}
-      <div className="min-w-[60px] text-center">
-        {isFinished ? (
-          <span className="text-lg font-black text-white">
-            {match.homeScore} - {match.awayScore}
-          </span>
-        ) : (
-          <span className="text-sm font-semibold text-hormadi-muted">
-            {date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
-          </span>
+          <div className="flex flex-col items-center px-2 min-w-[64px]">
+            {isFinished ? (
+              <>
+                <span className="text-2xl font-black text-white leading-none">
+                  {match.homeScore}-{match.awayScore}
+                </span>
+                <span className={cn(
+                  'mt-2 text-[10px] font-bold px-2 py-0.5 rounded-full text-white',
+                  isWin ? 'bg-emerald-500' : 'bg-hormadi-red'
+                )}>
+                  {isWin ? 'VICTOIRE' : 'DÉFAITE'}
+                </span>
+              </>
+            ) : (
+              <span className="text-lg font-black text-hormadi-muted/60">VS</span>
+            )}
+          </div>
+
+          <div className="flex flex-col items-center gap-2 flex-1">
+            <TeamLogo team={getShortName(match.awayTeam)} size={56} isHormadi={!match.isHomeGame} />
+            <span className={cn('text-xs font-bold text-center leading-tight', !match.isHomeGame ? 'text-white' : 'text-hormadi-muted')}>
+              {match.awayTeam}
+            </span>
+          </div>
+        </div>
+
+        {/* Venue */}
+        <div className="mt-4 pt-4 border-t border-hormadi-border/60 text-center">
+          <span className="text-hormadi-muted text-xs">{match.venue}</span>
+        </div>
+
+        {/* Ticket CTA */}
+        {showTicketButton && (
+          <Link
+            href={`/billetterie/${match.id}`}
+            className="mt-4 flex items-center justify-center gap-2 bg-hormadi-red text-white font-bold text-sm py-2.5 rounded-xl hover:bg-hormadi-red/80 transition-colors"
+          >
+            <Ticket size={16} />
+            Billets pour ce match
+          </Link>
         )}
       </div>
-
-      {/* Away team */}
-      <div className="flex items-center gap-2 flex-1 min-w-0">
-        <TeamLogo team={getShortName(match.awayTeam)} size={28} isHormadi={!match.isHomeGame} />
-        <span className={cn('text-sm font-semibold truncate', !match.isHomeGame ? 'text-white' : 'text-hormadi-muted')}>
-          {match.awayTeam}
-        </span>
-      </div>
-
-      {/* Result badge */}
-      {isFinished && (
-        <span className={cn(
-          'text-[10px] font-bold px-2 py-0.5 rounded-full text-white hidden sm:inline',
-          isWin ? 'bg-emerald-500' : 'bg-hormadi-red'
-        )}>
-          {isWin ? 'V' : 'D'}
-        </span>
-      )}
-
-      {/* DOM / EXT badge */}
-      <span className={cn(
-        'text-[10px] font-semibold px-2.5 py-0.5 rounded-full hidden sm:inline',
-        match.isHomeGame
-          ? 'bg-emerald-500/15 text-emerald-400'
-          : 'bg-hormadi-ocean/15 text-hormadi-ocean'
-      )}>
-        {match.isHomeGame ? 'Domicile' : 'Extérieur'}
-      </span>
     </div>
   )
 }
