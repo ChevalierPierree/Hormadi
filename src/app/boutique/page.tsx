@@ -25,15 +25,14 @@ const SHOPS: ShopLink[] = [
     href: 'https://www.pull-in.com/collections/hormadi',
   },
   {
-    name: 'Bauer / Promoglace',
-    description: 'Équipement de hockey (patins, crosses, protections) et produits dérivés des clubs partenaires.',
-    href: 'https://promoglace.com/634-hormadi-anglet',
+    name: 'Macron',
+    description: 'Boutique officielle des maillots et tenues de jeu Macron aux couleurs de l’Hormadi.',
+    href: 'https://clubshop.macron.com/pau/hormadi',
   },
   {
-    name: 'Full Ace',
-    description: 'Boutique officielle des maillots et équipements de jeu — lien à venir.',
-    href: null,
-    comingSoon: true,
+    name: 'Bauer / Promoglace',
+    description: 'Équipement de hockey (patins, crosses, protections) et produits dérivés des clubs partenaires.',
+    href: 'https://www.promoglace.com/boutique-clubs-2769?f=%7B%220%22%3A%5B%5B2508%5D%5D%7D',
   },
 ]
 
