@@ -24,6 +24,10 @@ export async function GET(request: NextRequest) {
       }
     }
 
+    // Touch the DB unconditionally so a scraping failure never leaves Supabase
+    // without daily activity — see sync-standings/route.ts for why this matters.
+    await prisma.match.count()
+
     const scraped = await scrapeGames(LIGUE_MAGNUS_URLS.calendar)
 
     if (scraped.length === 0) {

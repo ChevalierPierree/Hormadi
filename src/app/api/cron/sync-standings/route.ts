@@ -29,6 +29,12 @@ export async function GET(request: NextRequest) {
       }
     }
 
+    // Touch the DB unconditionally so a scraping failure (e.g. liguemagnus.com
+    // restructuring its pages again) never leaves Supabase without daily
+    // activity — that silent-failure-plus-inactivity combo is what caused the
+    // free-tier project to auto-pause in September 2026.
+    await prisma.standing.count()
+
     const { searchParams } = new URL(request.url)
     const competitionParam = searchParams.get('competition')
 

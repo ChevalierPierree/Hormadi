@@ -130,92 +130,73 @@ export async function scrapeStandings(url: string): Promise<ScrapedStanding[]> {
   const $ = cheerio.load(html)
   const standings: ScrapedStanding[] = []
 
-  // The standings table on liguemagnus.com
-  // Look for table rows with team data
-  $('table tbody tr, .classement-table tr, .standings-row, .table-standings tbody tr').each((i: number, el: any) => {
-    const cells = $(el).find('td')
-    if (cells.length < 5) return // skip header or invalid rows
-
-    // Try to extract data from cells
-    const texts = cells.map((_: number, cell: any) => $(cell).text().trim()).get()
-
-    // Typical format: Rang, Équipe, PJ, V, VP, DP, D, BP, BC, Diff, Pts
-    // But the exact column order varies, so we try to be smart about it
-    const rank = parseInt(texts[0]) || (i + 1)
-    const team = texts[1] || ''
-
-    if (!team || team.length < 2) return
-
-    // Parse numeric values safely
-    const nums = texts.slice(2).map((t: string) => parseInt(t.replace(/[^\d-]/g, '')) || 0)
-
-    const row = {
-      team: normalizeTeamName(team),
-      gp: nums[0] || 0,   // MJ/PJ
-      w: nums[1] || 0,     // V
-      otw: nums[2] || 0,   // VP
-      otl: nums[3] || 0,   // DP
-      l: nums[4] || 0,     // D
-      gf: nums[5] || 0,    // BP
-      ga: nums[6] || 0,    // BC
-      diff: nums[7] || 0,  // Diff
-      pts: nums[8] || nums[nums.length - 1] || 0, // PTS (usually last column)
-    }
-
-    if (isPlausibleStandingRow(row)) {
-      standings.push({ rank, ...row })
-    } else {
-      console.warn(`[scrapeStandings] Rejected implausible row: ${JSON.stringify(row)}`)
-    }
-  })
-
-  // If the main approach didn't work, try alternative selectors — but only within a
-  // table whose header row actually looks like a standings table (MJ/PJ + Pts columns),
-  // never "any table on the page" (news widgets, ads, etc. would otherwise get parsed).
-  if (standings.length === 0) {
-    $('table').each((_: number, table: any) => {
-      const rows = $(table).find('tr')
-      if (rows.length < 5) return // not a standings table
-
-      const headerText = $(rows[0]).text().toLowerCase()
-      const looksLikeStandings = /(mj|pj)/.test(headerText) && /pts?/.test(headerText)
-      if (!looksLikeStandings) return
-
-      rows.each((i: number, row: any) => {
-        if (i === 0) return // skip header
-        const cells = $(row).find('td')
-        if (cells.length < 5) return
-
-        const texts = cells.map((_: number, cell: any) => $(cell).text().trim()).get()
-        const rank = parseInt(texts[0]) || i
-        const team = texts[1] || texts[0] || ''
-
-        if (!team || team.length < 2 || /^\d+$/.test(team)) return
-
-        const nums = texts.map((t: string) => parseInt(t.replace(/[^\d-]/g, ''))).filter((n: number) => !isNaN(n))
-
-        if (nums.length >= 3) {
-          const parsed = {
-            team: normalizeTeamName(team),
-            gp: nums[1] || 0,
-            w: nums[2] || 0,
-            otw: nums[3] || 0,
-            otl: nums[4] || 0,
-            l: nums[5] || 0,
-            gf: nums[6] || 0,
-            ga: nums[7] || 0,
-            diff: nums[8] || 0,
-            pts: nums[nums.length - 1] || 0,
-          }
-          if (isPlausibleStandingRow(parsed)) {
-            standings.push({ rank, ...parsed })
-          } else {
-            console.warn(`[scrapeStandings] Rejected implausible fallback row: ${JSON.stringify(parsed)}`)
-          }
-        }
-      })
-    })
+  // liguemagnus.com's column order has changed between seasons (Pts used to be
+  // last, now sits right after the team/logo cells) and there's a blank <td>
+  // for the team logo. Rather than assume a fixed order, read the <thead> to
+  // find which <td> index holds each stat — robust to future re-ordering.
+  const COLUMN_ALIASES: Record<string, string[]> = {
+    gp: ['mj', 'pj'],
+    w: ['v'],
+    otw: ['vprl', 'vp'],
+    otl: ['dprl', 'dp'],
+    l: ['d'],
+    gf: ['bp'],
+    ga: ['bc'],
+    pts: ['pts', 'pt'],
   }
+
+  $('table').each((_: number, table: any) => {
+    const headerCells = $(table).find('thead tr').first().find('th, td')
+    if (headerCells.length === 0) return
+
+    const headerTexts = headerCells.map((_: number, th: any) => $(th).text().trim().toLowerCase()).get()
+    const looksLikeStandings = headerTexts.some((t: string) => t === 'mj' || t === 'pj') && headerTexts.some((t: string) => t.startsWith('pt'))
+    if (!looksLikeStandings) return
+
+    // Map each stat key to its column index by matching header text.
+    const colIndex: Record<string, number> = {}
+    for (const [key, aliases] of Object.entries(COLUMN_ALIASES)) {
+      const idx = headerTexts.findIndex((t: string) => aliases.includes(t))
+      if (idx !== -1) colIndex[key] = idx
+    }
+    const teamIdx = headerTexts.findIndex((t: string) => t.startsWith('equipe') || t.startsWith('équipe'))
+    if (Object.keys(colIndex).length < 5 || teamIdx === -1) return // not enough columns matched
+
+    $(table).find('tbody tr').each((i: number, row: any) => {
+      const cells = $(row).find('td')
+      if (cells.length < headerTexts.length - 2) return // allow for a couple of extra/missing decorative cells
+
+      const texts = cells.map((_: number, cell: any) => $(cell).text().trim()).get()
+      const rank = parseInt(texts[0]) || (i + 1)
+      const team = texts[teamIdx] || ''
+      if (!team || team.length < 2) return
+
+      const num = (key: string) => {
+        const idx = colIndex[key]
+        if (idx === undefined) return 0
+        return parseInt((texts[idx] || '').replace(/[^\d-]/g, '')) || 0
+      }
+
+      const row2 = {
+        team: normalizeTeamName(team),
+        gp: num('gp'),
+        w: num('w'),
+        otw: num('otw'),
+        otl: num('otl'),
+        l: num('l'),
+        gf: num('gf'),
+        ga: num('ga'),
+        diff: num('gf') - num('ga'),
+        pts: num('pts'),
+      }
+
+      if (isPlausibleStandingRow(row2)) {
+        standings.push({ rank, ...row2 })
+      } else {
+        console.warn(`[scrapeStandings] Rejected implausible row: ${JSON.stringify(row2)}`)
+      }
+    })
+  })
 
   return standings
 }
