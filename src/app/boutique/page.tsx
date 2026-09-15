@@ -23,16 +23,19 @@ const SHOPS: ShopLink[] = [
     name: 'Hormadi by Pull In',
     description: 'Textile lifestyle officiel : sweats, t-shirts, polos, casquettes et bonnets aux couleurs du club.',
     href: 'https://www.pull-in.com/collections/hormadi',
+    logoUrl: '/images/boutique/pull-in.png',
   },
   {
     name: 'Macron',
     description: 'Boutique officielle des maillots et tenues de jeu Macron aux couleurs de l’Hormadi.',
     href: 'https://clubshop.macron.com/pau/hormadi',
+    logoUrl: '/images/boutique/macron.png',
   },
   {
     name: 'Bauer / Promoglace',
     description: 'Équipement de hockey (patins, crosses, protections) et produits dérivés des clubs partenaires.',
     href: 'https://www.promoglace.com/boutique-clubs-2769?f=%7B%220%22%3A%5B%5B2508%5D%5D%7D',
+    logoUrl: '/images/boutique/promoglace.png',
   },
 ]
 
@@ -78,7 +81,7 @@ export default function BoutiquePage() {
 
       {/* ─── SHOP CARDS ─── */}
       <section className="py-16 sm:py-24">
-        <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12 grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 grid grid-cols-1 md:grid-cols-3 gap-6">
           {SHOPS.map(shop => (
             <ShopCard key={shop.name} shop={shop} />
           ))}
@@ -95,9 +98,19 @@ function ShopCard({ shop }: { shop: ShopLink }) {
   const content = (
     <div className="group relative h-full flex flex-col bg-hormadi-surface border border-hormadi-border rounded-2xl overflow-hidden p-8 hover:border-hormadi-red/40 transition-all duration-300">
       <div className="flex-1">
-        <div className="w-14 h-14 rounded-xl bg-hormadi-red/10 flex items-center justify-center mb-6 group-hover:bg-hormadi-red/20 transition-colors">
-          <ShoppingBag size={26} className="text-hormadi-red" />
-        </div>
+        {shop.logoUrl ? (
+          <div className="h-16 w-40 flex items-center justify-center bg-white rounded-xl px-4 mb-6">
+            <img
+              src={shop.logoUrl}
+              alt={shop.name}
+              className="max-h-10 max-w-full w-auto object-contain"
+            />
+          </div>
+        ) : (
+          <div className="w-14 h-14 rounded-xl bg-hormadi-red/10 flex items-center justify-center mb-6 group-hover:bg-hormadi-red/20 transition-colors">
+            <ShoppingBag size={26} className="text-hormadi-red" />
+          </div>
+        )}
         <h3 className="text-white font-black text-xl uppercase mb-3">{shop.name}</h3>
         <p className="text-hormadi-muted text-sm leading-relaxed">{shop.description}</p>
       </div>
