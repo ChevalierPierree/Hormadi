@@ -99,11 +99,11 @@ function ShopCard({ shop }: { shop: ShopLink }) {
     <div className="group relative h-full flex flex-col bg-hormadi-surface border border-hormadi-border rounded-2xl overflow-hidden p-8 hover:border-hormadi-red/40 transition-all duration-300">
       <div className="flex-1">
         {shop.logoUrl ? (
-          <div className="h-16 w-40 flex items-center justify-center bg-white rounded-xl px-4 mb-6">
+          <div className="h-20 w-full bg-white rounded-xl p-4 mb-6">
             <img
               src={shop.logoUrl}
               alt={shop.name}
-              className="max-h-10 max-w-full w-auto object-contain"
+              className="h-full w-full object-contain"
             />
           </div>
         ) : (
