@@ -171,7 +171,7 @@ export default function BilletteriePage() {
   }, [])
 
   return (
-    <div className="-mt-[5.5rem]">
+    <main className="min-h-screen bg-hormadi-dark">
       {/* ═══════════════════ HERO ═══════════════════ */}
       <section className="relative h-[50vh] min-h-[400px] max-h-[550px] overflow-hidden">
         <div className="absolute inset-0 z-0 bg-gradient-to-br from-hormadi-dark via-hormadi-forest to-hormadi-dark" />
@@ -670,6 +670,6 @@ export default function BilletteriePage() {
             </div>
           </div>
       </section>
-    </div>
+    </main>
   )
 }

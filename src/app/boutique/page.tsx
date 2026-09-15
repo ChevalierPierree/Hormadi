@@ -43,7 +43,7 @@ export default function BoutiquePage() {
   return (
     <main className="min-h-screen bg-hormadi-dark">
       {/* ─── HERO ─── */}
-      <section className="relative h-[45vh] min-h-[360px] max-h-[480px] overflow-hidden -mt-[5.5rem]">
+      <section className="relative h-[50vh] min-h-[400px] max-h-[550px] overflow-hidden">
         <div className="absolute inset-0 z-0 bg-gradient-to-br from-hormadi-dark via-hormadi-forest to-hormadi-dark" />
         <img
           src="/images/hero-boutique.jpg"
