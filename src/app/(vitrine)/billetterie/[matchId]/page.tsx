@@ -7,7 +7,6 @@ import {
   ChevronRight, Ticket, Clock, MapPin, ArrowRight, AlertCircle,
   Loader2, Shield, Check, X, Users, ExternalLink
 } from 'lucide-react'
-import { cn } from '@/lib/utils'
 import { findTeam, SULF_BILLETTERIE_URL } from '@/lib/constants'
 import PatinaireSeatMap, { ZoneConfig } from '@/components/PatinaireSeatMap'
 
@@ -429,16 +428,13 @@ export default function TicketSelectionPage() {
                     </>
                   )}
 
-                  {/* Continue button — redirige vers la billetterie officielle (SULF) */}
+                  {/* Continue button — redirige vers la billetterie officielle (SULF).
+                      Toujours actif : le clic ouvre SULF quelle que soit la sélection
+                      (la sélection ci-dessus n'est qu'indicative, l'achat réel se fait
+                      entièrement sur SULF). */}
                   <button
                     onClick={handleContinue}
-                    disabled={orderSummary.totalQty === 0}
-                    className={cn(
-                      'w-full mt-6 flex items-center justify-center gap-2 font-bold py-3.5 rounded-xl transition-all',
-                      orderSummary.totalQty > 0
-                        ? 'bg-hormadi-red text-white hover:bg-hormadi-red/80 shadow-lg shadow-hormadi-red/30'
-                        : 'bg-hormadi-surface border border-hormadi-border text-hormadi-muted cursor-not-allowed'
-                    )}
+                    className="w-full mt-6 flex items-center justify-center gap-2 font-bold py-3.5 rounded-xl transition-all bg-hormadi-red text-white hover:bg-hormadi-red/80 shadow-lg shadow-hormadi-red/30"
                   >
                     Acheter sur la billetterie officielle
                     <ExternalLink size={18} />
