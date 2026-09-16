@@ -44,10 +44,6 @@ export default function RootLayout({
 }) {
   return (
     <html lang="fr" className={`${anton.variable} ${inter.variable}`}>
-      <head>
-        <link rel="icon" href="/images/logo-hormadi.png" type="image/png" />
-        <link rel="apple-touch-icon" href="/images/logo-hormadi.png" />
-      </head>
       <body className="font-sans">
         <CartProvider>
           <Header />
