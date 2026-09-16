@@ -278,7 +278,7 @@ export async function scrapeGames(_url: string, competitionId = LIGUE_MAGNUS_IDS
       awayScore,
       status,
       competition: 'Ligue Magnus',
-      venue: homeIsHormadi ? 'Patinoire de la Barre' : '',
+      venue: m.lieu_de_pratique?.nom || (homeIsHormadi ? 'Patinoire de la Barre' : ''),
       isHomeGame: homeIsHormadi,
     })
   }

@@ -52,11 +52,12 @@ export async function GET(request: NextRequest) {
         })
 
         if (existing) {
-          // Update score and status if changed
+          // Update score, status and venue if changed
           const needsUpdate =
             existing.homeScore !== game.homeScore ||
             existing.awayScore !== game.awayScore ||
-            existing.status !== game.status
+            existing.status !== game.status ||
+            existing.venue !== game.venue
 
           if (needsUpdate) {
             await prisma.match.update({
@@ -65,6 +66,7 @@ export async function GET(request: NextRequest) {
                 homeScore: game.homeScore,
                 awayScore: game.awayScore,
                 status: game.status,
+                venue: game.venue,
               },
             })
             updated++
@@ -83,7 +85,7 @@ export async function GET(request: NextRequest) {
               awayScore: game.awayScore,
               status: game.status,
               competition: game.competition,
-              venue: game.venue || 'Patinoire de la Barre',
+              venue: game.venue,
               isHomeGame: game.isHomeGame,
             },
           })

@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { Ticket, ShoppingBag, Tv, ChevronRight, MapPin, Clock, Calendar } from 'lucide-react'
-import { CTA_LINKS } from '@/lib/constants'
+import { CTA_LINKS, findTeam } from '@/lib/constants'
 import TeamLogo from '@/components/ui/TeamLogo'
 
 const HERO_IMAGES = [
@@ -218,6 +218,7 @@ function NextMatchCard() {
 
   const match = nextMatch
   const matchDate = new Date(match.date)
+  const opponent = match.isHomeGame ? match.awayTeam : match.homeTeam
 
   return (
     <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-hormadi-surface/90 backdrop-blur-xl">
@@ -238,8 +239,10 @@ function NextMatchCard() {
         {/* Teams matchup */}
         <div className="flex items-center justify-between mb-5">
           <div className="flex flex-col items-center gap-2">
-            <TeamLogo team="Anglet" size={56} isHormadi />
-            <span className="text-xs font-bold text-white">ANG</span>
+            <TeamLogo team={match.isHomeGame ? 'Anglet' : opponent} size={56} isHormadi={match.isHomeGame} />
+            <span className="text-xs font-bold text-white">
+              {match.isHomeGame ? 'ANG' : findTeam(opponent)?.short || opponent.substring(0, 3).toUpperCase()}
+            </span>
           </div>
 
           <div className="flex flex-col items-center gap-1 px-4">
@@ -250,9 +253,9 @@ function NextMatchCard() {
           </div>
 
           <div className="flex flex-col items-center gap-2">
-            <TeamLogo team={match.awayTeam || 'Rouen'} size={56} />
+            <TeamLogo team={match.isHomeGame ? opponent : 'Anglet'} size={56} isHormadi={!match.isHomeGame} />
             <span className="text-xs font-bold text-white">
-              {(match.awayTeam || 'Rouen').substring(0, 3).toUpperCase()}
+              {match.isHomeGame ? findTeam(opponent)?.short || opponent.substring(0, 3).toUpperCase() : 'ANG'}
             </span>
           </div>
         </div>
@@ -269,7 +272,7 @@ function NextMatchCard() {
           </div>
           <div className="flex items-center gap-2">
             <MapPin size={14} className="text-hormadi-ocean" />
-            {match.venue || 'Patinoire de la Barre, Anglet'}
+            {match.venue || (match.isHomeGame ? 'Patinoire de la Barre, Anglet' : 'À l\'extérieur')}
           </div>
         </div>
 
