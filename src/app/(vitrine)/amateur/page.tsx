@@ -84,9 +84,9 @@ const VALUES = [
 
 export default function AmateurPage() {
   return (
-    <div className="-mt-[5.5rem]">
+    <main className="min-h-screen bg-hormadi-dark">
       {/* ═══════════════════ HERO ═══════════════════ */}
-      <section className="relative h-[45vh] min-h-[350px] max-h-[500px] overflow-hidden">
+      <section className="relative h-[50vh] min-h-[400px] max-h-[550px] overflow-hidden">
         <div className="absolute inset-0 z-0 bg-gradient-to-br from-hormadi-dark via-hormadi-forest to-hormadi-dark" />
         <img
           src="/images/amateur-section.jpg"
@@ -94,6 +94,8 @@ export default function AmateurPage() {
           className="absolute inset-0 z-[1] w-full h-full object-cover opacity-30"
         />
         <div className="absolute inset-0 z-[2] bg-gradient-to-t from-hormadi-dark via-hormadi-dark/50 to-transparent" />
+        <div className="absolute z-[3] top-0 right-0 w-96 h-96 bg-hormadi-red/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3" />
+        <div className="absolute z-[3] bottom-0 left-0 w-72 h-72 bg-hormadi-ocean/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/3" />
 
         <div className="relative z-[5] h-full flex flex-col justify-end pb-10 px-6 sm:px-8 lg:px-12 mx-auto max-w-7xl">
           <div className="flex items-center gap-2 text-sm text-hormadi-muted mb-4">
@@ -347,6 +349,6 @@ export default function AmateurPage() {
           </div>
         </div>
       </section>
-    </div>
+    </main>
   )
 }
