@@ -476,9 +476,9 @@ export default function ContactPage() {
                 <h4 className="font-bold text-white text-sm mb-4">Suivez-nous</h4>
                 <div className="flex items-center gap-3">
                   {[
-                    { icon: Instagram, href: 'https://www.instagram.com/hormadi_officiel', label: 'Instagram' },
-                    { icon: Facebook, href: 'https://www.facebook.com/HormadiOfficiel', label: 'Facebook' },
-                    { icon: Youtube, href: 'https://www.youtube.com/@hormadiofficiel', label: 'YouTube' },
+                    { icon: Instagram, href: 'https://www.instagram.com/anglet_hormadi/', label: 'Instagram' },
+                    { icon: Facebook, href: 'https://www.facebook.com/anglethormadiofficiel/', label: 'Facebook' },
+                    { icon: Youtube, href: 'https://www.youtube.com/channel/UCXXa4o0epdaQ-TZaIc-T6_g', label: 'YouTube' },
                   ].map((social) => {
                     const SIcon = social.icon;
                     return (

@@ -27,9 +27,9 @@ export const CTA_LINKS = {
   billetterie: '/billetterie',
   boutique: '/boutique',
   magnusTV: 'https://www.magnus.tv',
-  instagram: 'https://www.instagram.com/hormadi_officiel',
-  facebook: 'https://www.facebook.com/HormadiOfficiel',
-  twitter: 'https://twitter.com/HormadiOfficiel',
+  instagram: 'https://www.instagram.com/anglet_hormadi/',
+  facebook: 'https://www.facebook.com/anglethormadiofficiel/',
+  twitter: 'https://x.com/anglet_hormadi',
 } as const
 
 // Billetterie réelle opérée par SULF — pas d'API/embed disponible publiquement,
