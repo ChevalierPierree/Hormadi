@@ -9,7 +9,6 @@ import {
   Calendar,
   Trophy,
   Users,
-  ShoppingBag,
   LogOut,
   Menu,
   X,
@@ -40,7 +39,6 @@ export default function AdminSidebar({ user }: AdminSidebarProps) {
     { label: 'Organigramme', href: '/admin/organigramme', icon: Network },
     { label: 'Effectif', href: '/admin/effectif', icon: Shirt },
     { label: 'Partenaires', href: '/admin/partenaires', icon: Users },
-    { label: 'Boutique', href: '/admin/boutique', icon: ShoppingBag },
   ];
 
   const handleLogout = async () => {

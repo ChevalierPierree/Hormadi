@@ -3,8 +3,6 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import {
-  Ticket,
-  ShoppingBag,
   Newspaper,
   Calendar,
   TrendingUp,
@@ -35,12 +33,6 @@ type Article = {
   createdAt: string
 }
 
-type Product = {
-  id: string
-  name: string
-  price: number
-}
-
 type Partner = {
   id: string
   name: string
@@ -51,28 +43,25 @@ export default function AdminDashboard() {
   const [matches, setMatches] = useState<Match[]>([])
   const [articleCounts, setArticleCounts] = useState({ published: 0, drafts: 0 })
   const [recentArticles, setRecentArticles] = useState<Article[]>([])
-  const [products, setProducts] = useState<Product[]>([])
   const [partners, setPartners] = useState<Partner[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     async function fetchAll() {
       try {
-        const [matchRes, publishedRes, draftRes, recentRes, productRes, partnerRes] = await Promise.all([
+        const [matchRes, publishedRes, draftRes, recentRes, partnerRes] = await Promise.all([
           fetch('/api/matches?limit=150'),
           // limit=1 — only the pagination.total count is needed here, not the article bodies
           fetch('/api/articles?limit=1'),
           fetch('/api/articles?published=false&limit=1'),
           fetch('/api/articles?published=all&limit=5'),
-          fetch('/api/products'),
           fetch('/api/partners'),
         ])
-        const [matchData, publishedData, draftData, recentData, productData, partnerData] = await Promise.all([
+        const [matchData, publishedData, draftData, recentData, partnerData] = await Promise.all([
           matchRes.json(),
           publishedRes.json(),
           draftRes.json(),
           recentRes.json(),
-          productRes.json(),
           partnerRes.json(),
         ])
         const currentSeasonMatches = (matchData.matches || []).filter(
@@ -84,7 +73,6 @@ export default function AdminDashboard() {
           drafts: draftData.pagination?.total ?? 0,
         })
         setRecentArticles(recentData.articles || [])
-        setProducts(productData.products || [])
         setPartners(partnerData.partners || [])
       } catch (e) {
         console.error('Error fetching dashboard data:', e)
@@ -136,7 +124,6 @@ export default function AdminDashboard() {
         <StatCard label="Matchs joués" value={finishedMatches.length} icon={Calendar} subtext={`${wins.length} victoires / ${finishedMatches.length - wins.length} défaites`} />
         <StatCard label="Matchs à venir" value={upcomingMatches.length} icon={TrendingUp} subtext={daysToNext !== null ? `Prochain dans ${daysToNext}j — ${nextMatchLabel}` : 'Aucun match prévu'} />
         <StatCard label="Articles publiés" value={articleCounts.published} icon={Newspaper} subtext={`${articleCounts.drafts} brouillons`} />
-        <StatCard label="Produits en boutique" value={products.length} icon={ShoppingBag} subtext="Boutique en ligne" />
         <StatCard label="Partenaires actifs" value={visiblePartners.length} icon={Users} subtext={`${partners.length} partenaires au total`} />
         <StatCard label="Total matchs saison" value={matches.length} icon={BarChart3} subtext="Saison 2026-2027" />
       </div>
@@ -144,7 +131,7 @@ export default function AdminDashboard() {
       {/* Quick actions */}
       <div className="bg-hormadi-surface border border-hormadi-border rounded-xl p-6">
         <h2 className="text-lg font-bold text-white mb-4">Actions rapides</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           <Link href="/admin/actualites" className="btn-primary text-center justify-center text-sm py-2.5">
             <Newspaper size={16} />
             Nouvel article
@@ -152,10 +139,6 @@ export default function AdminDashboard() {
           <Link href="/admin/matchs" className="btn-secondary text-center justify-center text-sm py-2.5">
             <Calendar size={16} />
             Gérer les matchs
-          </Link>
-          <Link href="/admin/boutique/produits" className="btn-secondary text-center justify-center text-sm py-2.5">
-            <ShoppingBag size={16} />
-            Gérer la boutique
           </Link>
           <Link href="/admin/partenaires" className="btn-secondary text-center justify-center text-sm py-2.5">
             <Users size={16} />
