@@ -2,22 +2,12 @@
 
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect } from 'react'
 import {
   ChevronRight, Ticket, Clock, MapPin, ArrowRight, AlertCircle,
-  Loader2, Shield, Check, X, Users, ExternalLink
+  Loader2, Shield, Check, ExternalLink, Tag,
 } from 'lucide-react'
-import { findTeam, SULF_BILLETTERIE_URL } from '@/lib/constants'
-import PatinaireSeatMap, { ZoneConfig } from '@/components/PatinaireSeatMap'
-
-interface TicketCategory {
-  id: string
-  name: string
-  price: number
-  capacity: number
-  sold: number
-  available: number
-}
+import { findTeam, SULF_MATCHES_URL } from '@/lib/constants'
 
 interface MatchData {
   id: string
@@ -28,7 +18,6 @@ interface MatchData {
   status: string
   isHomeGame: boolean
   competition: string
-  ticketCategories: TicketCategory[]
 }
 
 function formatMatchDate(dateStr: string) {
@@ -41,29 +30,6 @@ function formatMatchDate(dateStr: string) {
   }
 }
 
-function formatPrice(cents: number) {
-  return (cents / 100).toFixed(2).replace('.', ',') + ' €'
-}
-
-// Map DB category names to zone IDs (supports both naming schemes)
-const CATEGORY_TO_ZONE: Record<string, string> = {
-  // New naming scheme
-  'Tribune Propp': 'propp',
-  'Catégorie 1': 'cat1',
-  'Catégorie 2 Gauche': 'cat2_left',
-  'Catégorie 2 Droite': 'cat2_right',
-  'Catégorie 3 Gauche': 'cat3_left',
-  'Catégorie 3 Droite': 'cat3_right',
-  'Debout Gauche': 'debout_left',
-  'Debout Droite': 'debout_right',
-  // Legacy naming scheme (from seed)
-  'Tribune Est': 'cat2_right',
-  'Tribune Ouest': 'cat2_left',
-  'Virage Nord': 'cat3_left',
-  'Virage Sud': 'cat3_right',
-  'Espace VIP': 'propp',
-}
-
 export default function TicketSelectionPage() {
   const params = useParams()
   const matchId = params.matchId as string
@@ -71,12 +37,6 @@ export default function TicketSelectionPage() {
   const [match, setMatch] = useState<MatchData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-
-  // Seat selection state
-  const [selectedSeats, setSelectedSeats] = useState<string[]>([])
-  const [standingSelections, setStandingSelections] = useState<Record<string, number>>({})
-  // Track which zone each selected seat belongs to
-  const [seatZones, setSeatZones] = useState<Record<string, string>>({}) // seatId -> zone.id
 
   useEffect(() => {
     async function fetchMatch() {
@@ -93,113 +53,6 @@ export default function TicketSelectionPage() {
     }
     fetchMatch()
   }, [matchId])
-
-  // Build zone configs from match ticket categories
-  const zones: ZoneConfig[] = useMemo(() => {
-    if (!match) return []
-    console.log('[Billetterie] ticketCategories:', match.ticketCategories?.map(tc => tc.name))
-    const mapped = match.ticketCategories
-      .filter((tc) => {
-        const mapped = CATEGORY_TO_ZONE[tc.name]
-        if (!mapped) console.warn(`[Billetterie] Category "${tc.name}" has no zone mapping`)
-        return !!mapped
-      })
-      .map((tc) => ({
-        id: CATEGORY_TO_ZONE[tc.name],
-        name: tc.name,
-        categoryId: tc.id,
-        price: tc.price,
-        color: '',
-        type: tc.name.startsWith('Debout') ? 'standing' as const : 'seated' as const,
-        capacity: tc.available,
-      }))
-    console.log('[Billetterie] Zones mapped:', mapped.map(z => `${z.id} (${z.name})`))
-    return mapped
-  }, [match])
-
-  // Sold seats: currently no real seat-level tracking, so this is empty
-  // When a real ticketing system is integrated, this would fetch actual sold seat IDs
-  const soldSeats = useMemo(() => new Set<string>(), [])
-
-  const handleSeatClick = (seatId: string, zone: ZoneConfig) => {
-    setSelectedSeats((prev) => {
-      if (prev.includes(seatId)) {
-        // Deselect
-        setSeatZones((z) => {
-          const next = { ...z }
-          delete next[seatId]
-          return next
-        })
-        return prev.filter((id) => id !== seatId)
-      }
-      // Check max
-      const totalStanding = Object.values(standingSelections).reduce((a, b) => a + b, 0)
-      if (prev.length + totalStanding >= 10) return prev
-      // Select
-      setSeatZones((z) => ({ ...z, [seatId]: zone.id }))
-      return [...prev, seatId]
-    })
-  }
-
-  const handleStandingChange = (zoneId: string, quantity: number) => {
-    setStandingSelections((prev) => ({ ...prev, [zoneId]: quantity }))
-  }
-
-  // Compute order summary
-  const orderSummary = useMemo(() => {
-    const items: { zoneName: string; categoryId: string; zoneId: string; quantity: number; unitPrice: number; seatIds: string[] }[] = []
-
-    // Group selected seats by zone
-    const seatsByZone: Record<string, string[]> = {}
-    selectedSeats.forEach((seatId) => {
-      const zoneId = seatZones[seatId]
-      if (zoneId) {
-        if (!seatsByZone[zoneId]) seatsByZone[zoneId] = []
-        seatsByZone[zoneId].push(seatId)
-      }
-    })
-
-    // Create items for seated zones
-    Object.entries(seatsByZone).forEach(([zoneId, seats]) => {
-      const zone = zones.find((z) => z.id === zoneId)
-      if (zone) {
-        items.push({
-          zoneName: zone.name,
-          categoryId: zone.categoryId,
-          zoneId,
-          quantity: seats.length,
-          unitPrice: zone.price,
-          seatIds: seats,
-        })
-      }
-    })
-
-    // Create items for standing zones
-    Object.entries(standingSelections).forEach(([zoneId, qty]) => {
-      if (qty <= 0) return
-      const zone = zones.find((z) => z.id === zoneId)
-      if (zone) {
-        items.push({
-          zoneName: zone.name,
-          categoryId: zone.categoryId,
-          zoneId,
-          quantity: qty,
-          unitPrice: zone.price,
-          seatIds: [],
-        })
-      }
-    })
-
-    const total = items.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0)
-    const totalQty = items.reduce((sum, item) => sum + item.quantity, 0)
-    return { items, total, totalQty }
-  }, [selectedSeats, seatZones, standingSelections, zones])
-
-  function handleContinue() {
-    // La billetterie réelle est opérée par SULF (pas d'API/lien par match disponible) —
-    // on affiche les tarifs par zone pour info, puis on renvoie vers la billetterie officielle.
-    window.open(SULF_BILLETTERIE_URL, '_blank', 'noopener,noreferrer')
-  }
 
   if (loading) {
     return (
@@ -262,11 +115,12 @@ export default function TicketSelectionPage() {
     )
   }
 
-  const awayTeam = findTeam(match.awayTeam)
+  const opponentName = match.isHomeGame ? match.awayTeam : match.homeTeam
+  const opponent = findTeam(opponentName)
   const { full: dateStr, time } = formatMatchDate(match.date)
 
   return (
-    <div className="-mt-[5.5rem]">
+    <main className="min-h-screen bg-hormadi-dark">
       {/* ═══════════════════ HERO COMPACT ═══════════════════ */}
       <section className="relative h-[30vh] min-h-[250px] max-h-[350px] overflow-hidden">
         <div className="absolute inset-0 z-0 bg-gradient-to-br from-hormadi-dark via-hormadi-forest to-hormadi-dark" />
@@ -289,20 +143,32 @@ export default function TicketSelectionPage() {
           <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6">
             <div className="flex items-center gap-4">
               <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-white flex items-center justify-center shadow-lg">
-                <img src="/images/teams/Anglet.png" alt="Hormadi" className="w-10 h-10 sm:w-11 sm:h-11 object-contain" />
+                {match.isHomeGame ? (
+                  <img src="/images/teams/Anglet.png" alt="Hormadi" className="w-10 h-10 sm:w-11 sm:h-11 object-contain" />
+                ) : opponent ? (
+                  <img src={opponent.logo} alt={opponent.name} className="w-10 h-10 sm:w-11 sm:h-11 object-contain" />
+                ) : (
+                  <span className="text-sm font-bold text-gray-500">?</span>
+                )}
               </div>
               <span className="text-white/50 font-black text-xl">VS</span>
               <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-white flex items-center justify-center shadow-lg">
-                {awayTeam ? (
-                  <img src={awayTeam.logo} alt={awayTeam.name} className="w-10 h-10 sm:w-11 sm:h-11 object-contain" />
+                {match.isHomeGame ? (
+                  opponent ? (
+                    <img src={opponent.logo} alt={opponent.name} className="w-10 h-10 sm:w-11 sm:h-11 object-contain" />
+                  ) : (
+                    <span className="text-sm font-bold text-gray-500">?</span>
+                  )
                 ) : (
-                  <span className="text-sm font-bold text-gray-500">?</span>
+                  <img src="/images/teams/Anglet.png" alt="Hormadi" className="w-10 h-10 sm:w-11 sm:h-11 object-contain" />
                 )}
               </div>
             </div>
             <div>
               <h1 className="text-2xl sm:text-3xl font-black text-white">
-                ANGLET vs {awayTeam ? awayTeam.name.toUpperCase() : match.awayTeam.toUpperCase()}
+                {match.isHomeGame ? 'ANGLET' : (opponent ? opponent.name.toUpperCase() : opponentName.toUpperCase())}
+                {' vs '}
+                {match.isHomeGame ? (opponent ? opponent.name.toUpperCase() : opponentName.toUpperCase()) : 'ANGLET'}
               </h1>
               <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 text-hormadi-muted text-sm mt-1">
                 <span className="flex items-center gap-1"><Clock size={14} />{dateStr} — {time}</span>
@@ -313,168 +179,67 @@ export default function TicketSelectionPage() {
         </div>
       </section>
 
-      {/* ═══════════════════ SEAT SELECTION ═══════════════════ */}
-      <section className="py-10 sm:py-14">
+      {/* ═══════════════════ ACHAT DE BILLETS ═══════════════════ */}
+      <section className="py-12 sm:py-16">
         <div className="section-padding">
-          <div className="max-w-7xl mx-auto">
-            {/* Step indicator */}
-            <div className="flex items-center gap-4 mb-10">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-full bg-hormadi-red flex items-center justify-center text-white text-sm font-bold">1</div>
-                <span className="text-white font-semibold text-sm hidden sm:inline">Choisir vos places</span>
+          <div className="max-w-3xl mx-auto">
+            <div className="bg-hormadi-surface/50 border border-hormadi-border rounded-2xl p-8 sm:p-10 text-center">
+              <div className="w-16 h-16 rounded-2xl bg-hormadi-red/10 flex items-center justify-center mx-auto mb-6">
+                <Ticket size={28} className="text-hormadi-red" />
               </div>
-              <div className="flex-1 h-px bg-hormadi-border" />
-              <div className="flex items-center gap-2 opacity-40">
-                <div className="w-8 h-8 rounded-full bg-hormadi-surface border border-hormadi-border flex items-center justify-center text-hormadi-muted text-sm font-bold">2</div>
-                <span className="text-hormadi-muted font-semibold text-sm hidden sm:inline">Vos informations</span>
-              </div>
-              <div className="flex-1 h-px bg-hormadi-border" />
-              <div className="flex items-center gap-2 opacity-40">
-                <div className="w-8 h-8 rounded-full bg-hormadi-surface border border-hormadi-border flex items-center justify-center text-hormadi-muted text-sm font-bold">3</div>
-                <span className="text-hormadi-muted font-semibold text-sm hidden sm:inline">Confirmation</span>
+              <h2 className="text-2xl sm:text-3xl font-black text-white mb-3">
+                Vos billets pour ce match
+              </h2>
+              <p className="text-hormadi-muted text-sm sm:text-base max-w-xl mx-auto mb-8 leading-relaxed">
+                La billetterie de l&apos;Hormadi Anglet est intégralement gérée par notre partenaire{' '}
+                <strong className="text-white">Sulf</strong>. Cliquez ci-dessous pour retrouver{' '}
+                <strong className="text-white">
+                  {match.isHomeGame ? 'Anglet' : (opponent ? opponent.name : opponentName)}
+                  {' vs '}
+                  {match.isHomeGame ? (opponent ? opponent.name : opponentName) : 'Anglet'}
+                </strong> et
+                finaliser votre achat en toute sécurité.
+              </p>
+
+              <a
+                href={SULF_MATCHES_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 bg-hormadi-red text-white font-bold px-8 py-4 rounded-xl hover:bg-hormadi-red/80 transition-all shadow-lg shadow-hormadi-red/30 text-sm sm:text-base uppercase tracking-wide"
+              >
+                Acheter mes billets sur Sulf
+                <ExternalLink size={18} />
+              </a>
+
+              <div className="flex items-center justify-center gap-6 mt-8 pt-6 border-t border-hormadi-border">
+                <p className="text-hormadi-muted/70 text-xs flex items-center gap-1.5"><Shield size={14} />Paiement sécurisé</p>
+                <p className="text-hormadi-muted/70 text-xs flex items-center gap-1.5"><Ticket size={14} />E-billet immédiat</p>
+                <p className="text-hormadi-muted/70 text-xs flex items-center gap-1.5"><Check size={14} />Confirmation par email</p>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
-              {/* ─── Left: Seat map ─── */}
-              <div className="xl:col-span-3">
-                <div className="border-l-4 border-hormadi-red pl-6 mb-6">
-                  <h2 className="text-2xl sm:text-3xl font-black text-white">
-                    CHOISISSEZ VOS PLACES
-                  </h2>
-                  <p className="text-hormadi-muted text-sm mt-1">
-                    Cliquez sur les sièges pour les sélectionner (10 places max) — Zones debout : choisissez la quantité ci-dessous
-                  </p>
+            {/* Tarifs + Hospitalités links */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
+              <Link
+                href="/billetterie#tarifs"
+                className="flex items-center gap-3 p-5 bg-hormadi-surface/50 border border-hormadi-border rounded-xl hover:border-hormadi-red/40 transition-colors"
+              >
+                <Tag size={20} className="text-hormadi-red flex-shrink-0" />
+                <div>
+                  <p className="text-white font-semibold text-sm">Voir les tarifs par catégorie</p>
+                  <p className="text-hormadi-muted text-xs">Tribune Propp, catégories 1 à 3, debout</p>
                 </div>
-
-                {zones.length === 0 && match ? (
-                  <div className="bg-[#f59e0b]/10 border border-[#f59e0b]/30 rounded-xl p-8 text-center">
-                    <AlertCircle size={40} className="text-[#f59e0b] mx-auto mb-4" />
-                    <h3 className="text-white font-bold text-lg mb-2">Billetterie non disponible</h3>
-                    <p className="text-hormadi-muted text-sm">
-                      La vente de billets n'est pas encore ouverte pour ce match.
-                      {match.ticketCategories?.length === 0
-                        ? ' Aucune catégorie de billet n\'a été configurée.'
-                        : ` Catégories trouvées : ${match.ticketCategories.map(tc => tc.name).join(', ')}`}
-                    </p>
-                  </div>
-                ) : (
-                  <PatinaireSeatMap
-                    zones={zones}
-                    soldSeats={soldSeats}
-                    selectedSeats={selectedSeats}
-                    standingSelections={standingSelections}
-                    onSeatClick={handleSeatClick}
-                    onStandingChange={handleStandingChange}
-                    maxSeats={10}
-                  />
-                )}
-              </div>
-
-              {/* ─── Right: Order summary sidebar ─── */}
-              <div className="xl:col-span-1">
-                <div className="bg-hormadi-surface/50 border border-hormadi-border rounded-xl p-5 sticky top-28">
-                  <h3 className="text-white font-black text-lg mb-4 flex items-center gap-2">
-                    <Ticket size={18} className="text-hormadi-red" />
-                    Votre sélection
-                  </h3>
-
-                  {orderSummary.totalQty === 0 ? (
-                    <div className="text-center py-8">
-                      <Users size={32} className="text-hormadi-muted/40 mx-auto mb-3" />
-                      <p className="text-hormadi-muted text-sm">Aucune place sélectionnée</p>
-                      <p className="text-hormadi-muted/60 text-xs mt-1">Cliquez sur un siège ou ajoutez des places debout</p>
-                    </div>
-                  ) : (
-                    <>
-                      <div className="space-y-3 mb-4">
-                        {orderSummary.items.map((item, i) => (
-                          <div key={i} className="bg-hormadi-dark/50 rounded-lg p-3">
-                            <div className="flex items-start justify-between gap-2">
-                              <div>
-                                <p className="text-white font-semibold text-sm">{item.zoneName}</p>
-                                <p className="text-hormadi-muted text-xs">
-                                  {item.quantity} place{item.quantity > 1 ? 's' : ''} × {formatPrice(item.unitPrice)}
-                                </p>
-                                {item.seatIds.length > 0 && (
-                                  <p className="text-hormadi-muted/60 text-[10px] mt-1">
-                                    {item.seatIds.map((id) => {
-                                      const parts = id.split('-')
-                                      return `R${parts[1]?.replace('R', '')}S${parts[2]?.replace('S', '')}`
-                                    }).join(', ')}
-                                  </p>
-                                )}
-                              </div>
-                              <p className="text-white font-bold text-sm whitespace-nowrap">
-                                {formatPrice(item.quantity * item.unitPrice)}
-                              </p>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-
-                      {/* Totals */}
-                      <div className="pt-4 border-t border-hormadi-border">
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="text-hormadi-muted text-sm">
-                            {orderSummary.totalQty} place{orderSummary.totalQty > 1 ? 's' : ''}
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-white font-black text-lg">TOTAL</span>
-                          <span className="text-2xl font-black text-hormadi-red">{formatPrice(orderSummary.total)}</span>
-                        </div>
-                      </div>
-                    </>
-                  )}
-
-                  {/* Continue button — redirige vers la billetterie officielle (SULF).
-                      Toujours actif : le clic ouvre SULF quelle que soit la sélection
-                      (la sélection ci-dessus n'est qu'indicative, l'achat réel se fait
-                      entièrement sur SULF). */}
-                  <button
-                    onClick={handleContinue}
-                    className="w-full mt-6 flex items-center justify-center gap-2 font-bold py-3.5 rounded-xl transition-all bg-hormadi-red text-white hover:bg-hormadi-red/80 shadow-lg shadow-hormadi-red/30"
-                  >
-                    Acheter sur la billetterie officielle
-                    <ExternalLink size={18} />
-                  </button>
-                  <p className="text-hormadi-muted text-xs text-center mt-3">
-                    Vous serez redirigé vers notre partenaire billetterie pour finaliser votre achat.
-                  </p>
-
-                  {/* Clear selection */}
-                  {orderSummary.totalQty > 0 && (
-                    <button
-                      onClick={() => {
-                        setSelectedSeats([])
-                        setSeatZones({})
-                        setStandingSelections({})
-                      }}
-                      className="w-full mt-2 text-hormadi-muted hover:text-hormadi-red text-xs font-semibold flex items-center justify-center gap-1 py-2 transition-colors"
-                    >
-                      <X size={12} />
-                      Tout désélectionner
-                    </button>
-                  )}
-
-                  {/* Trust badges */}
-                  <div className="mt-6 pt-4 border-t border-hormadi-border space-y-2">
-                    <p className="text-hormadi-muted/60 text-xs flex items-center gap-1"><Shield size={12} />Paiement sécurisé</p>
-                    <p className="text-hormadi-muted/60 text-xs flex items-center gap-1"><Ticket size={12} />E-billet immédiat</p>
-                    <p className="text-hormadi-muted/60 text-xs flex items-center gap-1"><Check size={12} />Confirmation par email</p>
-                  </div>
-
-                  {/* Hospitalités link */}
-                  <div className="mt-4 p-3 bg-[#f59e0b]/10 border border-[#f59e0b]/30 rounded-lg">
-                    <p className="text-[#f59e0b] text-xs font-semibold mb-1">Vous cherchez les Loges VIP ?</p>
-                    <Link href="/hospitalites" className="text-[#f59e0b]/80 text-xs hover:text-[#f59e0b] transition-colors flex items-center gap-1">
-                      Découvrir nos offres Hospitalités
-                      <ArrowRight size={12} />
-                    </Link>
-                  </div>
+              </Link>
+              <Link
+                href="/hospitalites"
+                className="flex items-center gap-3 p-5 bg-[#f59e0b]/10 border border-[#f59e0b]/30 rounded-xl hover:border-[#f59e0b]/60 transition-colors"
+              >
+                <Ticket size={20} className="text-[#f59e0b] flex-shrink-0" />
+                <div>
+                  <p className="text-[#f59e0b] font-semibold text-sm">Vous cherchez les Loges VIP ?</p>
+                  <p className="text-[#f59e0b]/70 text-xs">Découvrir nos offres Hospitalités</p>
                 </div>
-              </div>
+              </Link>
             </div>
 
             {/* Back link */}
@@ -490,6 +255,6 @@ export default function TicketSelectionPage() {
           </div>
         </div>
       </section>
-    </div>
+    </main>
   )
 }

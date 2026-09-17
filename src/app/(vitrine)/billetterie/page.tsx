@@ -3,110 +3,53 @@
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import {
-  ChevronRight, Ticket, MapPin, Clock, Calendar, Users, Car, Info,
-  CreditCard, Phone, Shield, ArrowRight, Check, Star, AlertCircle, Loader2, ShoppingBag
+  ChevronRight, Ticket, MapPin, Clock, Car, Info,
+  CreditCard, Phone, Mail, Shield, ArrowRight, ExternalLink, Star, Loader2
 } from 'lucide-react'
-import { cn } from '@/lib/utils'
-import { TEAMS, findTeam } from '@/lib/constants'
+import { findTeam, SULF_MATCHES_URL } from '@/lib/constants'
 
-/* ─── Tarifs réels — Grille 3 étoiles (match de gala) ─── */
+/* ─── Tarifs réels, saison 2026-2027 — source : grille tarifaire officielle du club.
+   3 niveaux de matchs selon l'affiche (le classement par étoile de chaque match est
+   publié par le club au fil de la saison, indépendamment de ce site). ─── */
 const TARIFS = [
   {
-    id: 'propp',
-    name: 'Tribune Propp',
-    price: '25€ – 27€',
-    priceReduit: '20€ – 22€',
-    description: 'Tribune latérale avec vue panoramique sur la glace.',
-    color: 'bg-[#ff69b4]',
-    popular: true,
-  },
-  {
-    id: 'cat1',
-    name: 'Catégorie 1',
-    price: '22€ – 24€',
-    priceReduit: '18€ – 20€',
-    description: 'Tribune principale, au centre, face aux bancs des joueurs.',
-    color: 'bg-hormadi-red',
-    popular: false,
-  },
-  {
-    id: 'cat2',
-    name: 'Catégorie 2',
-    price: '18€ – 20€',
-    priceReduit: '12€ – 14€',
-    description: 'Tribune principale, flancs gauche et droit. Bon compromis qualité-prix.',
-    color: 'bg-[#1e40af]',
-    popular: false,
-  },
-  {
-    id: 'cat3',
-    name: 'Catégorie 3',
-    price: '15€ – 17€',
-    priceReduit: '10€ – 12€',
-    description: 'Tribune principale, extrémités. Le tarif le plus accessible en tribune.',
-    color: 'bg-[#ec4899]',
-    popular: false,
-  },
-  {
-    id: 'debout',
-    name: 'Debout',
-    price: '9€ – 11€',
-    priceReduit: '—',
-    description: 'Zones debout derrière les buts, au cœur de l\'ambiance supporters !',
-    color: 'bg-[#22c55e]',
-    popular: false,
-  },
-]
-
-const ABONNEMENTS = [
-  {
-    id: 'saison',
-    name: 'Abonnement Saison',
-    price: '199€',
-    priceDetail: 'soit ~8€/match',
-    description: 'Accès à tous les matchs à domicile de la saison régulière.',
-    features: [
-      'Tous les matchs à domicile',
-      'Place garantie et réservée',
-      'Accès prioritaire aux playoffs',
-      'Tarif préférentiel hospitalités',
-      '10% de réduction boutique',
+    id: 'star1',
+    stars: 1,
+    label: 'Match 1 étoile',
+    tagline: 'Pour vibrer à petit prix',
+    rows: [
+      { name: 'Tribune Propp', price: 26, reduit: 21 },
+      { name: 'Catégorie 1', price: 26, reduit: 21 },
+      { name: 'Catégorie 2', price: 20, reduit: 16 },
+      { name: 'Catégorie 3', price: 15, reduit: 12 },
+      { name: 'Debout', price: 11, reduit: null },
     ],
-    color: 'border-hormadi-red',
-    popular: true,
-    badge: 'Pour les vrais !',
   },
   {
-    id: 'demi-saison',
-    name: 'Pack Demi-Saison',
-    price: '109€',
-    priceDetail: 'soit ~10€/match',
-    description: 'Accès à la moitié des matchs à domicile, au choix.',
-    features: [
-      '12 matchs au choix',
-      'Place réservée',
-      'Flexibilité des dates',
-      '5% de réduction boutique',
+    id: 'star2',
+    stars: 2,
+    label: 'Match 2 étoiles',
+    tagline: 'Les rencontres à ne pas manquer',
+    rows: [
+      { name: 'Tribune Propp', price: 27, reduit: 22 },
+      { name: 'Catégorie 1', price: 27, reduit: 22 },
+      { name: 'Catégorie 2', price: 21, reduit: 17 },
+      { name: 'Catégorie 3', price: 16, reduit: 13 },
+      { name: 'Debout', price: 12, reduit: null },
     ],
-    color: 'border-hormadi-red',
-    popular: true,
-    badge: 'Faites vous plaisir',
   },
   {
-    id: 'pack-famille',
-    name: 'Pack Famille',
-    price: '39€',
-    priceDetail: '2 adultes + 2 enfants',
-    description: 'Vivez le hockey en famille à prix réduit.',
-    features: [
-      '2 places adultes + 2 enfants',
-      'Valable sur tous les matchs',
-      'Accès espace famille',
-      'Animation enfants à chaque match',
+    id: 'star3',
+    stars: 3,
+    label: 'Match 3 étoiles',
+    tagline: 'Les grandes affiches de la saison',
+    rows: [
+      { name: 'Tribune Propp', price: 29, reduit: 23 },
+      { name: 'Catégorie 1', price: 29, reduit: 23 },
+      { name: 'Catégorie 2', price: 23, reduit: 18 },
+      { name: 'Catégorie 3', price: 18, reduit: 14 },
+      { name: 'Debout', price: 13, reduit: null },
     ],
-    color: 'border-hormadi-red',
-    popular: true,
-    badge: 'Une passion qui se transmet',
   },
 ]
 
@@ -350,7 +293,7 @@ export default function BilletteriePage() {
       </section>
 
       {/* ═══════════════════ TARIFS ═══════════════════ */}
-      <section className="py-16 sm:py-20 border-t border-hormadi-border">
+      <section id="tarifs" className="py-16 sm:py-20 border-t border-hormadi-border scroll-mt-24">
         <div className="section-padding">
           <div className="border-l-4 border-hormadi-red pl-6 mb-12">
             <h2 className="text-3xl sm:text-4xl font-black text-white">
@@ -368,7 +311,7 @@ export default function BilletteriePage() {
               <div>
                 <p className="text-white font-bold text-sm mb-1">Système par étoiles</p>
                 <p className="text-hormadi-muted text-sm">
-                  Les tarifs varient selon l&apos;intensité de l&apos;affiche : matchs 1 étoile (petits prix), 2 étoiles (rencontres à ne pas manquer), et 3 étoiles (grandes affiches). Tarifs majorés de 1€ pour les achats en ligne.
+                  Les tarifs varient selon l&apos;intensité de l&apos;affiche : matchs 1 étoile (petits prix), 2 étoiles (rencontres à ne pas manquer), et 3 étoiles (grandes affiches). Le niveau de chaque match est communiqué par le club au fil de la saison — la billetterie Sulf affiche toujours le tarif exact du match choisi.
                 </p>
                 <p className="text-hormadi-muted/60 text-xs mt-2">
                   * Tarif réduit : - de 18 ans, étudiants, carte Synergies, handicapés, licenciés AHA, carte séniors Anglet (sur justificatif). Gratuit pour les - de 7 ans sur les genoux de l&apos;accompagnant.
@@ -377,65 +320,53 @@ export default function BilletteriePage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-            {TARIFS.map((tarif) => (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            {TARIFS.map((tier) => (
               <div
-                key={tarif.id}
-                className={cn(
-                  'relative rounded-xl border overflow-hidden transition-all duration-300 hover:scale-[1.02] flex flex-col h-full',
-                  tarif.popular
-                    ? 'border-[#ff69b4] bg-hormadi-surface/80 shadow-xl shadow-[#ff69b4]/10'
-                    : 'border-hormadi-border bg-hormadi-surface/50'
-                )}
+                key={tier.id}
+                className="rounded-xl border border-hormadi-border bg-hormadi-surface/50 overflow-hidden flex flex-col h-full"
               >
-                {tarif.popular && (
-                  <div className="bg-[#ff69b4] text-white text-xs font-bold uppercase tracking-wider text-center py-1.5">
-                    <Star size={10} className="inline mr-1" />
-                    Tribune latérale
+                <div className="bg-hormadi-dark/60 border-b border-hormadi-border px-5 py-4">
+                  <div className="flex items-center gap-1 mb-1">
+                    {Array.from({ length: tier.stars }).map((_, i) => (
+                      <Star key={i} size={14} className="text-[#fbbf24] fill-[#fbbf24]" />
+                    ))}
                   </div>
-                )}
+                  <h3 className="text-white font-black">{tier.label}</h3>
+                  <p className="text-hormadi-muted text-xs">{tier.tagline}</p>
+                </div>
+
                 <div className="p-5 flex flex-col flex-1">
-                  <div className={cn('w-3 h-3 rounded-full mb-3', tarif.color)} />
-                  <h3 className="text-lg font-black text-white mb-1">{tarif.name}</h3>
-                  <p className="text-hormadi-muted text-xs mb-4 leading-relaxed flex-1">{tarif.description}</p>
+                  <ul className="space-y-2.5 mb-6 flex-1">
+                    {tier.rows.map((row) => (
+                      <li key={row.name} className="flex items-center justify-between text-sm border-b border-hormadi-border/50 pb-2.5 last:border-0">
+                        <span className="text-hormadi-muted">{row.name}</span>
+                        <span className="text-right">
+                          <span className="text-white font-bold">{row.price}€</span>
+                          {row.reduit != null && (
+                            <span className="text-hormadi-muted text-xs"> (réd. {row.reduit}€)</span>
+                          )}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
 
-                  <div className="mt-auto">
-                    <div className="mb-1">
-                      <span className="text-2xl font-black text-hormadi-red">{tarif.price}</span>
-                    </div>
-                    {tarif.priceReduit !== '—' && (
-                      <p className="text-hormadi-muted text-xs mb-4">
-                        Réduit : <span className="text-white font-semibold">{tarif.priceReduit}</span>
-                      </p>
-                    )}
-
-                    {matches.length > 0 ? (
-                      <Link
-                        href={`/billetterie/${matches[0].id}`}
-                        className={cn(
-                          'w-full flex items-center justify-center gap-2 font-bold py-2.5 rounded-lg transition-all text-xs',
-                          tarif.popular
-                            ? 'bg-[#ff69b4] text-white hover:bg-[#ff69b4]/80 shadow-lg shadow-[#ff69b4]/30'
-                            : 'bg-hormadi-surface border border-hormadi-border text-white hover:border-hormadi-red/50'
-                        )}
-                      >
-                        <Ticket size={16} />
-                        Acheter
-                      </Link>
-                    ) : (
-                      <div className="w-full flex items-center justify-center gap-2 font-bold py-3 rounded-lg text-sm bg-hormadi-surface border border-hormadi-border text-hormadi-muted cursor-not-allowed">
-                        <Ticket size={16} />
-                        Indisponible
-                      </div>
-                    )}
-                  </div>
+                  <a
+                    href={SULF_MATCHES_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full flex items-center justify-center gap-2 font-bold py-2.5 rounded-lg transition-all text-xs bg-hormadi-surface border border-hormadi-border text-white hover:border-hormadi-red/50"
+                  >
+                    Voir les matchs
+                    <ExternalLink size={14} />
+                  </a>
                 </div>
               </div>
             ))}
           </div>
 
           <p className="text-hormadi-muted text-xs text-center mt-6">
-            * Les tarifs sont donnés à titre indicatif et peuvent varier selon les matchs. Les loges et espaces VIP sont disponibles sur la page{' '}
+            Tarifs de la billetterie en ligne Sulf. Les loges et espaces VIP sont disponibles sur la page{' '}
             <Link href="/hospitalites" className="text-hormadi-ocean hover:text-hormadi-red transition-colors font-semibold">Hospitalités</Link>.
           </p>
         </div>
@@ -449,53 +380,55 @@ export default function BilletteriePage() {
               ABONNEMENTS
             </h2>
             <p className="text-hormadi-muted text-sm sm:text-base mt-1">
-              Profitez des meilleurs tarifs avec nos formules saison
+              Suivez l&apos;équipe toute la saison à la Patinoire de la Barre
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {ABONNEMENTS.map((abo) => (
-              <div
-                key={abo.id}
-                className={cn(
-                  'rounded-xl border-2 overflow-hidden transition-all duration-300 hover:scale-[1.02] bg-hormadi-surface/50 flex flex-col h-full',
-                  abo.popular ? 'border-hormadi-red shadow-xl shadow-hormadi-red/10' : abo.color
-                )}
-              >
-                {abo.badge && (
-                  <div className="bg-hormadi-red text-white text-xs font-bold uppercase tracking-wider text-center py-2">
-                    {abo.badge}
-                  </div>
-                )}
-                <div className="p-6 sm:p-8 flex flex-col flex-1">
-                  <h3 className="text-xl font-black text-white mb-2">{abo.name}</h3>
-                  <p className="text-hormadi-muted text-sm mb-6">{abo.description}</p>
+          <div className="bg-hormadi-surface/50 border border-hormadi-border rounded-2xl p-8 sm:p-10 max-w-3xl">
+            <p className="text-white font-bold mb-1">Les abonnements ne se prennent pas en ligne</p>
+            <p className="text-hormadi-muted text-sm leading-relaxed mb-6">
+              Contrairement à la billetterie à l&apos;unité (Sulf), les abonnements saison se souscrivent
+              directement au bureau du club, sur présentation d&apos;un justificatif pour les tarifs réduits.
+            </p>
 
-                  <div className="flex items-end gap-2 mb-1">
-                    <span className="text-4xl font-black text-hormadi-red">{abo.price}</span>
-                  </div>
-                  <p className="text-hormadi-ocean text-sm font-semibold mb-6">{abo.priceDetail}</p>
-
-                  {/* Features */}
-                  <ul className="space-y-3 mb-8 flex-1">
-                    {abo.features.map((feature) => (
-                      <li key={feature} className="flex items-start gap-2 text-sm">
-                        <Check size={16} className="text-hormadi-ocean flex-shrink-0 mt-0.5" />
-                        <span className="text-hormadi-muted">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-
-                  <Link
-                    href="/contact"
-                    className="w-full flex items-center justify-center gap-2 font-bold py-3.5 rounded-lg transition-all mt-auto bg-hormadi-red text-white hover:bg-hormadi-red/80 shadow-lg shadow-hormadi-red/30"
-                  >
-                    <Ticket size={16} />
-                    S&apos;abonner
-                  </Link>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
+              <div className="flex items-start gap-3">
+                <MapPin size={18} className="text-hormadi-red flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-white text-sm font-semibold">Bureau de l&apos;Hormadi</p>
+                  <p className="text-hormadi-muted text-sm">Patinoire de la Barre — porte côté Adour, interphone « Bureau Hormadi »</p>
                 </div>
               </div>
-            ))}
+              <div className="flex items-start gap-3">
+                <Clock size={18} className="text-hormadi-red flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-white text-sm font-semibold">Horaires d&apos;ouverture</p>
+                  <p className="text-hormadi-muted text-sm">Lundi, mardi, jeudi et vendredi<br />9h30 – 12h et 14h30 – 18h00</p>
+                </div>
+              </div>
+            </div>
+
+            <p className="text-hormadi-muted/60 text-xs mb-6">
+              * Tarif réduit : étudiant, - de 18 ans, personne en situation de handicap, carte Séniors Anglet et
+              Synergies, sur présentation d&apos;un justificatif en cours de validité.
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-3">
+              <a
+                href="tel:+33559571737"
+                className="flex-1 flex items-center justify-center gap-2 font-bold py-3.5 rounded-lg transition-all bg-hormadi-red text-white hover:bg-hormadi-red/80 shadow-lg shadow-hormadi-red/30"
+              >
+                <Phone size={16} />
+                05 59 57 17 37
+              </a>
+              <a
+                href="mailto:contact@hormadi.fr"
+                className="flex-1 flex items-center justify-center gap-2 font-bold py-3.5 rounded-lg transition-all bg-hormadi-surface border border-hormadi-border text-white hover:border-hormadi-red/50"
+              >
+                <Mail size={16} />
+                contact@hormadi.fr
+              </a>
+            </div>
           </div>
         </div>
       </section>

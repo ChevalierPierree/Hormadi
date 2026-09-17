@@ -1,5 +1,7 @@
-import Link from 'next/link'
-import { ArrowRight, Users, Heart, Trophy, Clock, Check } from 'lucide-react'
+import { ExternalLink, Users, Heart, Trophy, Clock, Check } from 'lucide-react'
+
+// Section amateur = association distincte (AHA), avec son propre site — pas géré par ce projet.
+const AMATEUR_SITE_URL = 'https://amateur.hormadi.fr/'
 
 const FEATURES = [
   'Baby hockey dès 3 ans',
@@ -65,15 +67,17 @@ export default function AmateurSection() {
                 ))}
               </ul>
 
-              <Link
-                href="/amateur"
+              <a
+                href={AMATEUR_SITE_URL}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="inline-flex items-center justify-center gap-2 bg-hormadi-ocean text-white font-bold
                            px-8 py-3.5 rounded-lg hover:bg-hormadi-ocean/90 transition-all
                            hover:shadow-lg hover:shadow-hormadi-ocean/30 text-sm uppercase tracking-wider group w-fit"
               >
-                Découvrir
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </Link>
+                Découvrir le site de l&apos;AHA
+                <ExternalLink className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </a>
             </div>
           </div>
         </div>

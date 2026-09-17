@@ -38,7 +38,12 @@ export const CTA_LINKS = {
 
 // Billetterie réelle opérée par SULF — pas d'API/embed disponible publiquement,
 // intégration = redirection externe (même principe que le site officiel actuel).
+// /home n'affiche que le tout prochain match : à utiliser seulement quand on ne
+// vise pas un match précis. /matchs liste tous les matchs à venir avec un lien
+// "Acheter" chacun — c'est la bonne cible dès qu'on veut qu'un fan retrouve un
+// match précis (pas de mapping d'ID entre notre base et celle de Sulf).
 export const SULF_BILLETTERIE_URL = 'https://hormadi.billetterie-club.fr/home'
+export const SULF_MATCHES_URL = 'https://hormadi.billetterie-club.fr/matchs'
 
 // ─── Ligue Magnus Teams with logo paths ─────────────────
 export const TEAMS: Record<string, { name: string; fullName: string; short: string; logo: string }> = {
