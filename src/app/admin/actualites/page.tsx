@@ -63,12 +63,28 @@ export default function AdminArticlesPage() {
     try {
       setLoading(true)
       setError(null)
-      const response = await fetch('/api/articles?published=all')
-      if (!response.ok) {
+
+      // /api/articles caps limit at 200 and paginates — fetch every page so
+      // the admin list (search/filter/edit) covers all articles, not just
+      // the first 20 (there are 300+, mostly imported from the old site).
+      const first = await fetch('/api/articles?published=all&limit=200&page=1')
+      if (!first.ok) {
         throw new Error('Failed to fetch articles')
       }
-      const data = await response.json()
-      setArticles(data.articles || [])
+      const firstData = await first.json()
+      let allArticles: Article[] = firstData.articles || []
+
+      const totalPages = firstData.pagination?.pages || 1
+      if (totalPages > 1) {
+        const rest = await Promise.all(
+          Array.from({ length: totalPages - 1 }, (_, i) =>
+            fetch(`/api/articles?published=all&limit=200&page=${i + 2}`).then((r) => r.json())
+          )
+        )
+        rest.forEach((d) => { allArticles = allArticles.concat(d.articles || []) })
+      }
+
+      setArticles(allArticles)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred')
     } finally {

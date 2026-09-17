@@ -33,7 +33,7 @@ export default function AdminBilletteriePage() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const res = await fetch('/api/matches?limit=60')
+        const res = await fetch('/api/matches?limit=200')
         const data = await res.json()
         const allMatches: Match[] = data.matches || []
 

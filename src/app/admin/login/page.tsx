@@ -1,11 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 
 export default function AdminLoginPage() {
-  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -32,8 +30,10 @@ export default function AdminLoginPage() {
         return;
       }
 
-      // Redirect to dashboard on successful login
-      router.push('/admin/dashboard');
+      // Redirect to dashboard on successful login — hard navigation so the
+      // server re-reads the just-set auth cookie instead of serving a stale
+      // (pre-login, unauthenticated) cached RSC payload for /admin/dashboard.
+      window.location.href = '/admin/dashboard';
     } catch (err) {
       setError('Une erreur est survenue. Veuillez réessayer.');
       console.error('Login error:', err);

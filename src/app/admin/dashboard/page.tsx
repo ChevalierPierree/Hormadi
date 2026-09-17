@@ -13,6 +13,7 @@ import {
   Users,
   type LucideIcon,
 } from 'lucide-react'
+import { SEASON_START } from '@/lib/constants'
 
 type Match = {
   id: string
@@ -48,7 +49,8 @@ type Partner = {
 
 export default function AdminDashboard() {
   const [matches, setMatches] = useState<Match[]>([])
-  const [articles, setArticles] = useState<Article[]>([])
+  const [articleCounts, setArticleCounts] = useState({ published: 0, drafts: 0 })
+  const [recentArticles, setRecentArticles] = useState<Article[]>([])
   const [products, setProducts] = useState<Product[]>([])
   const [partners, setPartners] = useState<Partner[]>([])
   const [loading, setLoading] = useState(true)
@@ -56,20 +58,32 @@ export default function AdminDashboard() {
   useEffect(() => {
     async function fetchAll() {
       try {
-        const [matchRes, articleRes, productRes, partnerRes] = await Promise.all([
-          fetch('/api/matches?limit=60'),
-          fetch('/api/articles?published=all'),
+        const [matchRes, publishedRes, draftRes, recentRes, productRes, partnerRes] = await Promise.all([
+          fetch('/api/matches?limit=150'),
+          // limit=1 — only the pagination.total count is needed here, not the article bodies
+          fetch('/api/articles?limit=1'),
+          fetch('/api/articles?published=false&limit=1'),
+          fetch('/api/articles?published=all&limit=5'),
           fetch('/api/products'),
           fetch('/api/partners'),
         ])
-        const [matchData, articleData, productData, partnerData] = await Promise.all([
+        const [matchData, publishedData, draftData, recentData, productData, partnerData] = await Promise.all([
           matchRes.json(),
-          articleRes.json(),
+          publishedRes.json(),
+          draftRes.json(),
+          recentRes.json(),
           productRes.json(),
           partnerRes.json(),
         ])
-        setMatches(matchData.matches || [])
-        setArticles(articleData.articles || [])
+        const currentSeasonMatches = (matchData.matches || []).filter(
+          (m: Match) => new Date(m.date) >= SEASON_START
+        )
+        setMatches(currentSeasonMatches)
+        setArticleCounts({
+          published: publishedData.pagination?.total ?? 0,
+          drafts: draftData.pagination?.total ?? 0,
+        })
+        setRecentArticles(recentData.articles || [])
         setProducts(productData.products || [])
         setPartners(partnerData.partners || [])
       } catch (e) {
@@ -90,7 +104,6 @@ export default function AdminDashboard() {
     if (m.isHomeGame) return (m.homeScore ?? 0) > (m.awayScore ?? 0)
     return (m.awayScore ?? 0) > (m.homeScore ?? 0)
   })
-  const publishedArticles = articles.filter((a) => a.published)
   const visiblePartners = partners.filter((p) => p.visible)
 
   const nextMatch = upcomingMatches[0]
@@ -122,7 +135,7 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         <StatCard label="Matchs joués" value={finishedMatches.length} icon={Calendar} subtext={`${wins.length} victoires / ${finishedMatches.length - wins.length} défaites`} />
         <StatCard label="Matchs à venir" value={upcomingMatches.length} icon={TrendingUp} subtext={daysToNext !== null ? `Prochain dans ${daysToNext}j — ${nextMatchLabel}` : 'Aucun match prévu'} />
-        <StatCard label="Articles publiés" value={publishedArticles.length} icon={Newspaper} subtext={`${articles.length - publishedArticles.length} brouillons`} />
+        <StatCard label="Articles publiés" value={articleCounts.published} icon={Newspaper} subtext={`${articleCounts.drafts} brouillons`} />
         <StatCard label="Produits en boutique" value={products.length} icon={ShoppingBag} subtext="Boutique en ligne" />
         <StatCard label="Partenaires actifs" value={visiblePartners.length} icon={Users} subtext={`${partners.length} partenaires au total`} />
         <StatCard label="Total matchs saison" value={matches.length} icon={BarChart3} subtext="Saison 2026-2027" />
@@ -226,7 +239,7 @@ export default function AdminDashboard() {
           </Link>
         </div>
         <div className="space-y-3">
-          {articles.slice(0, 5).map((article) => (
+          {recentArticles.map((article) => (
             <div key={article.id} className="flex items-center justify-between py-2 border-b border-hormadi-border/50 last:border-0">
               <p className="text-white text-sm font-medium truncate max-w-md">{article.title}</p>
               <div className="flex items-center gap-2">

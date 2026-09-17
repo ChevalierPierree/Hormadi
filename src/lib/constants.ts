@@ -12,6 +12,10 @@ export const CLUB = {
   hashtags: ['#GoHormadi', '#JoTaKelrabaziArte'],
 } as const
 
+// Match rows in the DB span multiple seasons (old fixtures are never deleted).
+// Filter on this cutoff wherever only the current season's matches should count.
+export const SEASON_START = new Date('2026-08-01T00:00:00Z')
+
 // ─── Navigation ──────────────────────────────────────────
 export const NAV_LINKS = [
   { label: 'Accueil', href: '/' },

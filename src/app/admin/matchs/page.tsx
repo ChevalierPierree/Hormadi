@@ -42,7 +42,7 @@ export default function AdminMatchsPage() {
   const fetchMatches = async () => {
     setLoading(true)
     try {
-      const res = await fetch('/api/matches?limit=50')
+      const res = await fetch('/api/matches?limit=200')
       const data = await res.json()
       setMatches(data.matches || [])
     } catch (e) {

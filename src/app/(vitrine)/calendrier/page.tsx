@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils'
 import TeamLogo from '@/components/ui/TeamLogo'
 import Link from 'next/link'
 import CTASection from '@/components/sections/CTASection'
-import { CLUB, SULF_BILLETTERIE_URL } from '@/lib/constants'
+import { CLUB, SULF_BILLETTERIE_URL, SEASON_START } from '@/lib/constants'
 
 interface Match {
   id: string
@@ -63,10 +63,6 @@ const MONTHS = [
   { label: 'Avr', value: '2027-04' },
   { label: 'Mai', value: '2027-05' },
 ]
-
-// Les matchs antérieurs à cette date appartiennent à une saison précédente
-// (pas de champ "season" en base — le calendrier n'a que des dates).
-const SEASON_START = new Date('2026-08-01T00:00:00Z')
 
 function getCompBadge(comp: string) {
   switch (comp) {
