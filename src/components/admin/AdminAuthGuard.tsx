@@ -1,10 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 
 export default function AdminAuthGuard() {
-  const router = useRouter()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -29,8 +27,12 @@ export default function AdminAuthGuard() {
         return
       }
 
-      // Reload the page — the layout will now find the session cookie and render the dashboard
-      router.refresh()
+      // Hard navigation to /admin/dashboard — a plain router.refresh() left the
+      // admin stuck looking at this same login form even after a successful
+      // login (confirmed live: the layout's session check didn't reliably
+      // re-run to reveal the authenticated view). A full page load guarantees
+      // the server re-reads the just-set auth cookie.
+      window.location.href = '/admin/dashboard'
     } catch (err) {
       setError('Une erreur est survenue. Veuillez réessayer.')
       console.error('Login error:', err)
