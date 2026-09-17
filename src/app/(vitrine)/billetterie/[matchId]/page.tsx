@@ -286,7 +286,7 @@ export default function TicketSelectionPage() {
             <span className="text-white">Réservation</span>
           </div>
 
-          <div className="flex items-center gap-6">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6">
             <div className="flex items-center gap-4">
               <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-white flex items-center justify-center shadow-lg">
                 <img src="/images/teams/Anglet.png" alt="Hormadi" className="w-10 h-10 sm:w-11 sm:h-11 object-contain" />
@@ -304,7 +304,7 @@ export default function TicketSelectionPage() {
               <h1 className="text-2xl sm:text-3xl font-black text-white">
                 ANGLET vs {awayTeam ? awayTeam.name.toUpperCase() : match.awayTeam.toUpperCase()}
               </h1>
-              <div className="flex items-center gap-4 text-hormadi-muted text-sm mt-1">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 text-hormadi-muted text-sm mt-1">
                 <span className="flex items-center gap-1"><Clock size={14} />{dateStr} — {time}</span>
                 <span className="flex items-center gap-1"><MapPin size={14} />{match.venue}</span>
               </div>
