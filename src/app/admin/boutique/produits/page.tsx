@@ -4,6 +4,7 @@ import { useState, useMemo, useEffect } from 'react'
 import Link from 'next/link'
 import { Trash2, Edit, Plus, Search, Eye, EyeOff } from 'lucide-react'
 import { formatPrice } from '@/lib/utils'
+import ImageUpload from '@/components/admin/ImageUpload'
 
 type Product = {
   id: string
@@ -29,6 +30,7 @@ type ProductFormData = {
   description: string
   price: string
   category: string
+  imageUrl: string
   stock: string
   featured: boolean
   published: boolean
@@ -46,6 +48,7 @@ export default function AdminProductsPage() {
     description: '',
     price: '',
     category: 'textile',
+    imageUrl: '',
     stock: '',
     featured: false,
     published: true,
@@ -87,6 +90,7 @@ export default function AdminProductsPage() {
         description: product.description,
         price: (product.price / 100).toString(),
         category: product.category,
+        imageUrl: product.imageUrl || '',
         stock: product.stock.toString(),
         featured: product.featured,
         published: product.published,
@@ -99,6 +103,7 @@ export default function AdminProductsPage() {
         description: '',
         price: '',
         category: 'textile',
+        imageUrl: '',
         stock: '',
         featured: false,
         published: true,
@@ -121,6 +126,7 @@ export default function AdminProductsPage() {
       description: formData.description,
       price: priceInCents,
       category: formData.category,
+      imageUrl: formData.imageUrl || null,
       stock: parseInt(formData.stock, 10),
       featured: formData.featured,
       published: formData.published,
@@ -383,6 +389,13 @@ export default function AdminProductsPage() {
                       required
                     />
                   </div>
+
+                  <ImageUpload
+                    value={formData.imageUrl}
+                    onChange={(url) => setFormData({ ...formData, imageUrl: url })}
+                    folder="products"
+                    label="Image du produit"
+                  />
 
                   {/* Price & Category */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

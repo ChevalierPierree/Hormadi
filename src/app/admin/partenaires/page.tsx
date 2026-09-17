@@ -1,19 +1,19 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import {
   Plus,
   Pencil,
   Trash2,
   Eye,
   EyeOff,
-  Upload,
   ExternalLink,
   Search,
   Filter,
   X,
   Loader,
 } from 'lucide-react'
+import ImageUpload from '@/components/admin/ImageUpload'
 
 type PartnerCategory =
   | 'partenaire_principal'
@@ -69,8 +69,6 @@ export default function AdminPartenairesPage() {
   const [selectedCategory, setSelectedCategory] = useState<PartnerCategory | 'all'>('all')
   const [formSubmitting, setFormSubmitting] = useState(false)
   const [logoPreview, setLogoPreview] = useState<string>('')
-  const [uploadingLogo, setUploadingLogo] = useState(false)
-  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const [formData, setFormData] = useState<PartnerFormData>({
     name: '',
@@ -140,33 +138,6 @@ export default function AdminPartenairesPage() {
       order: '',
       visible: true,
     })
-  }
-
-  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-
-    try {
-      setUploadingLogo(true)
-      const formDataObj = new FormData()
-      formDataObj.append('logo', file)
-
-      const response = await fetch('/api/partners/upload', {
-        method: 'POST',
-        body: formDataObj,
-      })
-
-      if (!response.ok) throw new Error('Upload failed')
-      const data = await response.json()
-      const logoPath = data.path || data.url
-      setFormData({ ...formData, logoUrl: logoPath })
-      setLogoPreview(logoPath)
-    } catch (error) {
-      console.error('Error uploading logo:', error)
-      alert('Erreur lors du téléchargement du logo')
-    } finally {
-      setUploadingLogo(false)
-    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -493,59 +464,16 @@ export default function AdminPartenairesPage() {
                 />
               </div>
 
-              {/* Logo Upload */}
-              <div>
-                <label className="block text-sm font-semibold text-white mb-2">
-                  Logo (optionnel)
-                </label>
-                <div className="space-y-3">
-                  <div className="flex items-center gap-3">
-                    <input
-                      ref={fileInputRef}
-                      type="file"
-                      accept="image/*"
-                      onChange={handleLogoUpload}
-                      className="hidden"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => fileInputRef.current?.click()}
-                      disabled={uploadingLogo}
-                      className="flex items-center gap-2 px-4 py-2 bg-hormadi-ocean hover:bg-hormadi-ocean/80 text-white rounded-lg transition-colors disabled:opacity-50"
-                    >
-                      <Upload size={18} />
-                      {uploadingLogo ? 'Téléchargement...' : 'Télécharger'}
-                    </button>
-                    {formData.logoUrl && (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setFormData({ ...formData, logoUrl: '' })
-                          setLogoPreview('')
-                        }}
-                        className="text-hormadi-muted hover:text-hormadi-red transition-colors"
-                      >
-                        <X size={18} />
-                      </button>
-                    )}
-                  </div>
-
-                  {logoPreview && (
-                    <div className="flex items-center gap-3 p-3 bg-hormadi-dark border border-hormadi-border rounded-lg">
-                      <img
-                        src={logoPreview}
-                        alt="Logo preview"
-                        className="h-12 w-12 object-contain rounded"
-                      />
-                      <div className="flex-1">
-                        <p className="text-sm text-white truncate">
-                          {logoPreview.split('/').pop()}
-                        </p>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
+              <ImageUpload
+                value={formData.logoUrl}
+                onChange={(url) => {
+                  setFormData({ ...formData, logoUrl: url })
+                  setLogoPreview(url)
+                }}
+                folder="partners"
+                label="Logo (optionnel)"
+                previewClassName="aspect-[4/3] w-48 bg-white"
+              />
 
               {/* Order */}
               <div>

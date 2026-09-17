@@ -12,6 +12,7 @@ import {
   X,
   Loader,
 } from 'lucide-react'
+import ImageUpload from '@/components/admin/ImageUpload'
 
 type StaffCategory = 'direction' | 'staff_technique' | 'encadrement'
 
@@ -324,22 +325,13 @@ export default function AdminOrganigrammePage() {
                 </select>
               </div>
 
-              <div>
-                <label className="block text-sm font-semibold text-white mb-2">Photo (URL, optionnel)</label>
-                <input
-                  type="text"
-                  value={formData.photoUrl}
-                  onChange={(e) => setFormData({ ...formData, photoUrl: e.target.value })}
-                  placeholder="/images/staff/nom.jpg ou https://..."
-                  className="w-full px-4 py-2 bg-hormadi-dark border border-hormadi-border rounded-lg text-white placeholder-hormadi-muted focus:outline-none focus:border-hormadi-ocean transition-colors"
-                />
-                {formData.photoUrl && (
-                  <div className="mt-3 flex items-center gap-3 p-3 bg-hormadi-dark border border-hormadi-border rounded-lg">
-                    <img src={formData.photoUrl} alt="Aperçu" className="h-12 w-12 object-cover rounded-full" />
-                    <p className="text-sm text-hormadi-muted truncate">{formData.photoUrl}</p>
-                  </div>
-                )}
-              </div>
+              <ImageUpload
+                value={formData.photoUrl}
+                onChange={(url) => setFormData({ ...formData, photoUrl: url })}
+                folder="staff"
+                label="Photo (optionnel)"
+                previewClassName="aspect-square w-32"
+              />
 
               <div>
                 <label className="block text-sm font-semibold text-white mb-2">Ordre d'affichage</label>

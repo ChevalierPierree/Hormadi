@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react'
 import { Trash2, Edit, Plus, Search, Eye, EyeOff, AlertCircle, Loader } from 'lucide-react'
+import ImageUpload from '@/components/admin/ImageUpload'
 
 type Article = {
   id: string
@@ -470,31 +471,12 @@ export default function AdminArticlesPage() {
                 </select>
               </div>
 
-              <div>
-                <label className="block text-sm font-semibold text-white mb-2">
-                  Image URL
-                </label>
-                <input
-                  type="url"
-                  value={formData.imageUrl}
-                  onChange={(e) =>
-                    setFormData({ ...formData, imageUrl: e.target.value })
-                  }
-                  placeholder="https://example.com/image.jpg"
-                  className="input w-full"
-                  disabled={submitting}
-                />
-                {formData.imageUrl && (
-                  <img
-                    src={formData.imageUrl}
-                    alt="Preview"
-                    className="mt-3 max-w-xs h-32 object-cover rounded bg-hormadi-surface"
-                    onError={(e) => {
-                      ;(e.target as HTMLImageElement).style.display = 'none'
-                    }}
-                  />
-                )}
-              </div>
+              <ImageUpload
+                value={formData.imageUrl}
+                onChange={(url) => setFormData({ ...formData, imageUrl: url })}
+                folder="articles"
+                label="Image de l'article"
+              />
 
               <div>
                 <label className="block text-sm font-semibold text-white mb-2">
