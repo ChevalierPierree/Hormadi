@@ -31,13 +31,14 @@ const CATEGORY_META: Record<string, { id: string; title: string; subtitle: strin
   partenaire_principal: { id: 'labellises', title: 'Nos partenaires', subtitle: 'LABELLISÉS' },
   partenaire_institutionnel: { id: 'institutionnels', title: 'Nos partenaires', subtitle: 'INSTITUTIONNELS' },
   partenaire: { id: 'partenaires', title: 'Nos', subtitle: 'PARTENAIRES' },
-  fournisseur_officiel: { id: 'fournisseurs', title: 'Nos fournisseurs', subtitle: 'OFFICIELS' },
+  fournisseur_officiel: { id: 'fournisseurs-officiels', title: 'Nos fournisseurs', subtitle: 'OFFICIELS' },
+  fournisseur: { id: 'fournisseurs', title: 'Nos', subtitle: 'FOURNISSEURS' },
   equipementier: { id: 'equipementiers', title: 'Nos partenaires', subtitle: 'ÉQUIPEMENTIERS' },
   media: { id: 'media', title: 'Nos partenaires', subtitle: 'MÉDIA' },
 }
 
 // Display order for the top category sections
-const CATEGORY_ORDER = ['partenaire_principal', 'partenaire_institutionnel', 'partenaire', 'fournisseur_officiel', 'equipementier', 'media']
+const CATEGORY_ORDER = ['partenaire_principal', 'partenaire_institutionnel', 'partenaire', 'fournisseur_officiel', 'fournisseur', 'equipementier', 'media']
 
 /* ─── Filter tabs for "Tous nos partenaires" ──────────────────── */
 const FILTER_TABS = [
@@ -45,6 +46,7 @@ const FILTER_TABS = [
   { id: 'labellises', label: 'LABELLISÉS' },
   { id: 'institutionnels', label: 'INSTITUTIONNELS' },
   { id: 'partenaires', label: 'PARTENAIRES' },
+  { id: 'fournisseurs-officiels', label: 'FOURNISSEURS OFFICIELS' },
   { id: 'fournisseurs', label: 'FOURNISSEURS' },
   { id: 'equipementiers', label: 'ÉQUIPEMENTIERS' },
   { id: 'media', label: 'MÉDIA' },

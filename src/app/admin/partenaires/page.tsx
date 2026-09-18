@@ -20,6 +20,7 @@ type PartnerCategory =
   | 'partenaire_institutionnel'
   | 'partenaire'
   | 'fournisseur_officiel'
+  | 'fournisseur'
   | 'equipementier'
   | 'media'
 
@@ -47,6 +48,7 @@ const CATEGORY_LABELS: Record<PartnerCategory, string> = {
   partenaire_institutionnel: 'Institutionnel',
   partenaire: 'Partenaire',
   fournisseur_officiel: 'Fournisseur Officiel',
+  fournisseur: 'Fournisseur',
   equipementier: 'Équipementier',
   media: 'Média',
 }
@@ -56,6 +58,7 @@ const CATEGORY_COLORS: Record<PartnerCategory, string> = {
   partenaire_institutionnel: 'bg-purple-500/20 text-purple-400 border-purple-500/30',
   partenaire: 'bg-hormadi-forest/20 text-hormadi-ice border-hormadi-forest/30',
   fournisseur_officiel: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
+  fournisseur: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
   equipementier: 'bg-hormadi-ocean/20 text-hormadi-ocean border-hormadi-ocean/30',
   media: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
 }
