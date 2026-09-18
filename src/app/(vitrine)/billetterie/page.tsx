@@ -373,7 +373,7 @@ export default function BilletteriePage() {
       </section>
 
       {/* ═══════════════════ ABONNEMENTS ═══════════════════ */}
-      <section className="py-16 sm:py-20 border-t border-hormadi-border">
+      <section id="abonnements" className="py-16 sm:py-20 border-t border-hormadi-border scroll-mt-24">
         <div className="section-padding">
           <div className="border-l-4 border-hormadi-red pl-6 mb-12">
             <h2 className="text-3xl sm:text-4xl font-black text-white">

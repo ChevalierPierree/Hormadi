@@ -82,7 +82,7 @@ export default function SocialCTA() {
           <div className="mt-10 flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
             <p className="text-white/50 text-sm italic">Abonnez-vous pour un tarif préférentiel et de nombreux avantages !</p>
             <Link
-              href="/abonnement"
+              href="/billetterie#abonnements"
               className="group relative inline-flex items-center flex-shrink-0 overflow-hidden"
             >
               <div className="border-2 border-white/40 text-white font-bold px-8 py-3 -skew-x-6

@@ -89,7 +89,7 @@ export default function BoutiqueSocialCTA() {
             <div className="mt-7 flex items-center gap-4">
               <p className="text-white/50 text-xs italic">Abonnez-vous pour un tarif préférentiel et de nombreux avantages !</p>
               <Link
-                href="/abonnement"
+                href="/billetterie#abonnements"
                 className="group relative inline-flex items-center flex-shrink-0 overflow-hidden"
               >
                 <div className="border-2 border-white/40 text-white font-bold px-6 py-2.5 -skew-x-6

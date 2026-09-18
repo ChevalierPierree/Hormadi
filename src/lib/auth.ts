@@ -3,7 +3,13 @@ import jwt from 'jsonwebtoken'
 import { cookies } from 'next/headers'
 import { prisma } from './db'
 
-const JWT_SECRET = process.env.JWT_SECRET || 'fallback-secret-dev-only'
+// No insecure fallback in production: a hardcoded secret in a public repo would let
+// anyone forge a valid super_admin session. Fail loudly instead if it's ever missing.
+const JWT_SECRET =
+  process.env.JWT_SECRET ||
+  (process.env.NODE_ENV === 'production'
+    ? (() => { throw new Error('JWT_SECRET env var is required in production') })()
+    : 'dev-only-insecure-secret')
 const TOKEN_NAME = 'hormadi_admin_token'
 const TOKEN_EXPIRY = '7d'
 
