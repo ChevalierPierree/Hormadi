@@ -174,7 +174,7 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* ═══ Giant animated text — "ICI C'EST ANGLET" ═══ */}
+      {/* ═══ Giant animated text — "AUPA ANGLET" ═══ */}
       <div
         className="relative overflow-hidden border-t border-white/5"
         style={{ background: 'linear-gradient(180deg, #061210 0%, #030a08 100%)' }}
@@ -188,7 +188,7 @@ export default function Footer() {
                 WebkitTextFillColor: 'transparent',
               }}
             >
-              LET&apos;S GO{' '}
+              AUPA{' '}
               <span
                 style={{
                   WebkitTextStroke: '0px',
