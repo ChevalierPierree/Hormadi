@@ -26,12 +26,6 @@ const SHOPS: ShopLink[] = [
     logoUrl: '/images/boutique/pull-in.png',
   },
   {
-    name: 'Macron',
-    description: 'Boutique officielle des maillots et tenues de jeu Macron aux couleurs de l’Hormadi.',
-    href: 'https://clubshop.macron.com/pau/hormadi',
-    logoUrl: '/images/boutique/macron.png',
-  },
-  {
     name: 'Bauer / Promoglace',
     description: 'Équipement de hockey (patins, crosses, protections) et produits dérivés des clubs partenaires.',
     href: 'https://www.promoglace.com/boutique-clubs-2769?f=%7B%220%22%3A%5B%5B2508%5D%5D%7D',
@@ -81,7 +75,7 @@ export default function BoutiquePage() {
 
       {/* ─── SHOP CARDS ─── */}
       <section className="py-16 sm:py-24">
-        <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 grid grid-cols-1 md:grid-cols-2 gap-6">
           {SHOPS.map(shop => (
             <ShopCard key={shop.name} shop={shop} />
           ))}

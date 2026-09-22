@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import {
   ChevronRight,
-  ChevronDown,
   Crown,
   Check,
   Mail,
@@ -15,7 +14,6 @@ import {
   ArrowRight,
   Briefcase,
 } from 'lucide-react';
-import { useState } from 'react';
 
 /* ─── Salon data (from official plaquette PDF) ──────────────── */
 const SALONS = [
@@ -242,7 +240,6 @@ export default function HospitalitesPage() {
             {SALONS.map((salon) => {
               const isPremium = (salon as any).isPremium;
               const isChalet = (salon as any).isChalet;
-              const hasFullPricing = 'saisonComplete' in salon.pricing;
 
               return (
                 <div
@@ -327,8 +324,8 @@ export default function HospitalitesPage() {
                       </ul>
                     </div>
 
-                    {/* Pricing Accordion */}
-                    <PricingAccordion salon={salon} hasFullPricing={hasFullPricing} />
+                    {/* Pricing → Contact */}
+                    <PricingAccordion salon={salon} />
 
                     {/* CTA */}
                     <Link
@@ -526,85 +523,23 @@ export default function HospitalitesPage() {
   );
 }
 
-/* ─── Pricing Accordion Component ──────────────────────────── */
-function PricingAccordion({ salon, hasFullPricing }: { salon: typeof SALONS[number]; hasFullPricing: boolean }) {
-  const [open, setOpen] = useState(false);
-
+/* ─── Pricing → Contact Component ──────────────────────────── */
+function PricingAccordion({ salon }: { salon: typeof SALONS[number] }) {
   return (
     <div className="border-t border-hormadi-border pt-6">
-      <button
-        onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between group"
-      >
-        <h4 className="text-hormadi-red font-bold uppercase text-sm tracking-wider">
-          Tarifs
-        </h4>
-        <div className="flex items-center gap-2 text-hormadi-muted text-xs group-hover:text-white transition-colors">
-          <span>{open ? 'Masquer' : 'Voir les tarifs'}</span>
-          <ChevronDown
-            className={`w-4 h-4 transition-transform duration-300 ${open ? 'rotate-180' : ''}`}
-          />
+      <div className="flex items-center justify-between gap-4 rounded-lg border border-hormadi-border bg-hormadi-ocean/10 px-5 py-4">
+        <div>
+          <h4 className="text-hormadi-red font-bold uppercase text-sm tracking-wider mb-1">
+            Tarifs
+          </h4>
+          <p className="text-hormadi-ice text-sm">Sur demande — contactez notre équipe commerciale</p>
         </div>
-      </button>
-
-      <div
-        className={`overflow-hidden transition-all duration-300 ease-out ${
-          open ? 'max-h-[500px] opacity-100 mt-4' : 'max-h-0 opacity-0'
-        }`}
-      >
-        <div className="overflow-hidden rounded-lg border border-hormadi-border">
-          <table className="w-full text-sm">
-            <tbody>
-              {hasFullPricing ? (
-                <>
-                  <tr className="bg-hormadi-ocean/10 border-b border-hormadi-border">
-                    <td className="px-5 py-3.5 text-hormadi-ice font-medium">Saison Complète</td>
-                    <td className="px-5 py-3.5 text-right">
-                      <span className="font-black text-white text-base">{(salon.pricing as any).saisonComplete}€</span>
-                      <span className="text-hormadi-muted text-xs ml-1">HT</span>
-                    </td>
-                  </tr>
-                  <tr className="border-b border-hormadi-border">
-                    <td className="px-5 py-3.5 text-hormadi-ice font-medium">Pack Magnus</td>
-                    <td className="px-5 py-3.5 text-right">
-                      <span className="font-black text-white text-base">{(salon.pricing as any).packMagnus}€</span>
-                      <span className="text-hormadi-muted text-xs ml-1">HT</span>
-                    </td>
-                  </tr>
-                  <tr className="bg-hormadi-ocean/10 border-b border-hormadi-border">
-                    <td className="px-5 py-3.5 text-hormadi-ice font-medium">Pack Angloy</td>
-                    <td className="px-5 py-3.5 text-right">
-                      <span className="font-black text-white text-base">{(salon.pricing as any).packAngloy}€</span>
-                      <span className="text-hormadi-muted text-xs ml-1">HT</span>
-                    </td>
-                  </tr>
-                  <tr className="border-b border-hormadi-border">
-                    <td className="px-5 py-3.5 text-hormadi-ice font-medium">Place Supplémentaire Partenaire</td>
-                    <td className="px-5 py-3.5 text-right">
-                      <span className="font-black text-white text-base">{(salon.pricing as any).placeSupplementaire}€</span>
-                      <span className="text-hormadi-muted text-xs ml-1">HT</span>
-                    </td>
-                  </tr>
-                  <tr className="bg-hormadi-ocean/10">
-                    <td className="px-5 py-3.5 text-hormadi-ice font-medium">Place Ponctuelle</td>
-                    <td className="px-5 py-3.5 text-right">
-                      <span className="font-black text-white text-base">{(salon.pricing as any).placePonctuelle}€</span>
-                      <span className="text-hormadi-muted text-xs ml-1">HT</span>
-                    </td>
-                  </tr>
-                </>
-              ) : (
-                <tr className="bg-hormadi-ocean/10">
-                  <td className="px-5 py-3.5 text-hormadi-ice font-medium">Loge complète au match (10 personnes)</td>
-                  <td className="px-5 py-3.5 text-right">
-                    <span className="font-black text-white text-base">{(salon.pricing as any).logeComplete}€</span>
-                    <span className="text-hormadi-muted text-xs ml-1">HT</span>
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+        <Link
+          href="/contact"
+          className="flex-shrink-0 text-xs font-bold uppercase tracking-wider text-hormadi-red hover:text-white transition-colors"
+        >
+          Nous contacter
+        </Link>
       </div>
     </div>
   );
