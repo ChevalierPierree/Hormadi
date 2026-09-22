@@ -250,8 +250,8 @@ export default function PatinaireSeatMap({
           {/* GLACE text removed */}
 
           {/* ═══ TRIBUNE PRINCIPALE HEADER ═══ */}
-          <rect x="550" y="5" width="350" height="22" rx="4" fill="white" fillOpacity="0.1" />
-          <text x="725" y="21" textAnchor="middle" fill="white" fontSize="13" fontWeight="900" letterSpacing="3">
+          <rect x="550" y="5" width="350" height="22" rx="4" fill="#DDCBA4" fillOpacity="0.1" />
+          <text x="725" y="21" textAnchor="middle" fill="#DDCBA4" fontSize="13" fontWeight="900" letterSpacing="3">
             TRIBUNE PRINCIPALE
           </text>
 
@@ -259,10 +259,10 @@ export default function PatinaireSeatMap({
           {zoneLabels.map((lbl, i) => (
             <g key={i}>
               <rect x={lbl.x - lbl.w/2} y={lbl.y - 12} width={lbl.w} height="17" rx="8" fill={lbl.color} fillOpacity="0.9" />
-              <text x={lbl.x - 8} y={lbl.y} textAnchor="middle" fill="white" fontSize="9" fontWeight="800">
+              <text x={lbl.x - 8} y={lbl.y} textAnchor="middle" fill="#DDCBA4" fontSize="9" fontWeight="800">
                 {lbl.text}
               </text>
-              <text x={lbl.x + 22} y={lbl.y} textAnchor="middle" fill="white" fontSize="8" fontWeight="600" opacity="0.9">
+              <text x={lbl.x + 22} y={lbl.y} textAnchor="middle" fill="#DDCBA4" fontSize="8" fontWeight="600" opacity="0.9">
                 {lbl.subtext}
               </text>
             </g>
@@ -283,7 +283,7 @@ export default function PatinaireSeatMap({
             if (isSold) {
               fill = '#4b5563'; stroke = '#374151'; opacity = 0.35
             } else if (isSelected) {
-              fill = '#ffffff'; stroke = '#fbbf24'
+              fill = '#DDCBA4'; stroke = '#fbbf24'
             } else if (isHovered && canSelect) {
               fill = colors?.hover || fill
             }
@@ -311,7 +311,7 @@ export default function PatinaireSeatMap({
 
           {/* ═══ TRIBUNE PROPP LABEL ═══ */}
           <rect x="2" y="145" width="70" height="16" rx="8" fill="#ff69b4" fillOpacity="0.9" />
-          <text x="37" y="156" textAnchor="middle" fill="white" fontSize="8" fontWeight="800">
+          <text x="37" y="156" textAnchor="middle" fill="#DDCBA4" fontSize="8" fontWeight="800">
             PROPP · {getZonePrice('propp')}
           </text>
 
@@ -345,7 +345,7 @@ export default function PatinaireSeatMap({
             {(standingSelections['debout_left'] || 0) > 0 && (
               <g className="pointer-events-none">
                 <circle cx="107" cy="315" r="14" fill="#22c55e" />
-                <text x="107" y="320" textAnchor="middle" fill="white" fontSize="12" fontWeight="900">
+                <text x="107" y="320" textAnchor="middle" fill="#DDCBA4" fontSize="12" fontWeight="900">
                   {standingSelections['debout_left']}
                 </text>
               </g>
@@ -381,7 +381,7 @@ export default function PatinaireSeatMap({
             {(standingSelections['debout_right'] || 0) > 0 && (
               <g className="pointer-events-none">
                 <circle cx="1342" cy="315" r="14" fill="#22c55e" />
-                <text x="1342" y="320" textAnchor="middle" fill="white" fontSize="12" fontWeight="900">
+                <text x="1342" y="320" textAnchor="middle" fill="#DDCBA4" fontSize="12" fontWeight="900">
                   {standingSelections['debout_right']}
                 </text>
               </g>
@@ -414,7 +414,7 @@ export default function PatinaireSeatMap({
                 x={Math.max(145, Math.min(tooltip.x, viewBoxWidth - 145))}
                 y={tooltip.y + 1}
                 textAnchor="middle"
-                fill="white"
+                fill="#DDCBA4"
                 fontSize="10"
                 fontWeight="600"
               >

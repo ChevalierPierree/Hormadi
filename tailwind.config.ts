@@ -7,6 +7,10 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        // Pantone 468 C now replaces pure white across the whole design
+        // system (charte 26-27) — overriding Tailwind's built-in "white"
+        // here covers every bg-white/text-white/border-white/etc. utility.
+        white: '#DDCBA4',
         hormadi: {
           // ─── Greens (from official charter) ───
           dark: '#012e24',       // Vert Foncé — primary dark bg
@@ -18,7 +22,7 @@ const config: Config = {
           red: '#A6192E',        // Rouge Basque — Pantone 187 C (charte 26-27)
           // ─── Neutrals ───
           black: '#0a0a0a',      // Near black — deepest bg
-          white: '#FFFFFF',
+          white: '#DDCBA4',      // now the same as the global "white" override above
           surface: '#021f19',    // Dark green surface for cards
           border: '#0a3d30',     // Border color (dark green)
           muted: '#8aafa6',      // Muted text on dark green

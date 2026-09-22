@@ -61,12 +61,12 @@ function generateEmailHTML(data: TicketEmailData): string {
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
                 <tr>
                   <td>
-                    <h1 style="margin:0;color:white;font-size:22px;font-weight:900;letter-spacing:1px;">
+                    <h1 style="margin:0;color:#DDCBA4;font-size:22px;font-weight:900;letter-spacing:1px;">
                       🏒 E-BILLET HORMADI
                     </h1>
                   </td>
                   <td align="right">
-                    <span style="color:rgba(255,255,255,0.8);font-size:12px;font-family:monospace;">
+                    <span style="color:rgba(221,203,164,0.8);font-size:12px;font-family:monospace;">
                       ${data.reference}
                     </span>
                   </td>
@@ -80,7 +80,7 @@ function generateEmailHTML(data: TicketEmailData): string {
             <td style="background:#0a3d30;padding:30px;">
               <!-- Greeting -->
               <p style="color:#b0c4b1;font-size:14px;margin:0 0 20px;">
-                Bonjour <strong style="color:white;">${data.customerName}</strong>,
+                Bonjour <strong style="color:#DDCBA4;">${data.customerName}</strong>,
               </p>
               <p style="color:#b0c4b1;font-size:14px;margin:0 0 25px;">
                 Votre réservation est confirmée ! Voici vos billets pour le match :
@@ -90,7 +90,7 @@ function generateEmailHTML(data: TicketEmailData): string {
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#012e24;border-radius:12px;border:1px solid #1a5c4a;margin-bottom:25px;">
                 <tr>
                   <td style="padding:25px;">
-                    <h2 style="margin:0 0 5px;color:white;font-size:24px;font-weight:900;">
+                    <h2 style="margin:0 0 5px;color:#DDCBA4;font-size:24px;font-weight:900;">
                       ${data.homeTeam} vs ${data.awayTeam}
                     </h2>
                     <p style="margin:0;color:#009681;font-size:13px;">
@@ -101,24 +101,24 @@ function generateEmailHTML(data: TicketEmailData): string {
                       <tr>
                         <td width="50%" style="padding:10px;background:#0a3d30;border-radius:8px;">
                           <p style="margin:0;color:#6b9e95;font-size:10px;text-transform:uppercase;letter-spacing:1px;">Date</p>
-                          <p style="margin:4px 0 0;color:white;font-size:14px;font-weight:700;">${data.matchDate}</p>
+                          <p style="margin:4px 0 0;color:#DDCBA4;font-size:14px;font-weight:700;">${data.matchDate}</p>
                         </td>
                         <td width="10"></td>
                         <td width="50%" style="padding:10px;background:#0a3d30;border-radius:8px;">
                           <p style="margin:0;color:#6b9e95;font-size:10px;text-transform:uppercase;letter-spacing:1px;">Heure</p>
-                          <p style="margin:4px 0 0;color:white;font-size:14px;font-weight:700;">${data.matchTime}</p>
+                          <p style="margin:4px 0 0;color:#DDCBA4;font-size:14px;font-weight:700;">${data.matchTime}</p>
                         </td>
                       </tr>
                       <tr><td colspan="3" height="10"></td></tr>
                       <tr>
                         <td width="50%" style="padding:10px;background:#0a3d30;border-radius:8px;">
                           <p style="margin:0;color:#6b9e95;font-size:10px;text-transform:uppercase;letter-spacing:1px;">Lieu</p>
-                          <p style="margin:4px 0 0;color:white;font-size:14px;font-weight:700;">${data.venue}</p>
+                          <p style="margin:4px 0 0;color:#DDCBA4;font-size:14px;font-weight:700;">${data.venue}</p>
                         </td>
                         <td width="10"></td>
                         <td width="50%" style="padding:10px;background:#0a3d30;border-radius:8px;">
                           <p style="margin:0;color:#6b9e95;font-size:10px;text-transform:uppercase;letter-spacing:1px;">Catégorie</p>
-                          <p style="margin:4px 0 0;color:white;font-size:14px;font-weight:700;">${data.categoryName}</p>
+                          <p style="margin:4px 0 0;color:#DDCBA4;font-size:14px;font-weight:700;">${data.categoryName}</p>
                         </td>
                       </tr>
                     </table>
@@ -128,7 +128,7 @@ function generateEmailHTML(data: TicketEmailData): string {
                       <tr>
                         <td style="padding:12px;">
                           <p style="margin:0;color:#6b9e95;font-size:10px;text-transform:uppercase;letter-spacing:1px;">Titulaire</p>
-                          <p style="margin:3px 0 0;color:white;font-size:14px;font-weight:700;">${data.customerName}</p>
+                          <p style="margin:3px 0 0;color:#DDCBA4;font-size:14px;font-weight:700;">${data.customerName}</p>
                         </td>
                         <td align="right" style="padding:12px;">
                           <p style="margin:0;color:#6b9e95;font-size:10px;text-transform:uppercase;letter-spacing:1px;">Places</p>
@@ -168,7 +168,7 @@ function generateEmailHTML(data: TicketEmailData): string {
                     <p style="margin:0;color:#6b9e95;font-size:12px;">Total payé</p>
                   </td>
                   <td align="right">
-                    <p style="margin:0;color:white;font-size:20px;font-weight:900;">${priceFormatted}</p>
+                    <p style="margin:0;color:#DDCBA4;font-size:20px;font-weight:900;">${priceFormatted}</p>
                   </td>
                 </tr>
               </table>
@@ -178,10 +178,10 @@ function generateEmailHTML(data: TicketEmailData): string {
           <!-- Info -->
           <tr>
             <td style="background:#009681;padding:20px 30px;">
-              <p style="margin:0;color:white;font-size:13px;font-weight:700;">
+              <p style="margin:0;color:#DDCBA4;font-size:13px;font-weight:700;">
                 📍 Rappel : Les portes ouvrent 1h avant le match.
               </p>
-              <p style="margin:5px 0 0;color:rgba(255,255,255,0.8);font-size:12px;">
+              <p style="margin:5px 0 0;color:rgba(221,203,164,0.8);font-size:12px;">
                 N'oubliez pas votre billet (imprimé ou sur mobile) !
               </p>
             </td>

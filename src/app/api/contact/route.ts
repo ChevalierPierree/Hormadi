@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
             <div style="max-width:600px;margin:0 auto;background:#021f19;border:1px solid #0a3d30;">
               <!-- Header -->
               <div style="background:#A6192E;padding:20px 30px;">
-                <h1 style="margin:0;color:#fff;font-size:20px;font-weight:800;letter-spacing:1px;">
+                <h1 style="margin:0;color:#DDCBA4;font-size:20px;font-weight:800;letter-spacing:1px;">
                   NOUVEAU MESSAGE — SITE WEB
                 </h1>
               </div>
@@ -54,11 +54,11 @@ export async function POST(request: NextRequest) {
                 <table style="width:100%;border-collapse:collapse;">
                   <tr>
                     <td style="padding:8px 0;color:#8aafa6;font-size:12px;text-transform:uppercase;font-weight:700;letter-spacing:1px;width:120px;vertical-align:top;">Sujet</td>
-                    <td style="padding:8px 0;color:#fff;font-size:14px;font-weight:700;">${subject}</td>
+                    <td style="padding:8px 0;color:#DDCBA4;font-size:14px;font-weight:700;">${subject}</td>
                   </tr>
                   <tr>
                     <td style="padding:8px 0;color:#8aafa6;font-size:12px;text-transform:uppercase;font-weight:700;letter-spacing:1px;vertical-align:top;">Nom</td>
-                    <td style="padding:8px 0;color:#fff;font-size:14px;">${firstName} ${lastName}</td>
+                    <td style="padding:8px 0;color:#DDCBA4;font-size:14px;">${firstName} ${lastName}</td>
                   </tr>
                   <tr>
                     <td style="padding:8px 0;color:#8aafa6;font-size:12px;text-transform:uppercase;font-weight:700;letter-spacing:1px;vertical-align:top;">Email</td>
@@ -67,14 +67,14 @@ export async function POST(request: NextRequest) {
                   ${phone ? `
                   <tr>
                     <td style="padding:8px 0;color:#8aafa6;font-size:12px;text-transform:uppercase;font-weight:700;letter-spacing:1px;vertical-align:top;">Tél</td>
-                    <td style="padding:8px 0;color:#fff;font-size:14px;">${phone}</td>
+                    <td style="padding:8px 0;color:#DDCBA4;font-size:14px;">${phone}</td>
                   </tr>
                   ` : ''}
                 </table>
 
                 <div style="margin-top:20px;padding-top:20px;border-top:1px solid #0a3d30;">
                   <p style="color:#8aafa6;font-size:12px;text-transform:uppercase;font-weight:700;letter-spacing:1px;margin:0 0 10px;">Message</p>
-                  <p style="color:#fff;font-size:14px;line-height:1.7;margin:0;white-space:pre-wrap;">${message}</p>
+                  <p style="color:#DDCBA4;font-size:14px;line-height:1.7;margin:0;white-space:pre-wrap;">${message}</p>
                 </div>
               </div>
 
@@ -101,16 +101,16 @@ export async function POST(request: NextRequest) {
           <body style="margin:0;padding:0;background:#012e24;font-family:Arial,sans-serif;">
             <div style="max-width:600px;margin:0 auto;background:#021f19;border:1px solid #0a3d30;">
               <div style="background:#A6192E;padding:20px 30px;text-align:center;">
-                <h1 style="margin:0;color:#fff;font-size:22px;font-weight:900;letter-spacing:2px;">
+                <h1 style="margin:0;color:#DDCBA4;font-size:22px;font-weight:900;letter-spacing:2px;">
                   HORMADI ANGLET
                 </h1>
               </div>
               <div style="padding:30px;">
-                <h2 style="color:#fff;font-size:18px;font-weight:800;margin:0 0 15px;">
+                <h2 style="color:#DDCBA4;font-size:18px;font-weight:800;margin:0 0 15px;">
                   Merci pour votre message, ${firstName} !
                 </h2>
                 <p style="color:#a8d7d2;font-size:14px;line-height:1.7;margin:0 0 20px;">
-                  Nous avons bien reçu votre demande concernant <strong style="color:#fff;">"${subject}"</strong>.
+                  Nous avons bien reçu votre demande concernant <strong style="color:#DDCBA4;">"${subject}"</strong>.
                   Notre équipe vous répondra dans les meilleurs délais, généralement sous 48h ouvrées.
                 </p>
                 <div style="background:#012e24;border:1px solid #0a3d30;border-radius:8px;padding:15px;margin:20px 0;">

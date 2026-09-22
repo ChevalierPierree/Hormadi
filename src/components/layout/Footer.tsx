@@ -184,7 +184,7 @@ export default function Footer() {
             <h2
               className="font-black text-[15vw] sm:text-[12vw] lg:text-[10vw] leading-[0.85] tracking-tighter text-center select-none whitespace-nowrap"
               style={{
-                WebkitTextStroke: '2px rgba(255,255,255,0.15)',
+                WebkitTextStroke: '2px rgba(221,203,164,0.15)',
                 WebkitTextFillColor: 'transparent',
               }}
             >
@@ -192,7 +192,7 @@ export default function Footer() {
               <span
                 style={{
                   WebkitTextStroke: '0px',
-                  WebkitTextFillColor: 'white',
+                  WebkitTextFillColor: '#DDCBA4',
                 }}
               >
                 ANGLET
