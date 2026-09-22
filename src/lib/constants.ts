@@ -233,9 +233,9 @@ export const PRODUCT_CATEGORIES = [
 
 // ─── Ticket Categories ───────────────────────────────────
 export const TICKET_CATEGORIES = [
-  { id: 'tribune-est', label: 'Tribune Est', color: '#e4002b' },
-  { id: 'tribune-ouest', label: 'Tribune Ouest', color: '#00664f' },
+  { id: 'tribune-est', label: 'Tribune Est', color: '#A6192E' },
+  { id: 'tribune-ouest', label: 'Tribune Ouest', color: '#154734' },
   { id: 'virage-nord', label: 'Virage Nord', color: '#009681' },
   { id: 'virage-sud', label: 'Virage Sud', color: '#a8d7d2' },
-  { id: 'vip', label: 'Espace VIP', color: '#e4002b' },
+  { id: 'vip', label: 'Espace VIP', color: '#A6192E' },
 ] as const

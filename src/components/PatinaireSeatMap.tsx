@@ -90,7 +90,7 @@ function generateAllSeats(): SeatInfo[] {
 
 const ZONE_COLORS: Record<string, { fill: string; stroke: string; hover: string; label: string; labelBg: string }> = {
   propp:       { fill: '#ff69b4', stroke: '#ff1493', hover: '#ff85c8', label: 'Tribune Propp', labelBg: '#ff69b4' },
-  cat1:        { fill: '#e4002b', stroke: '#c50025', hover: '#ff3355', label: 'Catégorie 1', labelBg: '#e4002b' },
+  cat1:        { fill: '#A6192E', stroke: '#c50025', hover: '#ff3355', label: 'Catégorie 1', labelBg: '#A6192E' },
   cat2_left:   { fill: '#1e40af', stroke: '#1e3a8a', hover: '#3b82f6', label: 'Catégorie 2', labelBg: '#1e40af' },
   cat2_right:  { fill: '#1e40af', stroke: '#1e3a8a', hover: '#3b82f6', label: 'Catégorie 2', labelBg: '#1e40af' },
   cat3_left:   { fill: '#ec4899', stroke: '#db2777', hover: '#f9a8d4', label: 'Catégorie 3', labelBg: '#ec4899' },
@@ -180,7 +180,7 @@ export default function PatinaireSeatMap({
   const zoneLabels = [
     { x: 50 + 20*11/2, y: 42, text: 'CAT. 3', subtext: getZonePrice('cat3_left'), color: '#ec4899', w: 70 },
     { x: 280 + 25*11/2, y: 42, text: 'CAT. 2', subtext: getZonePrice('cat2_left'), color: '#1e40af', w: 70 },
-    { x: 570 + 30*11/2, y: 42, text: 'CAT. 1', subtext: getZonePrice('cat1'), color: '#e4002b', w: 70 },
+    { x: 570 + 30*11/2, y: 42, text: 'CAT. 1', subtext: getZonePrice('cat1'), color: '#A6192E', w: 70 },
     { x: 920 + 25*11/2, y: 42, text: 'CAT. 2', subtext: getZonePrice('cat2_right'), color: '#1e40af', w: 70 },
     { x: 1210 + 20*11/2, y: 42, text: 'CAT. 3', subtext: getZonePrice('cat3_right'), color: '#ec4899', w: 70 },
   ]
@@ -220,7 +220,7 @@ export default function PatinaireSeatMap({
           <rect x="160" y="145" width="1130" height="350" rx="55" fill="none" stroke="#c0dce8" strokeWidth="1" />
 
           {/* Centre line */}
-          <line x1="725" y1="145" x2="725" y2="495" stroke="#e4002b" strokeWidth="2" />
+          <line x1="725" y1="145" x2="725" y2="495" stroke="#A6192E" strokeWidth="2" />
           {/* Blue lines */}
           <line x1="475" y1="145" x2="475" y2="495" stroke="#1e40af" strokeWidth="2" />
           <line x1="975" y1="145" x2="975" y2="495" stroke="#1e40af" strokeWidth="2" />
@@ -238,13 +238,13 @@ export default function PatinaireSeatMap({
             style={{ pointerEvents: 'none' }}
           />
           {/* Goals */}
-          <rect x="247" y="305" width="6" height="30" fill="#e4002b" rx="2" />
-          <rect x="1197" y="305" width="6" height="30" fill="#e4002b" rx="2" />
+          <rect x="247" y="305" width="6" height="30" fill="#A6192E" rx="2" />
+          <rect x="1197" y="305" width="6" height="30" fill="#A6192E" rx="2" />
           {/* Face-off circles */}
           {[375, 575, 875, 1075].map((cx) => [220, 420].map((cy) => (
             <g key={`${cx}-${cy}`}>
-              <circle cx={cx} cy={cy} r="22" fill="none" stroke="#e4002b" strokeWidth="1" />
-              <circle cx={cx} cy={cy} r="2.5" fill="#e4002b" />
+              <circle cx={cx} cy={cy} r="22" fill="none" stroke="#A6192E" strokeWidth="1" />
+              <circle cx={cx} cy={cy} r="2.5" fill="#A6192E" />
             </g>
           )))}
           {/* GLACE text removed */}

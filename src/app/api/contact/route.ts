@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
           <body style="margin:0;padding:0;background:#012e24;font-family:Arial,sans-serif;">
             <div style="max-width:600px;margin:0 auto;background:#021f19;border:1px solid #0a3d30;">
               <!-- Header -->
-              <div style="background:#e4002b;padding:20px 30px;">
+              <div style="background:#A6192E;padding:20px 30px;">
                 <h1 style="margin:0;color:#fff;font-size:20px;font-weight:800;letter-spacing:1px;">
                   NOUVEAU MESSAGE — SITE WEB
                 </h1>
@@ -100,7 +100,7 @@ export async function POST(request: NextRequest) {
           <html>
           <body style="margin:0;padding:0;background:#012e24;font-family:Arial,sans-serif;">
             <div style="max-width:600px;margin:0 auto;background:#021f19;border:1px solid #0a3d30;">
-              <div style="background:#e4002b;padding:20px 30px;text-align:center;">
+              <div style="background:#A6192E;padding:20px 30px;text-align:center;">
                 <h1 style="margin:0;color:#fff;font-size:22px;font-weight:900;letter-spacing:2px;">
                   HORMADI ANGLET
                 </h1>
@@ -119,7 +119,7 @@ export async function POST(request: NextRequest) {
                 </div>
                 <p style="color:#8aafa6;font-size:13px;line-height:1.6;margin:20px 0 0;">
                   À bientôt à la Patinoire de la Barre !<br/>
-                  <strong style="color:#e4002b;">L'équipe Hormadi</strong>
+                  <strong style="color:#A6192E;">L'équipe Hormadi</strong>
                 </p>
               </div>
               <div style="padding:15px 30px;background:#012e24;border-top:1px solid #0a3d30;text-align:center;">

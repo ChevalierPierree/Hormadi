@@ -10,11 +10,12 @@ const config: Config = {
         hormadi: {
           // ─── Greens (from official charter) ───
           dark: '#012e24',       // Vert Foncé — primary dark bg
-          forest: '#00664f',     // Vert Forêt — secondary bg / surfaces
+          forest: '#154734',     // Vert Forêt — Pantone 3435 C (charte 26-27)
           ocean: '#009681',      // Vert Océan — accent / interactive
           ice: '#a8d7d2',        // Vert Glace — light accents / highlights
+          sand: '#DDCBA4',       // Beige — Pantone 468 C (charte 26-27, maillots sable)
           // ─── Red ───
-          red: '#e4002b',        // Rouge Basque — CTAs, highlights, scores
+          red: '#A6192E',        // Rouge Basque — Pantone 187 C (charte 26-27)
           // ─── Neutrals ───
           black: '#0a0a0a',      // Near black — deepest bg
           white: '#FFFFFF',

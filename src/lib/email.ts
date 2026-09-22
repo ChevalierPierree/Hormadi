@@ -57,7 +57,7 @@ function generateEmailHTML(data: TicketEmailData): string {
 
           <!-- Header -->
           <tr>
-            <td style="background:#e4002b;padding:20px 30px;border-radius:12px 12px 0 0;">
+            <td style="background:#A6192E;padding:20px 30px;border-radius:12px 12px 0 0;">
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
                 <tr>
                   <td>
@@ -132,7 +132,7 @@ function generateEmailHTML(data: TicketEmailData): string {
                         </td>
                         <td align="right" style="padding:12px;">
                           <p style="margin:0;color:#6b9e95;font-size:10px;text-transform:uppercase;letter-spacing:1px;">Places</p>
-                          <p style="margin:3px 0 0;color:#e4002b;font-size:28px;font-weight:900;">${data.quantity}</p>
+                          <p style="margin:3px 0 0;color:#A6192E;font-size:28px;font-weight:900;">${data.quantity}</p>
                         </td>
                       </tr>
                     </table>
