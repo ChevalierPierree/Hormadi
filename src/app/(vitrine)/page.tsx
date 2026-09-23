@@ -3,6 +3,7 @@ import RecentResults from '@/components/sections/RecentResults'
 import StandingsPreview from '@/components/sections/StandingsPreview'
 import NewsPreview from '@/components/sections/NewsPreview'
 import CTASection from '@/components/sections/CTASection'
+import MagnusVideoSection from '@/components/sections/MagnusVideoSection'
 import AmateurSection from '@/components/sections/AmateurSection'
 import PartnersMarquee from '@/components/sections/PartnersMarquee'
 import SocialCTA from '@/components/sections/SocialCTA'
@@ -15,6 +16,7 @@ export default function HomePage() {
       <StandingsPreview />
       <NewsPreview />
       <CTASection />
+      <MagnusVideoSection />
       <AmateurSection />
       <PartnersMarquee />
     </div>
