@@ -24,7 +24,7 @@ function LogoImage() {
       alt="Hormadi"
       width={44}
       height={44}
-      className="rounded-full"
+      className="object-contain"
       onError={() => setError(true)}
     />
   )
