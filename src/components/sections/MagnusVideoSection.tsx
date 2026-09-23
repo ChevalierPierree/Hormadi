@@ -67,10 +67,11 @@ export default function MagnusVideoSection() {
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Voir Magnus TV"
-            className="flex-shrink-0 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-black/50 border border-white/20
-                       backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors"
+            className="flex-shrink-0 h-11 sm:h-12 rounded-full bg-black/50 border border-white/20
+                       backdrop-blur-sm flex items-center gap-1.5 px-4 sm:px-5 hover:bg-black/70 transition-colors"
           >
-            <ArrowUpRight size={20} className="text-white" />
+            <span className="text-white text-xs sm:text-sm font-medium">Magnus TV</span>
+            <ArrowUpRight size={18} className="text-white" />
           </a>
         </div>
       </div>
