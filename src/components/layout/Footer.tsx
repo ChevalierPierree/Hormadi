@@ -182,7 +182,7 @@ export default function Footer() {
         <div className="py-8 sm:py-12">
           <div className="flex items-center justify-center">
             <h2
-              className="font-black text-[15vw] sm:text-[12vw] lg:text-[10vw] leading-[0.85] tracking-tighter text-center select-none whitespace-nowrap"
+              className="font-black text-[15vw] sm:text-[12vw] lg:text-[10vw] leading-[0.85] tracking-tight text-center select-none whitespace-nowrap"
               style={{
                 WebkitTextStroke: '2px rgba(221,203,164,0.15)',
                 WebkitTextFillColor: 'transparent',
