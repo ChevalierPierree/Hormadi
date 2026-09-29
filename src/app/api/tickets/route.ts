@@ -93,11 +93,15 @@ export async function POST(req: NextRequest) {
     }
 
     // Send confirmation email (non-blocking)
+    // Dates are stored in UTC — always render in Europe/Paris explicitly, since this
+    // route runs server-side where the runtime's local timezone isn't guaranteed to be Paris.
     const matchDate = new Date(match.date)
-    const weekdays = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi']
-    const months = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre']
-    const dateStr = `${weekdays[matchDate.getDay()]} ${matchDate.getDate()} ${months[matchDate.getMonth()]} ${matchDate.getFullYear()}`
-    const timeStr = matchDate.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
+    const dateStr = matchDate.toLocaleDateString('fr-FR', {
+      timeZone: 'Europe/Paris', weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
+    })
+    const timeStr = matchDate.toLocaleTimeString('fr-FR', {
+      timeZone: 'Europe/Paris', hour: '2-digit', minute: '2-digit',
+    })
     const qrData = `HORMADI-TICKET|${reference}|${matchId}|${cat.name}|${qty}|${customerName}`
     const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(qrData)}`
 
