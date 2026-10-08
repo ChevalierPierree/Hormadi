@@ -213,3 +213,33 @@ model Player {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
+
+// ─── Auctions (vente aux enchères d'objets du club) ──────
+
+model AuctionItem {
+  id           String   @id @default(cuid())
+  title        String
+  description  String
+  imageUrl     String?
+  startPrice   Int      // en centimes
+  minIncrement Int      @default(500) // palier minimum entre deux enchères, en centimes
+  endDate      DateTime
+  order        Int      @default(0)
+  visible      Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  bids AuctionBid[]
+}
+
+model AuctionBid {
+  id            String      @id @default(cuid())
+  auctionItemId String
+  auctionItem   AuctionItem @relation(fields: [auctionItemId], references: [id], onDelete: Cascade)
+  amount        Int         // en centimes
+  bidderName    String
+  bidderEmail   String
+  bidderPhone   String
+  reference     String      @unique
+  createdAt     DateTime    @default(now())
+}

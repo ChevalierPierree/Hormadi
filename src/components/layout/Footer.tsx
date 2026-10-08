@@ -45,6 +45,7 @@ export default function Footer() {
                 { label: 'Billetterie', href: CTA_LINKS.billetterie },
                 { label: 'Boutique', href: CTA_LINKS.boutique },
                 { label: 'Hospitalités', href: '/hospitalites' },
+                { label: 'Enchères', href: '/encheres' },
                 { label: 'Magnus TV', href: CTA_LINKS.magnusTV, external: true },
                 { label: 'Contact', href: '/contact' },
               ].map(service => (

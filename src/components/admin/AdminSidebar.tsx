@@ -14,6 +14,7 @@ import {
   X,
   Network,
   Shirt,
+  Gavel,
 } from 'lucide-react';
 
 interface User {
@@ -39,6 +40,7 @@ export default function AdminSidebar({ user }: AdminSidebarProps) {
     { label: 'Organigramme', href: '/admin/organigramme', icon: Network },
     { label: 'Effectif', href: '/admin/effectif', icon: Shirt },
     { label: 'Partenaires', href: '/admin/partenaires', icon: Users },
+    { label: 'Enchères', href: '/admin/encheres', icon: Gavel },
   ];
 
   const handleLogout = async () => {

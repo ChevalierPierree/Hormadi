@@ -25,6 +25,7 @@ export const NAV_LINKS = [
   { label: 'Club', href: '/histoire' },
   { label: 'Hospitalités', href: '/hospitalites' },
   { label: 'Partenaires', href: '/partenaires' },
+  { label: 'Enchères', href: '/encheres' },
 ] as const
 
 export const CTA_LINKS = {

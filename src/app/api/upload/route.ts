@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic'
 // staff, partners, products). Files go to Vercel Blob — the alternative
 // (writing into public/ on the server) doesn't work on Vercel: the filesystem
 // there is read-only at runtime and reset on every deploy.
-const ALLOWED_FOLDERS = ['articles', 'players', 'staff', 'partners', 'products'] as const
+const ALLOWED_FOLDERS = ['articles', 'players', 'staff', 'partners', 'products', 'auctions'] as const
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml']
 const MAX_SIZE = 8 * 1024 * 1024 // 8MB
 

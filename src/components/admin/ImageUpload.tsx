@@ -6,7 +6,7 @@ import { Upload, X, Loader2, ImageIcon } from 'lucide-react'
 interface ImageUploadProps {
   value: string
   onChange: (url: string) => void
-  folder: 'articles' | 'players' | 'staff' | 'partners' | 'products'
+  folder: 'articles' | 'players' | 'staff' | 'partners' | 'products' | 'auctions'
   label?: string
   /** Tailwind classes controlling the preview box shape (default: 4:3 rectangle) */
   previewClassName?: string
