@@ -262,27 +262,17 @@ export default function PartenairesPage() {
                   </div>
                 </div>
 
-                {/* Plaquettes */}
+                {/* Plaquette */}
                 <div className="flex flex-wrap gap-3 mb-8">
                   <a
-                    href="/documents/plaquette-visibilites-hormadi.pdf"
+                    href="/documents/plaquette-commerciale-hormadi-2026-2027.pdf"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 bg-white/[0.05] border border-white/10 text-white font-semibold
                                px-5 py-3 rounded-lg hover:border-hormadi-red/40 hover:bg-white/[0.08] transition-all text-sm"
                   >
                     <FileText className="w-4 h-4 text-hormadi-red flex-shrink-0" />
-                    Plaquette Visibilités
-                  </a>
-                  <a
-                    href="/documents/plaquette-hospitalites-hormadi.pdf"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 bg-white/[0.05] border border-white/10 text-white font-semibold
-                               px-5 py-3 rounded-lg hover:border-hormadi-red/40 hover:bg-white/[0.08] transition-all text-sm"
-                  >
-                    <FileText className="w-4 h-4 text-hormadi-red flex-shrink-0" />
-                    Plaquette Hospitalités
+                    Plaquette Commerciale 2026-2027
                   </a>
                 </div>
 
