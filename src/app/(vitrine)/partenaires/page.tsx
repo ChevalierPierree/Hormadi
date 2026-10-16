@@ -330,7 +330,7 @@ function PartnerCard({ partner, size = 'normal' }: { partner: Partner; size?: 'l
 
   const cardContent = (
     <div className={cn(
-      'relative rounded-xl overflow-hidden bg-white flex items-center justify-center',
+      'relative rounded-xl overflow-hidden bg-[#ffffff] flex items-center justify-center',
       'transition-all duration-300 ease-out group',
       'hover:shadow-lg hover:shadow-hormadi-ocean/10 hover:scale-[1.02]',
       sizeClasses[size],
